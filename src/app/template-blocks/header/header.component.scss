@@ -1,0 +1,51 @@
+header {
+
+  .top-bar {
+    height: 14px;
+    background-color: #efefef;
+    padding: 8px 5%;
+
+    ul {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      list-style-type: none;
+      justify-content: space-between;
+
+      li {
+        cursor: pointer;
+        color: #b5b5b5;
+        font-size: 12px;
+      }
+    }
+  }
+
+  nav {
+    height: 75px;
+    padding: 1em 10% .25em;
+    display: flex;
+    justify-content: space-between;
+
+    &>div {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo-text-block {
+      cursor: default;
+
+      img {
+        height: calc(100% - 1em);
+        margin-right: .75em;
+      }
+
+    }
+
+    .header-buttons {
+      button:nth-child(1) {
+        margin-right: 1em;
+      }
+    }
+  }
+
+}

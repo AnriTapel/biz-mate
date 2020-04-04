@@ -1,0 +1,27 @@
+<header>
+
+  <div class="top-bar">
+    <ul>
+      <li>Правила</li>
+      <li>Помощь</li>
+      <li>Частые вопросы</li>
+      <li>Контакты</li>
+    </ul>
+  </div>
+
+  <nav>
+    <div class="logo-text-block" routerLink="/">
+      <img src="../../../assets/img/logo.svg" alt="BizMate логотип"/>
+    </div>
+
+
+    <div class="header-buttons">
+      <button mat-stroked-button color="primary" [routerLink]="['/new-offer']">
+        Разместить предложение
+      </button>
+
+      <button *ngIf="!loggedIn" mat-button color="primary" (click)="openLoginDialog()">{{authControlText}}</button>
+      <button *ngIf="loggedIn" mat-mini-fab color="primary" (click)="logOut()">{{authControlText}}</button>
+    </div>
+  </nav>
+</header>

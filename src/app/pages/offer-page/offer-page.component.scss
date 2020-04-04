@@ -1,0 +1,29 @@
+.offer-title {
+  display: flex;
+  align-items: center;
+  margin-top: 3em;
+
+  img {
+    max-width: 40px;
+    max-height: 40px;
+    margin-right: 1em;
+  }
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.offer-meta-data,
+.offer-main-data,
+.offer-contact-data{
+  display: grid;
+  grid-template: auto / 1fr 1fr;
+  grid-gap: 1em;
+  margin: 1.25em auto;
+
+  .full-width-block,
+  hr{
+    grid-column: 1/3;
+  }
+}

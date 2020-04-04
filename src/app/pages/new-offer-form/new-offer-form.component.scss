@@ -1,0 +1,11 @@
+.offer-type-panel {
+  width: 100%;
+
+  mat-button-toggle-group {
+    display: flex;
+
+    mat-button-toggle {
+      flex: 1;
+    }
+  }
+}

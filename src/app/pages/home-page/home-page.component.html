@@ -1,0 +1,77 @@
+<main>
+
+  <!-- Панель поиска (может нужно будет вынести в отдельный компонент) -->
+  <form class="search-form-panel" [formGroup]="searchForm">
+    <mat-form-field>
+      <mat-label>Поиск по названию</mat-label>
+      <input matInput placeholder="Мастшабирование бизнеса" formControlName="titleFilter" (change)="applyFilter()">
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="applyFilter()">Искать</button>
+
+
+    <mat-form-field>
+      <input type="text" placeholder="Сфера бизнеса" aria-label="Сфера бизнеса" matInput
+             formControlName="businessAreaFilter" [matAutocomplete]="businessArea">
+      <mat-autocomplete #businessArea="matAutocomplete" (optionSelected)="applyFilter()">
+        <mat-option *ngFor="let category of filteredBusinessAreas$ | async" [value]="category.name">
+          {{category.name}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
+
+    <mat-form-field>
+      <input type="text" placeholder="Населенный пункт" aria-label="Населенный пункт" matInput
+             formControlName="cityFilter" [matAutocomplete]="cities">
+      <mat-autocomplete #cities="matAutocomplete" (optionSelected)="applyFilter()">
+        <mat-option *ngFor="let city of filteredCities$ | async" [value]="city.name">
+          {{city.name}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <button mat-stroked-button color="primary" (click)="clearFilterForm()">Сбросить</button>
+  </form>
+
+
+  <section class="offers-block">
+    <div class="title">
+      <h2>Актуальные офферы</h2>
+      <mat-button-toggle-group>
+        <mat-button-toggle value="left" aria-label="Grid" [checked]="isGridLayout" (click)="isGridLayout = true">
+          <img src="/assets/img/grid_layout.svg" alt="Блочный макет"/>
+        </mat-button-toggle>
+
+        <mat-button-toggle value="left" aria-label="Line" [checked]="!isGridLayout" (click)="isGridLayout = false">
+          <img src="/assets/img/row_layout.svg" alt="Строчный макет"/>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+
+    <div class="offers-list">
+
+      <mat-card *ngFor="let offer of popularOffers$ | async" [style.flex-basis]="isGridLayout ? '49%' : '100%'">
+        <div>
+          <mat-card-header>
+            <div mat-card-avatar>
+              <img [src]="offer.profilePhoto" alt="Аватар"/>
+            </div>
+            <mat-card-title>{{offer.title}}</mat-card-title>
+            <mat-card-subtitle>{{offer.name}}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p>{{offer.desc}}</p>
+          </mat-card-content>
+        </div>
+        <mat-card-actions>
+          <button mat-stroked-button color="primary" (click)="openOfferPage(offer)">Подробнее</button>
+          <span>{{getOfferDate(offer)}}</span>
+        </mat-card-actions>
+      </mat-card>
+
+    </div>
+    <button mat-raised-button color="primary">Больше офферов</button>
+
+  </section>
+
+</main>

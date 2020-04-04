@@ -1,0 +1,49 @@
+<main>
+  <ng-container *ngIf="offer">
+
+    <div class="offer-title">
+      <img [src]="offer.profilePhoto" alt="Аватар оффера"/>
+      <h2>{{offer.title}}</h2>
+    </div>
+
+    <div class="offer-meta-data">
+      <span><strong>Тип объявления:</strong> {{getOfferTypeTitle()}}</span>
+      <span><strong>Сферы бизнеса:</strong> {{getOfferBusinessAreas()}}</span>
+      <span><strong>Дата публикации:</strong> {{getOfferDate()}}</span>
+    </div>
+
+    <hr>
+
+    <div class="offer-main-data">
+      <div *ngIf="offer.capital">
+        <h3>{{getCapitalLabel()}}</h3>
+        <p>{{offer.capital}}</p>
+      </div>
+
+      <div class="full-width-block">
+        <h3>Описание оффера</h3>
+        <p>{{offer.desc}}</p>
+      </div>
+
+      <div class="full-width-block">
+        <h3>{{getConditionsLabel()}}</h3>
+        <p>{{offer.conditions}}</p>
+      </div>
+
+      <div class="full-width-block">
+        <h3>{{getExperienceLabel()}}</h3>
+        <p>{{offer.experience}}</p>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="offer-contact-data">
+      <span><strong>Контактное лицо:</strong> {{offer.name}}</span>
+      <span><strong>Населенный пункт:</strong> {{getOfferCity()}}</span>
+      <span *ngIf="offer.phone"><strong>Номер телефона:</strong> {{offer.phone}}</span>
+      <span *ngIf="offer.email"><strong>E-mail:</strong> {{offer.email}}</span>
+    </div>
+
+  </ng-container>
+</main>
