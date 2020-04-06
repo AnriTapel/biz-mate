@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup} from "@angular/forms";
-import {Observable} from "rxjs";
+import {of, Observable} from "rxjs";
 import {BusinessArea} from "../../models/BusinessArea";
 import {City} from "../../models/City";
 import {AngularFirestore} from "@angular/fire/firestore";
@@ -8,7 +8,7 @@ import {AppService} from "../../app.service";
 import {map, startWith} from "rxjs/operators";
 import {FilterFunctions} from "../../filter-functions";
 import {NewOffer} from "../../models/NewOffer";
-import {Router} from "@angular/router";
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-home-page',
@@ -19,14 +19,14 @@ export class HomePageComponent implements OnInit {
 
   isGridLayout: boolean = true;
   popularOffers$: Observable<NewOffer[]>;
-  filteredOffers: any;
+  filteredOffers$: Observable<NewOffer[]>;
 
   // Панель поиска
   searchForm: FormGroup;
   filteredBusinessAreas$: Observable<BusinessArea[]>;
   filteredCities$: Observable<City[]>;
 
-  constructor(private appService: AppService, private db: AngularFirestore, private router: Router) {
+  constructor(private appService: AppService, private db: AngularFirestore) {
   }
 
   ngOnInit(): void {
@@ -51,14 +51,46 @@ export class HomePageComponent implements OnInit {
     this.popularOffers$ = this.db.collection<NewOffer>('/offers').valueChanges({idField: 'offer_id'});
   }
 
-  applyFilter(): void {
-    const filterValues = this.searchForm.getRawValue();
-    const offersRef = this.db.collection('offers').ref;
+  async applyFilter(): Promise<void> {
+    let filterResults = {
+      titleFiltered: [],
+      areaFiltered: [],
+      cityFiltered: []
+    };
 
-    this.filteredOffers = offersRef
-      .where('title', filterValues.titleFilter !== "" ? '>=' : '<', filterValues.titleFilter)
-      .where('business_areas', 'array-contains', AppService.getBusinessAreaByFiledValue('name', filterValues.businessAreaFilter))
-      .where('city', filterValues.cityFilter !== "" ? '>=' : '<', AppService.getCityByFiledValue('name', filterValues.cityFilter))
+    try {
+      const filterValues = this.searchForm.getRawValue();
+      const offersRef = this.db.collection('offers').ref;
+
+      if (filterValues.titleFilter && filterValues.titleFilter !== "") {
+        let titleRes = await offersRef.where('title', '>=', filterValues.titleFilter).get();
+
+        if (!titleRes.empty)
+          titleRes.forEach(it => filterResults.titleFiltered.push(it.data()))
+      }
+
+      if (filterValues.businessAreaFilter && filterValues.businessAreaFilter !== "") {
+        let areaRes = await offersRef
+          .where('business_areas', 'array-contains', AppService.getBusinessAreaByFiledValue('name', filterValues.businessAreaFilter)).get();
+
+        if (!areaRes.empty) {
+          areaRes.forEach(it => filterResults.areaFiltered.push(it.data()))
+        }
+      }
+
+      if (filterValues.cityFilter && filterValues.cityFilter !== "") {
+        let cityRes = await offersRef
+          .where('city', '>=', AppService.getCityByFiledValue('name', filterValues.cityFilter)).get();
+
+        if (!cityRes.empty)
+          cityRes.forEach(it => filterResults.cityFiltered.push(it.data()))
+      }
+
+      this.filteredOffers$ = of(_.union<NewOffer>(filterResults.titleFiltered, filterResults.areaFiltered, filterResults.cityFiltered));
+    } catch (e) {
+      console.error(e);
+      this.filteredOffers$ = null;
+    }
   }
 
   clearFilterForm(): void {
@@ -67,13 +99,7 @@ export class HomePageComponent implements OnInit {
     Object.keys(this.searchForm.controls).forEach(key => {
       this.searchForm.get(key).setErrors(null);
     });
-  }
 
-  getOfferDate(offer: NewOffer): string {
-    return AppService.getOfferDate(offer);
-  }
-
-  openOfferPage(offer: NewOffer): void {
-    this.router.navigateByUrl(`/offer/${offer.offer_id}`);
+    this.filteredOffers$ = null;
   }
 }

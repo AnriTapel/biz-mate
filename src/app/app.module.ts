@@ -29,6 +29,7 @@ import {MatIconModule} from "@angular/material/icon";
 import {AuthService} from "./services/auth/auth.service";
 import { OfferPageComponent } from './pages/offer-page/offer-page.component';
 import { FooterComponent } from './template-blocks/footer/footer.component';
+import { OfferCardComponent } from './template-blocks/offer-card/offer-card.component';
 
 export function appInitFactory(auth: AuthService) {
   return (): Promise<any> => {
@@ -49,7 +50,8 @@ export function appInitFactory(auth: AuthService) {
     SignUpComponent,
     LoginComponent,
     OfferPageComponent,
-    FooterComponent
+    FooterComponent,
+    OfferCardComponent
   ],
   imports: [
     BrowserModule,

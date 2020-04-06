@@ -4,7 +4,7 @@
   <form class="search-form-panel" [formGroup]="searchForm">
     <mat-form-field>
       <mat-label>Поиск по названию</mat-label>
-      <input matInput placeholder="Мастшабирование бизнеса" formControlName="titleFilter" (change)="applyFilter()">
+      <input matInput placeholder="Мастшабирование бизнеса" formControlName="titleFilter">
     </mat-form-field>
     <button mat-raised-button color="primary" (click)="applyFilter()">Искать</button>
 
@@ -12,7 +12,7 @@
     <mat-form-field>
       <input type="text" placeholder="Сфера бизнеса" aria-label="Сфера бизнеса" matInput
              formControlName="businessAreaFilter" [matAutocomplete]="businessArea">
-      <mat-autocomplete #businessArea="matAutocomplete" (optionSelected)="applyFilter()">
+      <mat-autocomplete #businessArea="matAutocomplete">
         <mat-option *ngFor="let category of filteredBusinessAreas$ | async" [value]="category.name">
           {{category.name}}
         </mat-option>
@@ -23,7 +23,7 @@
     <mat-form-field>
       <input type="text" placeholder="Населенный пункт" aria-label="Населенный пункт" matInput
              formControlName="cityFilter" [matAutocomplete]="cities">
-      <mat-autocomplete #cities="matAutocomplete" (optionSelected)="applyFilter()">
+      <mat-autocomplete #cities="matAutocomplete">
         <mat-option *ngFor="let city of filteredCities$ | async" [value]="city.name">
           {{city.name}}
         </mat-option>
@@ -49,26 +49,8 @@
     </div>
 
     <div class="offers-list">
-
-      <mat-card *ngFor="let offer of popularOffers$ | async" [style.flex-basis]="isGridLayout ? '49%' : '100%'">
-        <div>
-          <mat-card-header>
-            <div mat-card-avatar>
-              <img [src]="offer.profilePhoto" alt="Аватар"/>
-            </div>
-            <mat-card-title>{{offer.title}}</mat-card-title>
-            <mat-card-subtitle>{{offer.name}}</mat-card-subtitle>
-          </mat-card-header>
-          <mat-card-content>
-            <p>{{offer.desc}}</p>
-          </mat-card-content>
-        </div>
-        <mat-card-actions>
-          <button mat-stroked-button color="primary" (click)="openOfferPage(offer)">Подробнее</button>
-          <span>{{getOfferDate(offer)}}</span>
-        </mat-card-actions>
-      </mat-card>
-
+        <app-offer-card *ngFor="let offer of (filteredOffers$ ? filteredOffers$ : popularOffers$) | async"
+                        [offer]="offer" [style.flex-basis]="isGridLayout ? '49%' : '100%'"></app-offer-card>
     </div>
     <button mat-raised-button color="primary">Больше офферов</button>
 
