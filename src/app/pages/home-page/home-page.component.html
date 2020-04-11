@@ -52,7 +52,7 @@
         <app-offer-card *ngFor="let offer of (filteredOffers$ ? filteredOffers$ : popularOffers$) | async"
                         [offer]="offer" [style.flex-basis]="isGridLayout ? '49%' : '100%'"></app-offer-card>
     </div>
-    <button mat-raised-button color="primary">Больше офферов</button>
+    <button mat-raised-button color="primary" (click)="loadNextOffersChunk()">Больше офферов</button>
 
   </section>
 

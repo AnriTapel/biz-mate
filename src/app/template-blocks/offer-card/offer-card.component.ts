@@ -13,7 +13,7 @@ export class OfferCardComponent implements OnInit {
 
   @Input() offer: NewOffer;
 
-  constructor(private router: Router) { }
+  constructor() { }
 
   ngOnInit(): void {
   }
@@ -23,7 +23,7 @@ export class OfferCardComponent implements OnInit {
   }
 
   openOfferPage(offer: NewOffer): void {
-    this.router.navigateByUrl(`/offer/${offer.offer_id}`);
+    window.open(`/offer/${offer.offer_id}`, '_blank');
   }
 
 }

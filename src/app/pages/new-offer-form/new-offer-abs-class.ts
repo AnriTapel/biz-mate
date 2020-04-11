@@ -18,10 +18,6 @@ export abstract class NewOfferAbsClass {
 
   clearForm(form: FormGroup): void {
     form.reset();
-
-    /*Object.keys(form.controls).forEach(key => {
-      form.get(key).setErrors(null);
-    });*/
   }
 
   getUserAccountData(): any {
@@ -49,6 +45,7 @@ export abstract class NewOfferAbsClass {
   }
 
   sendOffer(offerData: NewOffer): Promise<string> {
+    offerData.offer_id = this.db.createId();
     offerData.user_id = this.auth.user ? this.auth.user.uid : null;
     offerData.city = AppService.getCityByFiledValue('name', offerData.city).id;
 
@@ -64,9 +61,7 @@ export abstract class NewOfferAbsClass {
 
     let ref = this.db.collection('/offers');
 
-    ref.valueChanges({idField: 'offer_id'});
-
-    return ref.add(offerData)
+    return ref.doc(offerData.offer_id).set(offerData)
       .then(() => {
         return this.successText
       })

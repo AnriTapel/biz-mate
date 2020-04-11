@@ -38,7 +38,6 @@ export class NeedPartnerFormComponent extends NewOfferAbsClass implements OnInit
       city: new FormControl('', [Validators.required, this.cityFiledValidator()]),
       businessAreas: new FormControl('', [Validators.required, this.businessAreaFieldValidator()]),
       title: new FormControl('', [Validators.required]),
-      capital: new FormControl(null, [Validators.required]),
       desc: new FormControl('', [Validators.required]),
       experience: new FormControl(''),
       conditions: new FormControl(''),

@@ -1,11 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {AngularFirestore} from "@angular/fire/firestore";
-import * as firebase from "firebase";
 import {ActivatedRoute} from "@angular/router";
 import {NewOffer} from "../../models/NewOffer";
 import {AppService} from "../../app.service";
-import {City} from "../../models/City";
-import {BusinessArea} from "../../models/BusinessArea";
 
 @Component({
   selector: 'app-offer-page',

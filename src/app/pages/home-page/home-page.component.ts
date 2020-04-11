@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup} from "@angular/forms";
-import {of, Observable} from "rxjs";
+import {of, Observable, zip} from "rxjs";
 import {BusinessArea} from "../../models/BusinessArea";
 import {City} from "../../models/City";
 import {AngularFirestore} from "@angular/fire/firestore";
 import {AppService} from "../../app.service";
-import {map, startWith} from "rxjs/operators";
+import {combineLatest, map, merge, startWith} from "rxjs/operators";
 import {FilterFunctions} from "../../filter-functions";
 import {NewOffer} from "../../models/NewOffer";
 import * as _ from 'lodash';
@@ -17,8 +17,11 @@ import * as _ from 'lodash';
 })
 export class HomePageComponent implements OnInit {
 
+  private readonly OFFER_QUERY_LIMIT: number = 2;
+  private lastVisibleOffer: any = null;
+
   isGridLayout: boolean = true;
-  popularOffers$: Observable<NewOffer[]>;
+  popularOffers$: Observable<any[]>;
   filteredOffers$: Observable<NewOffer[]>;
 
   // Панель поиска
@@ -48,7 +51,21 @@ export class HomePageComponent implements OnInit {
         map(value => FilterFunctions._filterCategories(value))
       );
 
-    this.popularOffers$ = this.db.collection<NewOffer>('/offers').valueChanges({idField: 'offer_id'});
+    this.getInitialOffers();
+  }
+
+  async getInitialOffers(): Promise<void> {
+    let initialQuery = await this.db.collection<NewOffer>('/offers').ref
+        .orderBy('date', 'desc').limit(this.OFFER_QUERY_LIMIT).get();
+
+    let offers = [];
+
+    if (!initialQuery.empty) {
+      initialQuery.forEach(it => offers.push(it.data()));
+      this.lastVisibleOffer = initialQuery.docs[initialQuery.docs.length - 1];
+
+      this.popularOffers$ = of(offers);
+    }
   }
 
   async applyFilter(): Promise<void> {
@@ -63,14 +80,15 @@ export class HomePageComponent implements OnInit {
       const offersRef = this.db.collection('offers').ref;
 
       if (filterValues.titleFilter && filterValues.titleFilter !== "") {
-        let titleRes = await offersRef.where('title', '>=', filterValues.titleFilter).get();
+        let titleRes = await offersRef.orderBy('date', 'desc')
+          .where('title', '>=', filterValues.titleFilter).get();
 
         if (!titleRes.empty)
           titleRes.forEach(it => filterResults.titleFiltered.push(it.data()))
       }
 
       if (filterValues.businessAreaFilter && filterValues.businessAreaFilter !== "") {
-        let areaRes = await offersRef
+        let areaRes = await offersRef.orderBy('date', 'desc')
           .where('business_areas', 'array-contains', AppService.getBusinessAreaByFiledValue('name', filterValues.businessAreaFilter)).get();
 
         if (!areaRes.empty) {
@@ -79,7 +97,7 @@ export class HomePageComponent implements OnInit {
       }
 
       if (filterValues.cityFilter && filterValues.cityFilter !== "") {
-        let cityRes = await offersRef
+        let cityRes = await offersRef.orderBy('date', 'desc')
           .where('city', '>=', AppService.getCityByFiledValue('name', filterValues.cityFilter)).get();
 
         if (!cityRes.empty)
@@ -101,5 +119,20 @@ export class HomePageComponent implements OnInit {
     });
 
     this.filteredOffers$ = null;
+  }
+
+  async loadNextOffersChunk(): Promise<void> {
+    let query = await this.db.collection<NewOffer>('/offers').ref
+      .orderBy('date', 'desc').limit(this.OFFER_QUERY_LIMIT).startAfter(this.lastVisibleOffer).get();
+
+    let offers = [];
+
+    if (!query.empty) {
+      query.forEach(it => offers.push(it.data()));
+      this.lastVisibleOffer = query.docs[query.docs.length - 1];
+
+      this.popularOffers$ = zip(this.popularOffers$, of(offers))
+        .pipe(map(x => x[0].concat(x[1])))
+    }
   }
 }
