@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AngularFirestore} from "@angular/fire/firestore";
 import {ActivatedRoute} from "@angular/router";
-import {NewOffer} from "../../models/NewOffer";
+import {Offer} from "../../models/Offer";
 import {AppService} from "../../app.service";
 
 @Component({
@@ -11,14 +11,14 @@ import {AppService} from "../../app.service";
 })
 export class OfferPageComponent implements OnInit {
 
-  offer: NewOffer = null;
+  offer: Offer = null;
 
   constructor(private db: AngularFirestore, private route: ActivatedRoute) {
     db.collection('/offers').doc(route.snapshot.paramMap.get("id").toString()).get().subscribe((doc) => {
       if (!doc.exists) {
         console.error('No such document!');
       } else {
-        this.offer = doc.data() as NewOffer;
+        this.offer = doc.data() as Offer;
       }
     }, (err) => {
       console.error(err);
@@ -36,13 +36,8 @@ export class OfferPageComponent implements OnInit {
     return AppService.getCityByFiledValue('id', this.offer.city).name;
   }
 
-  getOfferBusinessAreas(): string {
-    let businessAreas: string = '';
-
-    this.offer.business_areas.forEach(it =>
-      businessAreas += `${AppService.getBusinessAreaByFiledValue('id', it).name}, `);
-
-    return businessAreas.substr(0, businessAreas.length - 2);
+  getOfferBusinessArea(): string {
+    return AppService.getBusinessAreaByFiledValue('id', this.offer.businessArea).name;
   }
 
   getOfferTypeTitle(): string {

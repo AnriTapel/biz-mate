@@ -14,6 +14,7 @@ export class HeaderComponent implements OnInit {
 
   loggedIn: boolean;
   authControlText: string;
+  visibleMenu: boolean = false;
 
   constructor(private dialog: MatDialog, private auth: AuthService, private router: Router) { }
 
@@ -37,7 +38,12 @@ export class HeaderComponent implements OnInit {
     });
   }
 
+  openProfile(): void {
+    this.router.navigateByUrl('/profile');
+  }
+
   logOut(): void {
+    this.visibleMenu = false;
     this.auth.signOut().then((res) => {
       this.auth.user = null;
       this.router.navigateByUrl("/");

@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Observable} from "rxjs";
-import {NewOffer} from "../../models/NewOffer";
+import {Offer} from "../../models/Offer";
 import {AppService} from "../../app.service";
+import {AuthService} from "../../services/auth/auth.service";
 import {Router} from "@angular/router";
 
 @Component({
@@ -11,19 +11,25 @@ import {Router} from "@angular/router";
 })
 export class OfferCardComponent implements OnInit {
 
-  @Input() offer: NewOffer;
+  @Input() offer: Offer;
+  editable: boolean;
 
-  constructor() { }
+  constructor(private auth: AuthService, private router: Router) { }
 
   ngOnInit(): void {
+    this.editable = this.auth.user && this.auth.user.uid === this.offer.userId;
   }
 
-  getOfferDate(offer: NewOffer): string {
+  getOfferDate(offer: Offer): string {
     return AppService.getOfferDate(offer);
   }
 
-  openOfferPage(offer: NewOffer): void {
-    window.open(`/offer/${offer.offer_id}`, '_blank');
+  openOfferPage(offer: Offer): void {
+    window.open(`/offer/${offer.offerId}`, '_blank');
+  }
+
+  editOffer(): void {
+    this.router.navigateByUrl(`/edit-offer/${this.offer.offerId}`);
   }
 
 }

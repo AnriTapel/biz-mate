@@ -10,11 +10,7 @@ import {MatButtonModule} from "@angular/material/button";
 import {ReactiveFormsModule} from "@angular/forms";
 import {MatInputModule} from "@angular/material/input";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
-import { NewOfferFormComponent } from './pages/new-offer-form/new-offer-form.component';
-import { NeedInvestFormComponent } from './pages/new-offer-form/need-invest-form/need-invest-form.component';
-import { HaveInvestFormComponent } from './pages/new-offer-form/have-invest-form/have-invest-form.component';
-import { NeedPartnerFormComponent } from './pages/new-offer-form/need-partner-form/need-partner-form.component';
-import { SearchBusinessFormComponent } from './pages/new-offer-form/search-business-form/search-business-form.component';
+import { OfferFormComponent } from './pages/offer-form/offer-form.component';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
@@ -30,6 +26,8 @@ import {AuthService} from "./services/auth/auth.service";
 import { OfferPageComponent } from './pages/offer-page/offer-page.component';
 import { FooterComponent } from './template-blocks/footer/footer.component';
 import { OfferCardComponent } from './template-blocks/offer-card/offer-card.component';
+import { ProfilePageComponent } from './pages/profile-page/profile-page.component';
+import { EditOfferPageComponent } from './pages/edit-offer-page/edit-offer-page.component';
 
 export function appInitFactory(auth: AuthService) {
   return (): Promise<any> => {
@@ -41,17 +39,15 @@ export function appInitFactory(auth: AuthService) {
   declarations: [
     AppComponent,
     HomePageComponent,
-    NewOfferFormComponent,
-    NeedInvestFormComponent,
-    HaveInvestFormComponent,
-    NeedPartnerFormComponent,
-    SearchBusinessFormComponent,
+    OfferFormComponent,
     HeaderComponent,
     SignUpComponent,
     LoginComponent,
     OfferPageComponent,
     FooterComponent,
-    OfferCardComponent
+    OfferCardComponent,
+    ProfilePageComponent,
+    EditOfferPageComponent
   ],
   imports: [
     BrowserModule,

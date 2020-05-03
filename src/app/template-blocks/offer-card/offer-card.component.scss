@@ -1,4 +1,5 @@
 mat-card {
+  width: 100%;
   display: flex;
   justify-content: space-between;
   flex-direction: column;
@@ -6,11 +7,25 @@ mat-card {
   margin-bottom: 1.25em;
   box-sizing: border-box;
 
-  mat-card-header img {
-    max-width: 40px;
-    max-height: 40px;
-    border-radius: 50%;
+  mat-card-header {
+    position: relative;
+
+    .mat-card-avatar img{
+      max-width: 40px;
+      max-height: 40px;
+      border-radius: 50%;
+    }
+
+    .edit-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 20px;
+      cursor: pointer;
+    }
+
   }
+
 
   mat-card-actions {
     display: flex;

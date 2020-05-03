@@ -1,3 +1,5 @@
+$main-theme-color: #673ab7;
+
 header {
 
   .top-bar {
@@ -32,7 +34,7 @@ header {
     }
 
     .logo-text-block {
-      cursor: default;
+      cursor: pointer;
 
       img {
         height: calc(100% - 1em);
@@ -42,10 +44,39 @@ header {
     }
 
     .header-buttons {
-      button:nth-child(1) {
+      & > button {
         margin-right: 1em;
+      }
+
+      & > div {
+        position: relative;
+      }
+
+      .header-menu {
+        position: absolute;
+        right: 0;
+        z-index: 2147483647;
+        flex-direction: column;
+
+        margin: 5px 0 0;
+        padding: 0;
+        border-radius: 8px;
+        border: 1px solid #b5b5b5;
+        background-color: #fff;
+
+        li {
+          list-style: none;
+          padding: 10px 15px;
+          color: $main-theme-color;
+          white-space: nowrap;
+          cursor: pointer;
+          transition: transform 100ms;
+
+          &:hover {
+            transform: scale(1.03);
+          }
+        }
       }
     }
   }
-
 }

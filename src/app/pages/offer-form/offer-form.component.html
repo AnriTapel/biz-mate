@@ -1,0 +1,90 @@
+<main>
+
+  <div class="offer-type-panel">
+    <h2>Выберите тип оффера</h2>
+
+    <mat-button-toggle-group>
+      <mat-button-toggle *ngFor="let type of getOfferTypesArray()" [checked]="getOfferType() === type.id"
+                         (click)="setOfferType(type.id)">{{type.title}}</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+
+  <section *ngIf="isOfferLoaded">
+    <form class="new-offer-form" [formGroup]="newOfferForm">
+
+      <h4>Общая информация</h4>
+
+      <button mat-raised-button type="reset" color="primary" class="clear-form-btn"
+              (click)="clearForm()">Очистить
+      </button>
+
+      <mat-form-field>
+        <mat-label>Имя</mat-label>
+        <input matInput formControlName="name">
+      </mat-form-field>
+
+      <mat-form-field>
+        <input type="text" placeholder="Населенный пункт" aria-label="Населенный пункт" matInput
+               formControlName="city" [matAutocomplete]="cities">
+        <mat-autocomplete #cities="matAutocomplete">
+          <mat-option *ngFor="let city of filteredCities$ | async" [value]="city.name">
+            {{city.name}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input type="text" placeholder="Сфера бизнеса" aria-label="Сфера бизнеса" matInput
+               formControlName="businessArea" [matAutocomplete]="businessArea">
+        <mat-autocomplete #businessArea="matAutocomplete">
+          <mat-option *ngFor="let category of filteredBusinessArea$ | async" [value]="category.name">
+            {{category.name}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <h4 class="full-width-field">Детали оффера</h4>
+
+      <mat-form-field>
+        <mat-label>Заголовок оффера</mat-label>
+        <input matInput formControlName="title">
+      </mat-form-field>
+
+      <mat-form-field *ngIf="isCapitalFieldVisible()">
+        <mat-label>{{fieldsLabels.capital}}</mat-label>
+        <input matInput type="number" formControlName="capital">
+      </mat-form-field>
+
+      <mat-form-field class="full-width-field">
+        <mat-label>Описание оффера</mat-label>
+        <textarea matInput formControlName="desc"></textarea>
+      </mat-form-field>
+
+      <mat-form-field class="full-width-field">
+        <mat-label>{{fieldsLabels.experience}}</mat-label>
+        <textarea matInput formControlName="experience"></textarea>
+      </mat-form-field>
+
+      <mat-form-field class="full-width-field">
+        <mat-label>{{fieldsLabels.conditions}}</mat-label>
+        <textarea matInput formControlName="conditions"></textarea>
+      </mat-form-field>
+
+      <h4 class="full-width-field">Контактная информация</h4>
+
+      <mat-form-field>
+        <mat-label>Телефон</mat-label>
+        <input matInput formControlName="phone">
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>E-mail</mat-label>
+        <input matInput formControlName="email">
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" (click)="sendOffer()">{{editOffer ? 'Сохранить' : 'Отправить'}}</button>
+
+    </form>
+  </section>
+
+</main>

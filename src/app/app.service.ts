@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import {City} from "./models/City";
 import {BusinessArea} from "./models/BusinessArea";
-import {NewOffer} from "./models/NewOffer";
+import {Offer} from "./models/Offer";
 import {OfferTypes} from "./models/OfferTypes";
+import {AbstractControl, ValidatorFn} from "@angular/forms";
 
 @Injectable({
   providedIn: 'root'
@@ -43,8 +44,8 @@ export class AppService {
     return this.defaultAvatars[index];
   }
 
-  public static getOfferDate(offer: NewOffer): string {
-    const date = new Date(offer.date.seconds * 1000);
+  public static getOfferDate(offer: Offer): string {
+    const date = new Date(offer.date);
 
     const day = date.getDate() >= 10 ? date.getDate().toString() : `0${date.getDate()}`;
     const month = date.getMonth() + 1 >= 10 ? (date.getMonth() + 1).toString() : `0${date.getMonth() + 1}`;
@@ -59,4 +60,33 @@ export class AppService {
     return AppService.businessArea.filter(it => it[field] == value)[0] || null;
   }
 
+  public static _filterCities(value: string): any[] {
+    if (value === null)
+      value = '';
+
+    const filterValue = value.toLowerCase();
+    return AppService.cities.filter(option => option.name.toLowerCase().includes(filterValue));
+  }
+
+  public static _filterCategories(value: string): any[] {
+    if (value === null)
+      value = '';
+
+    const filterValue = value.toLowerCase();
+    return AppService.businessArea.filter(option => option.name.toLowerCase().includes(filterValue));
+  }
+
+  public static cityFieldValidator(): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      const valid = AppService.cities.filter(it => it.name === control.value).length == 1;
+      return !valid ? {'validCity': {value: control.value}} : null;
+    };
+  }
+
+  public static businessAreaFieldValidator(): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      const valid = AppService.businessArea.filter(it => it.name === control.value).length == 1;
+      return !valid ? {'validArea': {value: control.value}} : null;
+    };
+  }
 }

@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HaveInvestFormComponent } from './have-invest-form.component';
+import { EditOfferPageComponent } from './edit-offer-page.component';
 
-describe('HaveInvestFormComponent', () => {
-  let component: HaveInvestFormComponent;
-  let fixture: ComponentFixture<HaveInvestFormComponent>;
+describe('EditOfferPageComponent', () => {
+  let component: EditOfferPageComponent;
+  let fixture: ComponentFixture<EditOfferPageComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ HaveInvestFormComponent ]
+      declarations: [ EditOfferPageComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(HaveInvestFormComponent);
+    fixture = TestBed.createComponent(EditOfferPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -5,9 +5,8 @@ import {BusinessArea} from "../../models/BusinessArea";
 import {City} from "../../models/City";
 import {AngularFirestore} from "@angular/fire/firestore";
 import {AppService} from "../../app.service";
-import {combineLatest, map, merge, startWith} from "rxjs/operators";
-import {FilterFunctions} from "../../filter-functions";
-import {NewOffer} from "../../models/NewOffer";
+import {map, startWith} from "rxjs/operators";
+import {Offer} from "../../models/Offer";
 import * as _ from 'lodash';
 
 @Component({
@@ -22,11 +21,11 @@ export class HomePageComponent implements OnInit {
 
   isGridLayout: boolean = true;
   popularOffers$: Observable<any[]>;
-  filteredOffers$: Observable<NewOffer[]>;
+  filteredOffers$: Observable<Offer[]>;
 
   // Панель поиска
   searchForm: FormGroup;
-  filteredBusinessAreas$: Observable<BusinessArea[]>;
+  filteredBusinessArea$: Observable<BusinessArea[]>;
   filteredCities$: Observable<City[]>;
 
   constructor(private appService: AppService, private db: AngularFirestore) {
@@ -42,20 +41,20 @@ export class HomePageComponent implements OnInit {
     this.filteredCities$ = this.searchForm.controls.cityFilter.valueChanges
       .pipe(
         startWith(''),
-        map(value => FilterFunctions._filterCities(value))
+        map(value => AppService._filterCities(value))
       );
 
-    this.filteredBusinessAreas$ = this.searchForm.controls.businessAreaFilter.valueChanges
+    this.filteredBusinessArea$ = this.searchForm.controls.businessAreaFilter.valueChanges
       .pipe(
         startWith(''),
-        map(value => FilterFunctions._filterCategories(value))
+        map(value => AppService._filterCategories(value))
       );
 
     this.getInitialOffers();
   }
 
   async getInitialOffers(): Promise<void> {
-    let initialQuery = await this.db.collection<NewOffer>('/offers').ref
+    let initialQuery = await this.db.collection<Offer>('/offers').ref
         .orderBy('date', 'desc').limit(this.OFFER_QUERY_LIMIT).get();
 
     let offers = [];
@@ -80,16 +79,15 @@ export class HomePageComponent implements OnInit {
       const offersRef = this.db.collection('offers').ref;
 
       if (filterValues.titleFilter && filterValues.titleFilter !== "") {
-        let titleRes = await offersRef.orderBy('date', 'desc')
-          .where('title', '>=', filterValues.titleFilter).get();
+        let titleRes = await offersRef.where('title', '>=', filterValues.titleFilter).get();
 
         if (!titleRes.empty)
           titleRes.forEach(it => filterResults.titleFiltered.push(it.data()))
       }
 
       if (filterValues.businessAreaFilter && filterValues.businessAreaFilter !== "") {
-        let areaRes = await offersRef.orderBy('date', 'desc')
-          .where('business_areas', 'array-contains', AppService.getBusinessAreaByFiledValue('name', filterValues.businessAreaFilter)).get();
+        let areaRes = await offersRef
+          .where('businessArea', 'array-contains', AppService.getBusinessAreaByFiledValue('name', filterValues.businessAreaFilter).id).get();
 
         if (!areaRes.empty) {
           areaRes.forEach(it => filterResults.areaFiltered.push(it.data()))
@@ -97,14 +95,15 @@ export class HomePageComponent implements OnInit {
       }
 
       if (filterValues.cityFilter && filterValues.cityFilter !== "") {
-        let cityRes = await offersRef.orderBy('date', 'desc')
-          .where('city', '>=', AppService.getCityByFiledValue('name', filterValues.cityFilter)).get();
+        let cityRes = await offersRef
+          .where('city', '>=', AppService.getCityByFiledValue('name', filterValues.cityFilter).id).get();
 
         if (!cityRes.empty)
           cityRes.forEach(it => filterResults.cityFiltered.push(it.data()))
       }
 
-      this.filteredOffers$ = of(_.union<NewOffer>(filterResults.titleFiltered, filterResults.areaFiltered, filterResults.cityFiltered));
+      this.filteredOffers$ = of(_.union<Offer>(filterResults.titleFiltered, filterResults.areaFiltered, filterResults.cityFiltered)
+        .sort((a,b) => b.date - a.date));
     } catch (e) {
       console.error(e);
       this.filteredOffers$ = null;
@@ -122,7 +121,7 @@ export class HomePageComponent implements OnInit {
   }
 
   async loadNextOffersChunk(): Promise<void> {
-    let query = await this.db.collection<NewOffer>('/offers').ref
+    let query = await this.db.collection<Offer>('/offers').ref
       .orderBy('date', 'desc').limit(this.OFFER_QUERY_LIMIT).startAfter(this.lastVisibleOffer).get();
 
     let offers = [];

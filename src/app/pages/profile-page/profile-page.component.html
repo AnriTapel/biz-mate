@@ -1,0 +1,89 @@
+<main>
+
+  <section id="user-info" [formGroup]="userDataForm">
+    <h2>Мои данные</h2>
+    <div class="name-and-thumb">
+      <div>
+        <img [src]="user.profilePhoto" alt="Аватар пользователя" title="{{user.displayName}}" class="user-photo">
+        <mat-form-field *ngIf="editableFields.displayName" class="example-full-width">
+          <mat-label>Имя</mat-label>
+          <input matInput autofocus formControlName="displayName" (change)="editUserData('displayName')">
+        </mat-form-field>
+
+        <mat-form-field *ngIf="!editableFields.displayName" class="example-full-width">
+          <mat-label>Имя</mat-label>
+          <input matInput disabled [value]="userDataForm.getRawValue().displayName">
+        </mat-form-field>
+      </div>
+
+      <img class="edit-field" src="/assets/img/edit.svg" alt="Изменить поле"
+           (click)="switchEditableField('displayName')"
+           [style.opacity]="editableFields.displayName ? 1 : 0.4"/>
+    </div>
+
+    <div class="city">
+      <mat-form-field *ngIf="!editableFields.city" class="example-full-width">
+        <mat-label>Населенный пункт</mat-label>
+        <input matInput disabled [value]="userDataForm.getRawValue().city">
+      </mat-form-field>
+
+      <mat-form-field *ngIf="editableFields.city">
+        <input type="text" autofocus placeholder="Населенный пункт" aria-label="Населенный пункт" matInput
+               formControlName="city" [matAutocomplete]="cities">
+        <mat-autocomplete #cities="matAutocomplete">
+          <mat-option *ngFor="let city of filteredCities$ | async" (onSelectionChange)="editUserCityField($event)"
+                      [value]="city.name">
+            {{city.name}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <img class="edit-field" src="/assets/img/edit.svg" alt="Изменить поле"
+           [style.opacity]="editableFields.city ? 1 : 0.4" (click)="switchEditableField('city')"/>
+    </div>
+
+    <div class="email">
+      <mat-form-field *ngIf="editableFields.email" class="example-full-width">
+        <mat-label>E-mail</mat-label>
+        <input matInput autofocus formControlName="email" (change)="editUserData('email')">
+      </mat-form-field>
+
+      <mat-form-field *ngIf="!editableFields.email" class="example-full-width">
+        <mat-label>E-mail</mat-label>
+        <input matInput disabled placeholder="Не указан" [value]="userDataForm.getRawValue().email">
+      </mat-form-field>
+
+      <img class="edit-field" src="/assets/img/edit.svg" alt="Изменить поле"
+           [style.opacity]="editableFields.email ? 1 : 0.4" (click)="switchEditableField('email')"/>
+    </div>
+
+    <div class="phone">
+      <mat-form-field *ngIf="editableFields.phone" class="example-full-width">
+        <mat-label>Номер телефона</mat-label>
+        <input matInput autofocus formControlName="phone" (change)="editUserData('phone')">
+      </mat-form-field>
+
+      <mat-form-field *ngIf="!editableFields.phone" class="example-full-width">
+        <mat-label>Номер телефона</mat-label>
+        <input matInput disabled [value]="userDataForm.getRawValue().phone">
+      </mat-form-field>
+
+      <img class="edit-field" src="/assets/img/edit.svg" alt="Изменить поле"
+           [style.opacity]="editableFields.phone ? 1 : 0.4" (click)="switchEditableField('phone')"/>
+    </div>
+  </section>
+
+  <section id="user-offers">
+    <h2>Мои офферы</h2>
+    <ng-container *ngIf="userOffers$">
+      <app-offer-card *ngFor="let offer of userOffers$ | async" [offer]="offer" [style.flex-basis]="'100%'"></app-offer-card>
+    </ng-container>
+    <ng-container *ngIf="!userOffers$">
+      <div class="no-offers-block">
+        <p>Размещенных офферов нет</p>
+        <button mat-raised-button color="primary">Разместить оффер</button>
+      </div>
+    </ng-container>
+  </section>
+
+</main>

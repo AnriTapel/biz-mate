@@ -6,6 +6,7 @@
       </div>
       <mat-card-title>{{offer.title}}</mat-card-title>
       <mat-card-subtitle>{{offer.name}}</mat-card-subtitle>
+      <img *ngIf="editable" class="edit-btn" src="/assets/img/edit.svg" title="Редактировать" (click)="editOffer()"/>
     </mat-card-header>
     <mat-card-content>
       <p>{{offer.desc}}</p>

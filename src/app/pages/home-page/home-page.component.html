@@ -13,7 +13,7 @@
       <input type="text" placeholder="Сфера бизнеса" aria-label="Сфера бизнеса" matInput
              formControlName="businessAreaFilter" [matAutocomplete]="businessArea">
       <mat-autocomplete #businessArea="matAutocomplete">
-        <mat-option *ngFor="let category of filteredBusinessAreas$ | async" [value]="category.name">
+        <mat-option *ngFor="let category of filteredBusinessArea$ | async" [value]="category.name">
           {{category.name}}
         </mat-option>
       </mat-autocomplete>

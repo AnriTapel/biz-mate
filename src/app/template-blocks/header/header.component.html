@@ -11,7 +11,7 @@
 
   <nav>
     <div class="logo-text-block" routerLink="/">
-      <img src="../../../assets/img/logo.svg" alt="BizMate логотип"/>
+      <img src="/assets/img/logo.svg" alt="BizMate логотип"/>
     </div>
 
 
@@ -21,7 +21,14 @@
       </button>
 
       <button *ngIf="!loggedIn" mat-button color="primary" (click)="openLoginDialog()">{{authControlText}}</button>
-      <button *ngIf="loggedIn" mat-mini-fab color="primary" (click)="logOut()">{{authControlText}}</button>
+      <div *ngIf="loggedIn">
+        <button mat-mini-fab color="primary" (click)="visibleMenu = !visibleMenu">{{authControlText}}</button>
+        <ul class="header-menu" (mouseleave)="visibleMenu = false" [style.display]="visibleMenu ? 'flex' : 'none'">
+          <li (click)="openProfile()">Личный кабинет</li>
+          <li>Помощь</li>
+          <li (click)="logOut()">Выход</li>
+        </ul>
+      </div>
     </div>
   </nav>
 </header>
