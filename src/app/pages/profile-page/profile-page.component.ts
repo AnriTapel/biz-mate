@@ -60,7 +60,7 @@ export class ProfilePageComponent implements OnInit {
       return;
 
     userOffersRef.forEach(it => offers.push(it.data() as Offer));
-    offers.sort((a,b) => a.date - b.date);
+    offers.sort((a,b) => b.date - a.date);
     this.userOffers$ = of(offers);
   }
 

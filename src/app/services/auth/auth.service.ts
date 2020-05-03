@@ -35,22 +35,19 @@ export class AuthService {
 
   appInitAuth(): Promise<any> {
     return new Promise<void>((resolve, reject) => {
-      let handler = this.afAuth.authState.subscribe((user) => {
-        if (user) {
-          this.afs.doc<User>(`users/${user.uid}`).valueChanges()
-            .subscribe(res => {
+      let handler = this.afAuth.authState.subscribe((userData) => {
+        if (userData) {
+          this.afs.doc<User>(`users/${userData.uid}`).valueChanges().subscribe(
+            res => {
               this.user = res;
-              handler.unsubscribe();
+              this.updateEmailVerificationState(userData.emailVerified);
               resolve();
-            }, error => {
-              reject(error);
-              handler.unsubscribe()
-            });
+            }, error => { reject(error) });
         } else {
           this.user = null;
-          handler.unsubscribe();
           resolve();
         }
+        handler.unsubscribe();
       }, (error) => {
         handler.unsubscribe();
         reject(error);
@@ -74,10 +71,9 @@ export class AuthService {
 
   async emailPasswordSignUp(credentials: any): Promise<void> {
     try {
-      await this.afAuth.auth.createUserWithEmailAndPassword(credentials.email, credentials.password).then(
-        (userData) => {
-          return this.updateUserData(userData.user, credentials.name);
-        });
+      let userData = await this.afAuth.auth.createUserWithEmailAndPassword(credentials.email, credentials.password);
+      this.updateUserData(userData.user, credentials.name);
+      await this.sendEmailVerification();
     } catch (e) {
       console.error("Sign-up error");
       console.log(e);
@@ -90,6 +86,19 @@ export class AuthService {
     return this.updateUserData(credential.user);
   }
 
+  private async sendEmailVerification(): Promise<void> {
+    await this.afAuth.auth.currentUser.sendEmailVerification();
+  }
+
+  private async sendPasswordResetEmail(passwordResetEmail: string) {
+    return await this.afAuth.auth.sendPasswordResetEmail(passwordResetEmail);
+  }
+
+  private async updateEmailVerificationState(currentState: boolean): Promise<void> {
+    if (!this.user.emailVerified && currentState)
+      await this.updateUserData(this.user, this.user.displayName);
+  }
+
   private updateUserData(user, name?: string): Promise<void> {
     const userRef: AngularFirestoreDocument<User> = this.afs.doc(`users/${user.uid}`);
     const displayName = name ? name : user.displayName || user.email;
@@ -97,7 +106,7 @@ export class AuthService {
     const data = {
       uid: user.uid,
       email: user.email,
-      photoURL: user.profilePhoto || AppService.getDefaultAvatar(),
+      profilePhoto: user.profilePhoto || AppService.getDefaultAvatar(),
       displayName: displayName,
       emailVerified: user.emailVerified
     };
@@ -105,8 +114,6 @@ export class AuthService {
     return userRef.set(data, {merge: true})
 
   }
-
-
 
   signOut() {
     return this.afAuth.auth.signOut();

@@ -1,4 +1,4 @@
-<h1 mat-dialog-title class="">Вход</h1>
+<h1 mat-dialog-title>Вход</h1>
 <div mat-dialog-content [formGroup]="loginFormGroup">
   <mat-form-field appearance="legacy">
     <mat-label>E-mail</mat-label>
@@ -16,10 +16,10 @@
   </mat-form-field>
 </div>
 <div mat-dialog-actions class="auth-social-media">
-  <button mat-button color="primary" (click)="loginGoogle()">
+  <button mat-button color="primary" (click)="loginGoogle()">Вход через
     <img src="/assets/img/google_logo.svg" alt="Логотип Google" /></button>
-  <button mat-button color="primary" (click)="loginFacebook()">
-    <img src="/assets/img/facebook_logo.svg" alt="Логотип Facebook" /></button>
+  <!--<button mat-button color="primary" (click)="loginFacebook()">
+    <img src="/assets/img/facebook_logo.svg" alt="Логотип Facebook" /></button>-->
 </div>
 <div mat-dialog-actions class="full-width-action-buttons">
   <button mat-raised-button color="primary" [mat-dialog-close] (click)="logIn()">Войти</button>

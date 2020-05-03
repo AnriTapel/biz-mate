@@ -28,6 +28,7 @@ main {
 
   h1 {
     text-align: center;
+    color: $main-theme-color;
   }
 
   .mat-dialog-content {
@@ -62,12 +63,13 @@ main {
 
   .auth-social-media {
     button {
-      flex: 0 49%;
-      min-width: 210px;
+      flex: 0 100%;
       height: 48px;
+      font-size: 18px;
 
       img {
-        width: 32px;
+        width: 22px;
+        vertical-align: sub;
       }
     }
   }
