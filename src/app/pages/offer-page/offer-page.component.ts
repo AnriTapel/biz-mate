@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {AngularFirestore} from "@angular/fire/firestore";
 import {ActivatedRoute} from "@angular/router";
 import {Offer} from "../../models/Offer";
-import {AppService} from "../../app.service";
+import {AppService} from "../../services/app/app.service";
 
 @Component({
   selector: 'app-offer-page',

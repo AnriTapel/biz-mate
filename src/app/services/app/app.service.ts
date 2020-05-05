@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import {City} from "./models/City";
-import {BusinessArea} from "./models/BusinessArea";
-import {Offer} from "./models/Offer";
-import {OfferTypes} from "./models/OfferTypes";
+import {City} from "../../models/City";
+import {BusinessArea} from "../../models/BusinessArea";
+import {Offer} from "../../models/Offer";
+import {OfferTypes} from "../../models/OfferTypes";
 import {AbstractControl, ValidatorFn} from "@angular/forms";
 
 @Injectable({

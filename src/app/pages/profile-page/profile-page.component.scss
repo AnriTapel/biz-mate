@@ -55,8 +55,15 @@ h2 {
 
 .no-offers-block {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 70vh;
+  height: 50vh;
+
+  p {
+    font-size: 20px;
+    color: #6b6b6b;
+    margin-bottom: 1.5em;
+  }
 }

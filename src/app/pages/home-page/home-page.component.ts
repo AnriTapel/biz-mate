@@ -4,7 +4,7 @@ import {of, Observable, zip} from "rxjs";
 import {BusinessArea} from "../../models/BusinessArea";
 import {City} from "../../models/City";
 import {AngularFirestore} from "@angular/fire/firestore";
-import {AppService} from "../../app.service";
+import {AppService} from "../../services/app/app.service";
 import {map, startWith} from "rxjs/operators";
 import {Offer} from "../../models/Offer";
 import * as _ from 'lodash';

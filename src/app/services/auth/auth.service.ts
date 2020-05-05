@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, Injector} from '@angular/core';
 import {auth} from 'firebase/app';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {AngularFirestore, AngularFirestoreDocument} from '@angular/fire/firestore';
@@ -6,7 +6,8 @@ import {AngularFirestore, AngularFirestoreDocument} from '@angular/fire/firestor
 import {Observable, of} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 import {User} from "../../models/User";
-import {AppService} from "../../app.service";
+import {AppService} from "../app/app.service";
+import {Router} from "@angular/router";
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,7 @@ export class AuthService {
   user$: Observable<User>;
   user: User;
 
-  constructor(private afAuth: AngularFireAuth, private afs: AngularFirestore) {
+  constructor(private afAuth: AngularFireAuth, private afs: AngularFirestore, private injector: Injector) {
     this.user$ = this.afAuth.authState.pipe(
       switchMap(user => {
         // Logged in
@@ -95,8 +96,12 @@ export class AuthService {
   }
 
   private async updateEmailVerificationState(currentState: boolean): Promise<void> {
-    if (!this.user.emailVerified && currentState)
+    if (!this.user.emailVerified && currentState) {
+      this.user.emailVerified = true;
       await this.updateUserData(this.user, this.user.displayName);
+      const router = this.injector.get(Router);
+      router.navigateByUrl('profile');
+    }
   }
 
   private updateUserData(user, name?: string): Promise<void> {

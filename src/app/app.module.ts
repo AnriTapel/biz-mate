@@ -27,7 +27,7 @@ import { OfferPageComponent } from './pages/offer-page/offer-page.component';
 import { FooterComponent } from './template-blocks/footer/footer.component';
 import { OfferCardComponent } from './template-blocks/offer-card/offer-card.component';
 import { ProfilePageComponent } from './pages/profile-page/profile-page.component';
-import { EditOfferPageComponent } from './pages/edit-offer-page/edit-offer-page.component';
+import {MatCheckboxModule} from "@angular/material/checkbox";
 
 export function appInitFactory(auth: AuthService) {
   return (): Promise<any> => {
@@ -46,8 +46,7 @@ export function appInitFactory(auth: AuthService) {
     OfferPageComponent,
     FooterComponent,
     OfferCardComponent,
-    ProfilePageComponent,
-    EditOfferPageComponent
+    ProfilePageComponent
   ],
   imports: [
     BrowserModule,
@@ -66,7 +65,8 @@ export function appInitFactory(auth: AuthService) {
     MatAutocompleteModule,
     MatButtonToggleModule,
     MatDialogModule,
-    MatIconModule
+    MatIconModule,
+    MatCheckboxModule
 
   ],
   providers: [

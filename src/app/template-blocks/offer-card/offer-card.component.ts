@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Offer} from "../../models/Offer";
-import {AppService} from "../../app.service";
+import {AppService} from "../../services/app/app.service";
 import {AuthService} from "../../services/auth/auth.service";
 import {Router} from "@angular/router";
 
