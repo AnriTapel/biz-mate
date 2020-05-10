@@ -6,8 +6,6 @@ import {AuthService} from "../../services/auth/auth.service";
 import {Offer} from "../../models/Offer";
 import {AngularFirestore} from '@angular/fire/firestore';
 import {Observable, of} from "rxjs";
-import {City} from "../../models/City";
-import {map, startWith} from "rxjs/operators";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 
 @Component({
@@ -19,14 +17,11 @@ export class ProfilePageComponent implements OnInit {
 
   user: User = null;
   userOffers$: Observable<Offer[]> = null;
-  filteredCities$: Observable<City[]>;
 
   userDataForm: FormGroup;
 
   editableFields = {
-    city: false,
     displayName: false,
-    phone: false,
     email: false
   };
 
@@ -39,19 +34,17 @@ export class ProfilePageComponent implements OnInit {
 
     this.user = this.authService.user;
     this.userDataForm = new FormGroup({
-      city: new FormControl(this.getUserCity(), [Validators.required, AppService.cityFieldValidator()]),
-      phone: new FormControl(this.user.phone || '', [Validators.required]),
       email: new FormControl(this.user.email || '', [Validators.required]),
       displayName: new FormControl(this.user.displayName || '', [Validators.required])
     });
 
-    this.filteredCities$ = this.userDataForm.controls.city.valueChanges.pipe(
-      startWith(''),
-      map(value => AppService._filterCities(value))
-    );
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
+    this.getUserOffers();
+  }
+
+  async getUserOffers(): Promise<void> {
     const userOffersRef = await this.db.collection<Offer[]>('/offers').ref
       .where('userId', '==', this.user.uid).get();
 
@@ -60,13 +53,8 @@ export class ProfilePageComponent implements OnInit {
       return;
 
     userOffersRef.forEach(it => offers.push(it.data() as Offer));
-    offers.sort((a,b) => b.date - a.date);
+    offers.sort((a, b) => b.date - a.date);
     this.userOffers$ = of(offers);
-  }
-
-  getUserCity(): string {
-    const city: City = AppService.getCityByFiledValue('id', this.user.city);
-    return city ? city.name : '';
   }
 
   switchEditableField(field: string): void {
@@ -76,37 +64,36 @@ export class ProfilePageComponent implements OnInit {
     this.editableFields[field] = !this.editableFields[field];
   }
 
-  editUserData(field: string): void {
+  async editUserData(field: string): Promise<void> {
     if (this.userDataForm.get(field).status == "INVALID")
       return;
 
     let newValue = this.userDataForm.get(field).value;
 
-    this.db.collection('users').doc(this.user.uid).update({
-      [field]: newValue
-    }).then(() => {
-      this.user[field] = newValue;
-      console.log('OK');
-      this.editableFields[field] = false;
-    }).catch((e) => {
-      console.log(e);
-    });
+    let result: Promise<void>;
+    if (field === 'email')
+      result = this.authService.updateUserEmail(newValue);
+    else
+      result = this.authService.updateUserDisplayNameOrPhotoURL(field, newValue);
+
+    result
+      .then(() => {
+        this.editableFields[field] = false;
+        this.updateUserDataInOffers(field, newValue);
+      }).catch(() => console.error(`Couldn't edit ${field} field`));
   }
 
-  editUserCityField(event): void {
-    const value = event.source.value;
-    const cityId = AppService.getCityByFiledValue('name', value).id;
+  updateUserDataInOffers(field: string, newValue: string) {
+    this.db.collection<Offer[]>('/offers').ref.where('userId', '==', this.user.uid).get()
+      .then((resp) => {
+        let batch = this.db.firestore.batch();
 
-    this.userDataForm.controls.city.setValue(value);
+        resp.docs.forEach(userDocRef => {
+          batch.update(userDocRef.ref, {[field]: newValue});
+        });
 
-    this.db.collection('users').doc(this.user.uid).update({
-      'city': cityId
-    }).then(() => {
-      this.user.city = cityId;
-      this.editableFields.city = false;
-    }).catch((e) => {
-      console.log(e);
-    });
+        batch.commit().then(() => this.getUserOffers()).catch(err => console.error(err));
+      }).catch(error => console.error(error));
   }
 
 }

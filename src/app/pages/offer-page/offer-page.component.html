@@ -2,7 +2,7 @@
   <ng-container *ngIf="offer">
 
     <div class="offer-title">
-      <img [src]="offer.profilePhoto" alt="Аватар оффера"/>
+      <img [src]="offer.photoURL" alt="Аватар оффера"/>
       <h2>{{offer.title}}</h2>
     </div>
 
@@ -39,7 +39,7 @@
     <hr>
 
     <div class="offer-contact-data">
-      <span><strong>Контактное лицо:</strong> {{offer.name}}</span>
+      <span><strong>Контактное лицо:</strong> {{offer.displayName}}</span>
       <span><strong>Населенный пункт:</strong> {{getOfferCity()}}</span>
       <span *ngIf="offer.phone"><strong>Номер телефона:</strong> {{offer.phone}}</span>
       <span *ngIf="offer.email"><strong>E-mail:</strong> {{offer.email}}</span>

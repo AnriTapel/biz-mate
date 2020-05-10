@@ -67,10 +67,13 @@
 
       <h4 class="full-width-field">Контактная информация</h4>
 
-      <mat-checkbox [disabled]="!contactDataState.email.enabled" (change)="contactDataState.email.insert = !contactDataState.email.insert"
-                    [checked]="contactDataState.email.insert">&nbsp;Указать E-mail в объявлении</mat-checkbox>
-      <mat-checkbox [disabled]="!contactDataState.phone.enabled" (change)="contactDataState.phone.insert = !contactDataState.phone.insert"
-                    [checked]="contactDataState.phone.insert">&nbsp;Указать номер телефона в объявлении</mat-checkbox>
+      <mat-form-field>
+        <mat-label>Номер телефона</mat-label>
+        <input matInput formControlName="phone">
+      </mat-form-field>
+
+      <mat-checkbox class="full-width-field" (change)="attacheEmail = !attacheEmail" [checked]="attacheEmail">
+          &nbsp;Указать Ваш E-mail в качестве контактной информации</mat-checkbox>
 
       <button mat-raised-button color="primary" (click)="sendOffer()">{{editOffer ? 'Сохранить' : 'Отправить'}}</button>
 

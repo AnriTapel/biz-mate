@@ -4,7 +4,7 @@
     <h2>Мои данные</h2>
     <div class="name-and-thumb">
       <div>
-        <img [src]="user.profilePhoto" alt="Аватар пользователя" title="{{user.displayName}}" class="user-photo">
+        <img [src]="user.photoURL" alt="Аватар пользователя" title="{{user.displayName}}" class="user-photo">
         <mat-form-field *ngIf="editableFields.displayName" class="example-full-width">
           <mat-label>Имя</mat-label>
           <input matInput autofocus formControlName="displayName" (change)="editUserData('displayName')">
@@ -21,27 +21,6 @@
            [style.opacity]="editableFields.displayName ? 1 : 0.4"/>
     </div>
 
-    <div class="city">
-      <mat-form-field *ngIf="!editableFields.city" class="example-full-width">
-        <mat-label>Населенный пункт</mat-label>
-        <input matInput disabled [value]="userDataForm.getRawValue().city">
-      </mat-form-field>
-
-      <mat-form-field *ngIf="editableFields.city">
-        <input type="text" autofocus placeholder="Населенный пункт" aria-label="Населенный пункт" matInput
-               formControlName="city" [matAutocomplete]="cities">
-        <mat-autocomplete #cities="matAutocomplete">
-          <mat-option *ngFor="let city of filteredCities$ | async" (onSelectionChange)="editUserCityField($event)"
-                      [value]="city.name">
-            {{city.name}}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
-
-      <img class="edit-field" src="/assets/img/edit.svg" alt="Изменить поле"
-           [style.opacity]="editableFields.city ? 1 : 0.4" (click)="switchEditableField('city')"/>
-    </div>
-
     <div class="email">
       <mat-form-field *ngIf="editableFields.email" class="example-full-width">
         <mat-label>E-mail</mat-label>
@@ -55,21 +34,6 @@
 
       <img class="edit-field" src="/assets/img/edit.svg" alt="Изменить поле"
            [style.opacity]="editableFields.email ? 1 : 0.4" (click)="switchEditableField('email')"/>
-    </div>
-
-    <div class="phone">
-      <mat-form-field *ngIf="editableFields.phone" class="example-full-width">
-        <mat-label>Номер телефона</mat-label>
-        <input matInput autofocus formControlName="phone" (change)="editUserData('phone')">
-      </mat-form-field>
-
-      <mat-form-field *ngIf="!editableFields.phone" class="example-full-width">
-        <mat-label>Номер телефона</mat-label>
-        <input matInput disabled [value]="userDataForm.getRawValue().phone">
-      </mat-form-field>
-
-      <img class="edit-field" src="/assets/img/edit.svg" alt="Изменить поле"
-           [style.opacity]="editableFields.phone ? 1 : 0.4" (click)="switchEditableField('phone')"/>
     </div>
   </section>
 

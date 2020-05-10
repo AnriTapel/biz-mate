@@ -3,8 +3,8 @@ import {OfferTypes} from "./OfferTypes";
 export interface Offer {
   userId?: string;
   offerId?: string;
-  name: string;
-  city: number ;
+  displayName: string;
+  city: number;
   type: OfferTypes;
   businessArea: number;
   date: number;
@@ -15,5 +15,5 @@ export interface Offer {
   experience?: string;
   phone?: string;
   email?: string;
-  profilePhoto?: string;
+  photoURL?: string;
 }

@@ -29,10 +29,7 @@ export class OfferFormComponent implements OnInit {
   filteredBusinessArea$: Observable<BusinessArea[]>;
   filteredCities$: Observable<City[]>;
   fieldsLabels: any = null;
-  contactDataState: any = {
-    phone: {enabled: true, insert: true},
-    email: {enabled: true, insert: true},
-  };
+  attacheEmail: boolean = true;
   
   readonly successText: string = "Ваше предложение успешно отправлено";
   readonly errorText: string = "При отправке произошла ошибка. Попробуйте еще раз.";
@@ -53,10 +50,8 @@ export class OfferFormComponent implements OnInit {
       experience: new FormControl(offerData.experience),
       conditions: new FormControl(offerData.conditions),
       phone: new FormControl(offerData.phone),
-      email: new FormControl(offerData.email, [Validators.email])
     });
 
-    this.resolveContactData();
     this.fieldsLabels = OfferFormComponent.getFieldsLabels(this.currentType);
     this.isOfferLoaded = true;
 
@@ -115,6 +110,7 @@ export class OfferFormComponent implements OnInit {
       let offer = offerRef.data() as Offer;
 
       this.currentType = offer.type;
+
       offerData['offerId'] = offer.offerId || '';
       offerData['title'] = offer.title || '';
       offerData['desc'] = offer.desc || '';
@@ -123,31 +119,12 @@ export class OfferFormComponent implements OnInit {
       offerData['businessArea'] = AppService.getBusinessAreaByFiledValue('id', offer.businessArea).name || '';
       offerData['conditions'] = offer.conditions || '';
       offerData['phone'] = offer.phone || null;
-      offerData['email'] = offer.email || null;
-      offerData['city'] = AppService.getCityByFiledValue('id', this.auth.user.city).name || '';
-    } else {
-      offerData['phone'] = this.auth.user.phone || null;
-      offerData['email'] = this.auth.user.email || null;
-      if (this.auth.user.city)
-        offerData['city'] = AppService.getCityByFiledValue('id', this.auth.user.city).name || '';
+      offerData['city'] = AppService.getCityByFiledValue('id', offer.city).name || '';
     }
 
     return offerData;
   }
 
-  private resolveContactData(): void {
-    if (!this.auth.user.phone || this.auth.user.phone == '') {
-      this.contactDataState.phone.enabled = false;
-      this.contactDataState.phone.insert = false;
-    } else
-      this.contactDataState.phone.insert = !!this.newOfferForm.controls.phone.value;
-
-    if (!this.auth.user.email || this.auth.user.email == '') {
-      this.contactDataState.email.enabled = false;
-      this.contactDataState.email.insert = false;
-    } else
-      this.contactDataState.email.insert = !!this.newOfferForm.controls.email.value;
-  }
 
   private capitalFieldValidator(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } | null => {
@@ -167,18 +144,14 @@ export class OfferFormComponent implements OnInit {
       return;
 
     offerData.type = this.currentType;
+    offerData.displayName = this.auth.user.displayName;
     offerData.userId = this.auth.user ? this.auth.user.uid : null;
     offerData.city = AppService.getCityByFiledValue('name', offerData.city).id;
     offerData.businessArea = AppService.getBusinessAreaByFiledValue('name', offerData.businessArea).id;
     offerData.date = Date.now();
     offerData.offerId = this.editOfferId || this.db.createId();
-    offerData.phone = this.contactDataState.phone.insert ? this.auth.user.phone : null;
-    offerData.email = this.contactDataState.email.insert ? this.auth.user.email : null;
-
-    if (this.auth.user && this.auth.user.profilePhoto)
-      offerData.profilePhoto = this.auth.user.profilePhoto;
-    else
-      offerData.profilePhoto = AppService.getDefaultAvatar();
+    offerData.email = this.attacheEmail ? this.auth.user.email : null;
+    offerData.photoURL = this.auth.user.photoURL || AppService.getDefaultAvatar();
 
     let ref = this.db.collection('/offers');
 

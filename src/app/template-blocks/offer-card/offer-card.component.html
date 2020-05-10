@@ -2,10 +2,10 @@
   <div>
     <mat-card-header>
       <div mat-card-avatar>
-        <img [src]="offer.profilePhoto" alt="Аватар"/>
+        <img [src]="offer.photoURL" alt="Аватар"/>
       </div>
       <mat-card-title>{{offer.title}}</mat-card-title>
-      <mat-card-subtitle>{{offer.name}}</mat-card-subtitle>
+      <mat-card-subtitle>{{offer.displayName}}</mat-card-subtitle>
       <img *ngIf="editable" class="edit-btn" src="/assets/img/edit.svg" title="Редактировать" (click)="editOffer()"/>
     </mat-card-header>
     <mat-card-content>
