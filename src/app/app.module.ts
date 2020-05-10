@@ -28,6 +28,7 @@ import { FooterComponent } from './template-blocks/footer/footer.component';
 import { OfferCardComponent } from './template-blocks/offer-card/offer-card.component';
 import { ProfilePageComponent } from './pages/profile-page/profile-page.component';
 import {MatCheckboxModule} from "@angular/material/checkbox";
+import { ResetPasswordComponent } from './dialogs/reset-password/reset-password.component';
 
 export function appInitFactory(auth: AuthService) {
   return (): Promise<any> => {
@@ -46,7 +47,8 @@ export function appInitFactory(auth: AuthService) {
     OfferPageComponent,
     FooterComponent,
     OfferCardComponent,
-    ProfilePageComponent
+    ProfilePageComponent,
+    ResetPasswordComponent
   ],
   imports: [
     BrowserModule,

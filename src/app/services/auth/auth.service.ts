@@ -84,6 +84,12 @@ export class AuthService {
     });
   }
 
+  resetPasswordByEmail(email: string): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.afAuth.auth.sendPasswordResetEmail(email).then((res) => resolve(res)).catch((error) => reject(error));
+    });
+  }
+
   updateUserDisplayNameOrPhotoURL(field: string, newValue: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.afAuth.auth.currentUser.updateProfile({[field]: newValue})

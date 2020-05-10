@@ -4,6 +4,7 @@ import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {SignUpComponent} from "../sign-up/sign-up.component";
 import {MatDialogConfig} from "../mat-dialog-config";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {ResetPasswordComponent} from "../reset-password/reset-password.component";
 
 @Component({
   selector: 'app-login',
@@ -60,7 +61,12 @@ export class LoginComponent implements OnInit {
   }
 
   forgotPassword() {
+    this.dialogRef.close();
+    const dialogRef = this.dialog.open(ResetPasswordComponent, MatDialogConfig.narrowDialogWindow);
 
+    dialogRef.afterClosed().subscribe(() => {
+      console.log('Reset password dialog was closed');
+    });
   }
 
 }
