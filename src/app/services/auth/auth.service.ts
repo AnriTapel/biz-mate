@@ -50,28 +50,27 @@ export class AuthService {
     });
   }
 
-  async emailAndPasswordLogin(credentials: any): Promise<void> {
-    try {
-      return await this.afAuth.auth.signInWithEmailAndPassword(credentials.login, credentials.password)
-        .then((userData) => {
-          console.log(userData);
-        }).catch((error) => {
-          console.log(error);
-        })
-    } catch (e) {
-      console.error("Login error");
-      console.log(e);
-    }
+  emailAndPasswordLogin(credentials: any): Promise<void> {
+    return new Promise<void>(async(resolve, reject) => {
+      try {
+        await this.afAuth.auth.signInWithEmailAndPassword(credentials.login, credentials.password);
+        resolve();
+      } catch (e) {
+        reject(e);
+      }
+    });
   }
 
-  async emailPasswordSignUp(credentials: any): Promise<void> {
-    try {
-      await this.afAuth.auth.createUserWithEmailAndPassword(credentials.email, credentials.password);
-      await this.sendEmailVerification();
-    } catch (e) {
-      console.error("Sign-up error");
-      console.log(e);
-    }
+  emailPasswordSignUp(credentials: any): Promise<void> {
+    return new Promise<void>(async (resolve, reject) => {
+      try {
+        await this.afAuth.auth.createUserWithEmailAndPassword(credentials.email, credentials.password);
+        await this.sendEmailVerification();
+        resolve();
+      } catch (e) {
+        reject(e);
+      }
+    });
   }
 
   updateUserEmail(newValue: string): Promise<void> {
@@ -86,7 +85,9 @@ export class AuthService {
 
   resetPasswordByEmail(email: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      this.afAuth.auth.sendPasswordResetEmail(email).then((res) => resolve(res)).catch((error) => reject(error));
+      this.afAuth.auth.sendPasswordResetEmail(email)
+        .then((res) => resolve(res))
+        .catch((error) => reject(error));
     });
   }
 
@@ -97,17 +98,20 @@ export class AuthService {
     });
   }
 
-  async googleAuth(): Promise<void> {
-    const provider = new auth.GoogleAuthProvider();
-    await this.afAuth.auth.signInWithPopup(provider);
+  googleAuth(): Promise<void> {
+    return new Promise<void>(async(resolve, reject) => {
+      try {
+        const provider = new auth.GoogleAuthProvider();
+        await this.afAuth.auth.signInWithPopup(provider);
+        resolve();
+      } catch (e) {
+        reject(e);
+      }
+    });
   }
 
   private async sendEmailVerification(): Promise<void> {
     await this.afAuth.auth.currentUser.sendEmailVerification();
-  }
-
-  private async sendPasswordResetEmail(passwordResetEmail: string) {
-    return await this.afAuth.auth.sendPasswordResetEmail(passwordResetEmail);
   }
 
   signOut() {

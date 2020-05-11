@@ -1,4 +1,7 @@
 <h1 mat-dialog-title>Вход</h1>
+
+<p class="error-message" *ngIf="errorMessage">{{errorMessage}}</p>
+
 <div mat-dialog-content [formGroup]="loginFormGroup">
   <mat-form-field appearance="legacy">
     <mat-label>E-mail</mat-label>
@@ -22,7 +25,7 @@
     <img src="/assets/img/facebook_logo.svg" alt="Логотип Facebook" /></button>-->
 </div>
 <div mat-dialog-actions class="full-width-action-buttons">
-  <button mat-raised-button color="primary" [mat-dialog-close] (click)="logIn()">Войти</button>
+  <button mat-raised-button color="primary" (click)="logIn()">Войти</button>
   <button mat-button color="primary" [mat-dialog-close] (click)="signUp()">Зарегистрироваться</button>
   <button mat-button [mat-dialog-close] (click)="forgotPassword()">Забыл пароль</button>
 </div>

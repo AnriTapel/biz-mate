@@ -1,3 +1,10 @@
+import {config} from "rxjs";
+
+export enum DialogConfigType {
+  NARROW_CONFIG = 0,
+  WIDE_CONFIG = 1
+}
+
 export class MatDialogConfig {
 
   static readonly narrowDialogWindow = {
@@ -18,5 +25,13 @@ export class MatDialogConfig {
     autoFocus: true,
     panelClass: 'dialog-content',
     closeOnNavigation: true
+  };
+
+  static getConfigWithData(configType: DialogConfigType, data: any): any {
+    const config = configType === DialogConfigType.NARROW_CONFIG ? this.narrowDialogWindow : this.wideDialogWindow;
+
+    let configClone = JSON.parse(JSON.stringify(config));
+    configClone['data'] = data;
+    return configClone;
   }
 }

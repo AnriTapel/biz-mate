@@ -29,6 +29,7 @@ import { OfferCardComponent } from './template-blocks/offer-card/offer-card.comp
 import { ProfilePageComponent } from './pages/profile-page/profile-page.component';
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import { ResetPasswordComponent } from './dialogs/reset-password/reset-password.component';
+import { EmailVerifyComponent } from './dialogs/email-verify-message/email-verify.component';
 
 export function appInitFactory(auth: AuthService) {
   return (): Promise<any> => {
@@ -48,7 +49,8 @@ export function appInitFactory(auth: AuthService) {
     FooterComponent,
     OfferCardComponent,
     ProfilePageComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    EmailVerifyComponent
   ],
   imports: [
     BrowserModule,

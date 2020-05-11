@@ -79,14 +79,14 @@ export class AppService {
   public static cityFieldValidator(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } | null => {
       const valid = AppService.cities.filter(it => it.name === control.value).length == 1;
-      return !valid ? {'validCity': {value: control.value}} : null;
+      return !control.value ? null : !valid ? {'validCity': {value: control.value}} : null;
     };
   }
 
   public static businessAreaFieldValidator(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } | null => {
       const valid = AppService.businessArea.filter(it => it.name === control.value).length == 1;
-      return !valid ? {'validArea': {value: control.value}} : null;
+      return !control.value ? null : !valid ? {'validArea': {value: control.value}} : null;
     };
   }
 }

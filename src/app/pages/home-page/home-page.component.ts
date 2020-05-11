@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormControl, FormGroup} from "@angular/forms";
+import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {of, Observable, zip} from "rxjs";
 import {BusinessArea} from "../../models/BusinessArea";
 import {City} from "../../models/City";
@@ -33,9 +33,9 @@ export class HomePageComponent implements OnInit {
 
   ngOnInit(): void {
     this.searchForm = new FormGroup({
-      titleFilter: new FormControl(''),
-      businessAreaFilter: new FormControl(''),
-      cityFilter: new FormControl('')
+      titleFilter: new FormControl(null),
+      businessAreaFilter: new FormControl(null, [AppService.businessAreaFieldValidator()]),
+      cityFilter: new FormControl(null, [AppService.cityFieldValidator()])
     });
 
     this.filteredCities$ = this.searchForm.controls.cityFilter.valueChanges
@@ -68,6 +68,9 @@ export class HomePageComponent implements OnInit {
   }
 
   async applyFilter(): Promise<void> {
+    if (this.searchForm.status === 'INVALID')
+      return;
+
     let filterResults = {
       titleFiltered: [],
       areaFiltered: [],
@@ -101,6 +104,9 @@ export class HomePageComponent implements OnInit {
         if (!cityRes.empty)
           cityRes.forEach(it => filterResults.cityFiltered.push(it.data()))
       }
+
+      if (!filterResults.cityFiltered.length && !filterResults.areaFiltered.length && !filterResults.titleFiltered)
+        return;
 
       this.filteredOffers$ = of(_.union<Offer>(filterResults.titleFiltered, filterResults.areaFiltered, filterResults.cityFiltered)
         .sort((a,b) => b.date - a.date));

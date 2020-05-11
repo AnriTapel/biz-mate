@@ -31,6 +31,11 @@ main {
     color: $main-theme-color;
   }
 
+  .error-message {
+    font-size: 14px;
+    color: #d70108;
+  }
+
   .mat-dialog-content {
     overflow: visible;
     flex-direction: column;
