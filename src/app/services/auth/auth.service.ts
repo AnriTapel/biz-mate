@@ -115,6 +115,7 @@ export class AuthService {
   }
 
   signOut() {
+    this.user = null;
     return this.afAuth.auth.signOut();
   }
 }
