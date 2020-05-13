@@ -35,12 +35,11 @@ export class OfferFormComponent implements OnInit {
   readonly errorText: string = "При отправке произошла ошибка. Попробуйте еще раз.";
   offerType = OfferTypes;
 
-  constructor(private db: AngularFirestore, private auth: AuthService, private activeRoute: ActivatedRoute,
-              private router: Router) {
+  constructor(private db: AngularFirestore, private auth: AuthService, private activeRoute: ActivatedRoute) {
   }
 
   async ngOnInit(): Promise<void> {
-    const offerData = await this.getUserAccountData();
+    const offerData = await this.getOfferData();
     this.newOfferForm = new FormGroup({
       city: new FormControl(offerData.city, [Validators.required, AppService.cityFieldValidator()]),
       businessArea: new FormControl(offerData.businessArea, [Validators.required, AppService.businessAreaFieldValidator()]),
@@ -95,11 +94,7 @@ export class OfferFormComponent implements OnInit {
     this.newOfferForm.reset();
   }
 
-  async getUserAccountData(): Promise<any> {
-    if (!this.auth.user) {
-      this.router.navigateByUrl('/');
-      return;
-    }
+  async getOfferData(): Promise<any> {
 
     let offerData = {};
     // TODO: привести валидацию урлы в соответствующие вид

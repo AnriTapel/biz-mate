@@ -27,11 +27,6 @@ export class ProfilePageComponent implements OnInit {
 
   constructor(private appService: AppService, private authService: AuthService, private router: Router,
               private db: AngularFirestore) {
-    if (!authService.user) {
-      router.navigateByUrl('/');
-      return;
-    }
-
     this.user = this.authService.user;
     this.userDataForm = new FormGroup({
       email: new FormControl(this.user.email || '', [Validators.required]),
