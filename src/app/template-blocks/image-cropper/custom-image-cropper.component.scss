@@ -1,0 +1,26 @@
+$main-theme-color: #673ab7;
+
+.upload-file-text-block{
+  margin: 150px auto 0;
+  height: 200px;
+  cursor: pointer;
+
+  a {
+    text-decoration: underline $main-theme-color;
+    color: $main-theme-color;
+    cursor: pointer;
+  }
+}
+
+image-cropper{
+  max-height: 300px;
+}
+
+.control-panel{
+  margin-top: 10px;
+  justify-content: center;
+
+  & button {
+    margin: 0 10px;
+  }
+}

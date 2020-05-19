@@ -98,6 +98,23 @@ export class AuthService {
     });
   }
 
+  // Update this.user when firebaseUser data is changed
+  updateCurrentUserData(): User {
+    const user = this.afAuth.auth.currentUser;
+    if (user)
+      this.user = {
+        displayName: user.displayName,
+        uid: user.uid,
+        email: user.email,
+        emailVerified: user.emailVerified,
+        photoURL: user.photoURL
+      };
+    else
+      this.user = null;
+
+    return this.user;
+  }
+
   googleAuth(): Promise<void> {
     return new Promise<void>(async(resolve, reject) => {
       try {

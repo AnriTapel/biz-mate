@@ -4,7 +4,7 @@
     <h2>Мои данные</h2>
     <div class="name-and-thumb">
       <div>
-        <img [src]="user.photoURL" alt="Аватар пользователя" title="{{user.displayName}}" class="user-photo">
+        <img [src]="user.photoURL" (click)="changePhotoURL()" alt="Аватар пользователя" title="{{user.displayName}}" class="user-photo">
         <mat-form-field *ngIf="editableFields.displayName" class="example-full-width">
           <mat-label>Имя</mat-label>
           <input matInput autofocus formControlName="displayName" (change)="editUserData('displayName')">

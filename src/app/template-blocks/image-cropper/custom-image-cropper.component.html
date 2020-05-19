@@ -1,0 +1,25 @@
+<h1 mat-dialog-title>Выбор миниатюры</h1>
+
+<p class="error-message" *ngIf="errorMessage">{{errorMessage}}</p>
+
+<input #_fileInput type="file" (change)="fileChangeEvent($event)" accept=".jpg, .jpeg, .png" hidden>
+
+<div *ngIf="!isLoaded" mat-dialog-content class="upload-file-text-block">
+  <span><a (click)="_fileInput.click()">Загрузите</a> или перетащите изображение</span>
+</div>
+
+<image-cropper [imageChangedEvent]="imageChangedEvent" [maintainAspectRatio]="true" [aspectRatio]="1" [cropperMinWidth]="40"
+               [resizeToWidth]="40" [roundCropper]="true" [autoCrop]="false" (imageCropped)="imageCropped($event)" [format]="'png'"
+               (imageLoaded)="imageLoaded()" (loadImageFailed)="loadImageFailed()">
+</image-cropper>
+
+
+<div *ngIf="isLoaded" mat-dialog-actions class="control-panel">
+  <button mat-stroked-button color="primary" (click)="_fileInput.click()">Изменить</button>
+  <button mat-raised-button color="primary" (click)="cropImage()">Обрезать</button>
+</div>
+
+
+
+
+

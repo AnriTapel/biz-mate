@@ -7,6 +7,9 @@ import {Offer} from "../../models/Offer";
 import {AngularFirestore} from '@angular/fire/firestore';
 import {Observable, of} from "rxjs";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {MatDialog} from "@angular/material/dialog";
+import {CustomImageCropperComponent} from "../../template-blocks/image-cropper/custom-image-cropper.component";
+import {MatDialogConfig} from "../../dialogs/mat-dialog-config";
 
 @Component({
   selector: 'app-profile-page',
@@ -26,7 +29,7 @@ export class ProfilePageComponent implements OnInit {
   };
 
   constructor(private appService: AppService, private authService: AuthService, private router: Router,
-              private db: AngularFirestore) {
+              private db: AngularFirestore, private dialog: MatDialog) {
     this.user = this.authService.user;
     this.userDataForm = new FormGroup({
       email: new FormControl(this.user.email || '', [Validators.required]),
@@ -59,6 +62,21 @@ export class ProfilePageComponent implements OnInit {
     this.editableFields[field] = !this.editableFields[field];
   }
 
+  async changePhotoURL(): Promise<void> {
+    const dialogRef = this.dialog.open(CustomImageCropperComponent, MatDialogConfig.narrowDialogWindow);
+    dialogRef.afterClosed().subscribe((res) => {
+      if (res && typeof res === "string") {
+
+        this.authService.updateUserDisplayNameOrPhotoURL('photoURL', res)
+          .then(() => {
+            this.updateUserDataInOffers('photoURL', res);
+            this.user = this.authService.updateCurrentUserData();
+          })
+          .catch((err) => console.error(err));
+      }
+    });
+  }
+
   async editUserData(field: string): Promise<void> {
     if (this.userDataForm.get(field).status == "INVALID")
       return;
@@ -75,6 +93,7 @@ export class ProfilePageComponent implements OnInit {
       .then(() => {
         this.editableFields[field] = false;
         this.updateUserDataInOffers(field, newValue);
+        this.user = this.authService.updateCurrentUserData();
       }).catch(() => console.error(`Couldn't edit ${field} field`));
   }
 

@@ -30,6 +30,8 @@ import { ProfilePageComponent } from './pages/profile-page/profile-page.componen
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import { ResetPasswordComponent } from './dialogs/reset-password/reset-password.component';
 import { EmailVerifyComponent } from './dialogs/email-verify-message/email-verify.component';
+import { CustomImageCropperComponent } from './template-blocks/image-cropper/custom-image-cropper.component';
+import {ImageCropperModule} from "ngx-image-cropper";
 
 export function appInitFactory(auth: AuthService) {
   return (): Promise<any> => {
@@ -50,7 +52,8 @@ export function appInitFactory(auth: AuthService) {
     OfferCardComponent,
     ProfilePageComponent,
     ResetPasswordComponent,
-    EmailVerifyComponent
+    EmailVerifyComponent,
+    CustomImageCropperComponent
   ],
   imports: [
     BrowserModule,
@@ -61,6 +64,7 @@ export function appInitFactory(auth: AuthService) {
     AngularFireDatabaseModule,
     AngularFirestoreModule,
     AngularFireAuthModule,
+    ImageCropperModule,
 
     // Material
     MatCardModule,
