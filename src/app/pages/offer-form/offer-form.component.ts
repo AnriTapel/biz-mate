@@ -3,14 +3,15 @@ import {OfferTypes} from "../../models/OfferTypes";
 import {AppService} from "../../services/app/app.service";
 import {AuthService} from "../../services/auth/auth.service";
 import {AngularFirestore} from "@angular/fire/firestore";
-import * as firebase from "firebase";
 import {AbstractControl, FormControl, FormGroup, ValidatorFn, Validators} from "@angular/forms";
 import {map, startWith} from "rxjs/operators";
 import {Observable} from "rxjs";
 import {BusinessArea} from "../../models/BusinessArea";
 import {City} from "../../models/City";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute} from "@angular/router";
 import {Offer} from "../../models/Offer";
+import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
+import {Messages} from "../../models/Messages";
 
 @Component({
   selector: 'app-offer-form',
@@ -30,12 +31,12 @@ export class OfferFormComponent implements OnInit {
   filteredCities$: Observable<City[]>;
   fieldsLabels: any = null;
   attacheEmail: boolean = true;
-  
-  readonly successText: string = "Ваше предложение успешно отправлено";
-  readonly errorText: string = "При отправке произошла ошибка. Попробуйте еще раз.";
+
+  isFormValid: boolean = true;
   offerType = OfferTypes;
 
-  constructor(private db: AngularFirestore, private auth: AuthService, private activeRoute: ActivatedRoute) {
+  constructor(private db: AngularFirestore, private auth: AuthService, private activeRoute: ActivatedRoute,
+              private notificationBarService: NotificationBarService) {
   }
 
   async ngOnInit(): Promise<void> {
@@ -51,6 +52,7 @@ export class OfferFormComponent implements OnInit {
       phone: new FormControl(offerData.phone),
     });
 
+    this.newOfferForm.valueChanges.subscribe(() => this.isFormValid = true);
     this.fieldsLabels = OfferFormComponent.getFieldsLabels(this.currentType);
     this.isOfferLoaded = true;
 
@@ -135,8 +137,10 @@ export class OfferFormComponent implements OnInit {
   sendOffer(): Promise<void> {
     let offerData = this.newOfferForm.getRawValue();
 
-    if (this.newOfferForm.status == "INVALID")
+    if (this.newOfferForm.status == "INVALID") {
+      this.isFormValid = false;
       return;
+    }
 
     offerData.type = this.currentType;
     offerData.displayName = this.auth.user.displayName;
@@ -153,11 +157,10 @@ export class OfferFormComponent implements OnInit {
     let request = this.editOffer ? ref.doc(offerData.offerId).update(offerData) : ref.doc(offerData.offerId).set(offerData);
     return request
       .then(() => {
-        console.log(this.successText);
+        this.notificationBarService.showNotificationBar(this.editOffer ? Messages.SAVE_SUCCESS : Messages.OFFER_CREATED, true);
       })
-      .catch((e) => {
-        console.log(e);
-        console.log(this.errorText);
+      .catch(() => {
+        this.notificationBarService.showNotificationBar(this.editOffer ? Messages.SAVE_ERROR : Messages.OFFER_ERROR, false);
       })
   }
 

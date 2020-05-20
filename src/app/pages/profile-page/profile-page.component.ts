@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {User} from "../../models/User";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {AppService} from "../../services/app/app.service";
 import {AuthService} from "../../services/auth/auth.service";
 import {Offer} from "../../models/Offer";
@@ -9,7 +9,10 @@ import {Observable, of} from "rxjs";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {MatDialog} from "@angular/material/dialog";
 import {CustomImageCropperComponent} from "../../template-blocks/image-cropper/custom-image-cropper.component";
-import {MatDialogConfig} from "../../dialogs/mat-dialog-config";
+import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
+import {NotificationComponent} from "../../dialogs/notification/notification.component";
+import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
+import {Messages} from "../../models/Messages";
 
 @Component({
   selector: 'app-profile-page',
@@ -17,6 +20,16 @@ import {MatDialogConfig} from "../../dialogs/mat-dialog-config";
   styleUrls: ['./profile-page.component.scss']
 })
 export class ProfilePageComponent implements OnInit {
+
+  readonly emailVerifyEvent = {
+    title: 'Электронная почта подтверждена',
+    text: 'Вы успешно подтвердили свой адрес электронной почты! Теперь Вы можете отредактировать информацию о себе и перейти к созданию своего первого оффера.'
+  };
+
+  readonly resetPasswordEvent = {
+    title: 'Пароль изменен',
+    text: 'Вы успешно сменили пароль к своей учетной записи!'
+  };
 
   user: User = null;
   userOffers$: Observable<Offer[]> = null;
@@ -29,7 +42,17 @@ export class ProfilePageComponent implements OnInit {
   };
 
   constructor(private appService: AppService, private authService: AuthService, private router: Router,
-              private db: AngularFirestore, private dialog: MatDialog) {
+              private db: AngularFirestore, private dialog: MatDialog, private route: ActivatedRoute,
+              private notificationBarService: NotificationBarService) {
+
+    this.route.queryParams.subscribe(params => {
+      if (params['email_verify']) {
+        this.dialog.open(NotificationComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, this.emailVerifyEvent))
+      } else if (params['password_reset']) {
+        this.dialog.open(NotificationComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, this.resetPasswordEvent))
+      }
+    });
+
     this.user = this.authService.user;
     this.userDataForm = new FormGroup({
       email: new FormControl(this.user.email || '', [Validators.required]),
@@ -71,8 +94,9 @@ export class ProfilePageComponent implements OnInit {
           .then(() => {
             this.updateUserDataInOffers('photoURL', res);
             this.user = this.authService.updateCurrentUserData();
+            this.notificationBarService.showNotificationBar(Messages.SAVE_SUCCESS, true);
           })
-          .catch((err) => console.error(err));
+          .catch(() => this.notificationBarService.showNotificationBar(Messages.SAVE_ERROR, false));
       }
     });
   }
@@ -94,7 +118,8 @@ export class ProfilePageComponent implements OnInit {
         this.editableFields[field] = false;
         this.updateUserDataInOffers(field, newValue);
         this.user = this.authService.updateCurrentUserData();
-      }).catch(() => console.error(`Couldn't edit ${field} field`));
+        this.notificationBarService.showNotificationBar(Messages.SAVE_SUCCESS, true);
+      }).catch(() => this.notificationBarService.showNotificationBar(Messages.SAVE_ERROR, false));
   }
 
   updateUserDataInOffers(field: string, newValue: string) {

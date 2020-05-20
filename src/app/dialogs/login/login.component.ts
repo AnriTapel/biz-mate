@@ -5,7 +5,7 @@ import {SignUpComponent} from "../sign-up/sign-up.component";
 import {MatDialogConfig} from "../mat-dialog-config";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {ResetPasswordComponent} from "../reset-password/reset-password.component";
-import {Errors} from "../../models/Errors";
+import {Messages} from "../../models/Messages";
 
 @Component({
   selector: 'app-login',
@@ -41,13 +41,13 @@ export class LoginComponent implements OnInit {
 
     this.auth.emailAndPasswordLogin(credentials)
       .then(() => this.dialogRef.close())
-      .catch((err) => this.errorMessage = Errors[err.code] || Errors.DEFAULT_MESSAGE);
+      .catch((err) => this.errorMessage = Messages[err.code] || Messages.DEFAULT_MESSAGE);
   }
 
   loginGoogle() {
     this.auth.googleAuth()
       .then(() => this.dialogRef.close())
-      .catch((err) => this.errorMessage = Errors[err.code] || Errors.DEFAULT_MESSAGE);
+      .catch((err) => this.errorMessage = Messages[err.code] || Messages.DEFAULT_MESSAGE);
   }
 
   loginFacebook() {

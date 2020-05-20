@@ -4,7 +4,7 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../services/auth/auth.service";
 import {EmailVerifyComponent} from "../email-verify-message/email-verify.component";
 import {DialogConfigType, MatDialogConfig} from "../mat-dialog-config";
-import {Errors} from "../../models/Errors";
+import {Messages} from "../../models/Messages";
 
 @Component({
   selector: 'app-sign-up',
@@ -45,7 +45,7 @@ export class SignUpComponent implements OnInit {
       this.dialog.open(EmailVerifyComponent,
         MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, credentials.email));
     }).catch((err) => {
-      this.errorMessage = Errors[err.code] || Errors.DEFAULT_MESSAGE;
+      this.errorMessage = Messages[err.code] || Messages.DEFAULT_MESSAGE;
     });
   }
 

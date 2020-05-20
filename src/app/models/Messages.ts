@@ -1,4 +1,8 @@
-export enum Errors{
+export enum Messages{
+  'OFFER_CREATED' = 'Оффер успешно размещен',
+  'OFFER_ERROR' = 'Не удалось разместить оффера. Попробуйте снова',
+  'SAVE_SUCCESS' = 'Изменения успешно сохранены',
+  'SAVE_ERROR' = 'Не удалось сохранить имзенения',
   'DEFAULT_MESSAGE' = 'Произошла ошибка, попробуйте еще раз',
   'auth/email-already-in-use' = 'Пользователь с таким E-mail уже зарегистрирован',
   'auth/weak-password' = 'Пароль слишком простой. Придумайте более надежный',

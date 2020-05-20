@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {FormControl, Validators} from "@angular/forms";
 import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {AuthService} from "../../services/auth/auth.service";
-import {Errors} from "../../models/Errors";
+import {Messages} from "../../models/Messages";
 
 @Component({
   selector: 'app-reset-password',
@@ -29,7 +29,7 @@ export class ResetPasswordComponent implements OnInit {
 
     this.authService.resetPasswordByEmail(email)
       .then(() => this.emailSent = true)
-      .catch((err) => this.errorMessage = Errors[err.code] || Errors.DEFAULT_MESSAGE);
+      .catch((err) => this.errorMessage = Messages[err.code] || Messages.DEFAULT_MESSAGE);
   }
 
 }

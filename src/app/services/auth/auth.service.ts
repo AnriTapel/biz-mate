@@ -85,7 +85,10 @@ export class AuthService {
 
   resetPasswordByEmail(email: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      this.afAuth.auth.sendPasswordResetEmail(email)
+      this.afAuth.auth.sendPasswordResetEmail(email, {
+        // TODO: Поменять урл на реальный при релизе
+        url: 'http://localhost:4200/profile?password_reset=true'
+      })
         .then((res) => resolve(res))
         .catch((error) => reject(error));
     });
@@ -128,7 +131,10 @@ export class AuthService {
   }
 
   private async sendEmailVerification(): Promise<void> {
-    await this.afAuth.auth.currentUser.sendEmailVerification();
+    await this.afAuth.auth.currentUser.sendEmailVerification({
+      // TODO: Поменять урл на реальный при релизе
+      url: 'http://localhost:4200/profile?email_verify=true'
+    });
   }
 
   signOut() {

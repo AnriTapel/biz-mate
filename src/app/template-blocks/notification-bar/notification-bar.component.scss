@@ -1,0 +1,37 @@
+.notification-bar-container {
+  position: fixed;
+  top: 50px;
+  left: 0;
+  width: 100%;
+  padding: 30px 0;
+  background-color: white;
+  z-index: 2147483647;
+  -webkit-box-shadow: 0 8px 6px -6px black;
+  -moz-box-shadow: 0 8px 6px -6px black;
+  box-shadow: 0 8px 6px -6px black;
+
+  .error-message,
+  .success-message {
+    width: 80%;
+    margin: 0 auto;
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .success-message {
+    color: green;
+  }
+
+  .error-message {
+    color: red;
+  }
+
+  img {
+    position: absolute;
+    opacity: .3;
+    top: 26px;
+    right: 3em;
+    width: 25px;
+    cursor: pointer;
+  }
+}

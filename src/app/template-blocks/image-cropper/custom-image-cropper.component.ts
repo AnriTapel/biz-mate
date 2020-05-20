@@ -2,7 +2,7 @@ import {Component, ViewChild} from '@angular/core';
 import {ImageCroppedEvent, ImageCropperComponent} from "ngx-image-cropper";
 import * as firebase from 'firebase/app';
 import 'firebase/storage';
-import {Errors} from "../../models/Errors";
+import {Messages} from "../../models/Messages";
 import {MatDialogRef} from "@angular/material/dialog";
 
 @Component({
@@ -54,7 +54,7 @@ export class CustomImageCropperComponent {
       let photoURL = await uploadRef.ref.getDownloadURL();
       this.dialogRef.close(photoURL);
     } else
-      this.errorMessage = Errors["image/could_not_load"] || Errors.DEFAULT_MESSAGE;
+      this.errorMessage = Messages["image/could_not_load"] || Messages.DEFAULT_MESSAGE;
   }
 
   getFileName(file: File): void {
@@ -97,7 +97,7 @@ export class CustomImageCropperComponent {
 
   loadImageFailed() {
     this.isLoaded = false;
-    this.errorMessage = Errors['image/could_not_load'] || Errors.DEFAULT_MESSAGE;
+    this.errorMessage = Messages['image/could_not_load'] || Messages.DEFAULT_MESSAGE;
   }
 
 

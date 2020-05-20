@@ -75,7 +75,10 @@
       <mat-checkbox class="full-width-field" (change)="attacheEmail = !attacheEmail" [checked]="attacheEmail">
           &nbsp;Указать Ваш E-mail в качестве контактной информации</mat-checkbox>
 
-      <button mat-raised-button color="primary" (click)="sendOffer()">{{editOffer ? 'Сохранить' : 'Отправить'}}</button>
+      <div class="bottom-block">
+        <p *ngIf="!isFormValid" class="error-message">Корректно заполните обязательные поля</p>
+        <button mat-raised-button color="primary" (click)="sendOffer()">{{editOffer ? 'Сохранить' : 'Отправить'}}</button>
+      </div>
 
     </form>
   </section>

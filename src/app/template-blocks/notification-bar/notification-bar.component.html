@@ -1,0 +1,4 @@
+<div *ngIf="isBarVisible()" class="notification-bar-container">
+  <p [ngClass]="getMessageStatus() ? 'success-message' : 'error-message'">{{getNotificationText()}}</p>
+  <img src="/assets/img/close_button.svg" alt="Скрыть уведомление" (click)="hideNotificationBar()"/>
+</div>

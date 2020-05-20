@@ -35,17 +35,17 @@ main {
   outline: 0;
 }
 
+.error-message {
+  font-size: 14px;
+  color: #d70108;
+}
+
 .dialog-content {
   text-align: center;
 
   h1 {
     text-align: center;
     color: $main-theme-color;
-  }
-
-  .error-message {
-    font-size: 14px;
-    color: #d70108;
   }
 
   .mat-dialog-content {
