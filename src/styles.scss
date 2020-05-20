@@ -5,6 +5,7 @@ $main-theme-color: #673ab7;
 
 html, body {
   height: 100%;
+  position: relative;
 }
 
 body {
@@ -13,10 +14,21 @@ body {
   background-image: linear-gradient(90deg, #efefef, #ffffff, #efefef);
 }
 
+app-root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+router-outlet {
+  flex: 1 0 auto;
+}
+
 main {
   max-width: 1190px;
   width: 80%;
   margin: 20px auto 40px;
+  flex: 1;
 }
 
 *:focus {

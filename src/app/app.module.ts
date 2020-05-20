@@ -32,6 +32,7 @@ import { ResetPasswordComponent } from './dialogs/reset-password/reset-password.
 import { EmailVerifyComponent } from './dialogs/email-verify-message/email-verify.component';
 import { CustomImageCropperComponent } from './template-blocks/image-cropper/custom-image-cropper.component';
 import {ImageCropperModule} from "ngx-image-cropper";
+import { NotFoundComponent } from './pages/not-found/not-found.component';
 
 export function appInitFactory(auth: AuthService) {
   return (): Promise<any> => {
@@ -53,7 +54,8 @@ export function appInitFactory(auth: AuthService) {
     ProfilePageComponent,
     ResetPasswordComponent,
     EmailVerifyComponent,
-    CustomImageCropperComponent
+    CustomImageCropperComponent,
+    NotFoundComponent
   ],
   imports: [
     BrowserModule,

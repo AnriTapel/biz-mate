@@ -5,6 +5,7 @@ import {OfferFormComponent} from "./pages/offer-form/offer-form.component";
 import {OfferPageComponent} from "./pages/offer-page/offer-page.component";
 import {ProfilePageComponent} from "./pages/profile-page/profile-page.component";
 import {AuthGuardService} from "./services/auth-guard/auth-guard.service";
+import {NotFoundComponent} from "./pages/not-found/not-found.component";
 
 
 
@@ -14,7 +15,7 @@ const routes: Routes = [
   {path: 'edit-offer/:offerId', component: OfferFormComponent, canActivate: [AuthGuardService]},
   {path: 'profile', component: ProfilePageComponent, pathMatch: "full", canActivate: [AuthGuardService]},
   {path: 'offer/:id', component: OfferPageComponent},
-  {path: '**', component: HomePageComponent}
+  {path: '**', component: NotFoundComponent}
 ];
 
 @NgModule({

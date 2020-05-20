@@ -1,0 +1,31 @@
+$main-theme-color: #673ab7;
+
+h1 {
+  text-align: center;
+  color: $main-theme-color;
+}
+
+img {
+  display: block;
+  width: 200px;
+  margin: 1.5em auto 1em;
+}
+
+p {
+  text-align: center;
+  font-size: 14px;
+  color: $main-theme-color;
+  opacity: .8;
+}
+
+.control-panel {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2em;
+
+  & button {
+    width: 120px;
+    margin: 0 10px;
+  }
+}
