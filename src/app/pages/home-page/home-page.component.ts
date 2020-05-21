@@ -51,6 +51,7 @@ export class HomePageComponent implements OnInit {
       );
 
     this.getInitialOffers();
+    scroll(0,0);
   }
 
   async getInitialOffers(): Promise<void> {

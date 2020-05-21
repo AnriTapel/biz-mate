@@ -30,6 +30,7 @@ export class AuthService {
 
   appInitAuth(): Promise<any> {
     return new Promise<void>((resolve, reject) => {
+      this.afAuth.auth.useDeviceLanguage();
       let handler = this.afAuth.authState.subscribe((userData) => {
         if (userData) {
           this.user = {

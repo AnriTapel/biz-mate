@@ -11,6 +11,7 @@ export class NotFoundComponent implements OnInit {
   constructor(private router: Router) { }
 
   ngOnInit(): void {
+    scroll(0,0);
   }
 
   previousPage(): void {

@@ -67,6 +67,8 @@ export class OfferFormComponent implements OnInit {
         startWith(''),
         map(value => AppService._filterCategories(value))
       );
+
+    scroll(0,0);
   }
 
   public setOfferType(type: OfferTypes): void {

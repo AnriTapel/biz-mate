@@ -26,6 +26,7 @@ export class OfferPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    scroll(0,0);
   }
 
   getOfferDate(): string {

@@ -63,6 +63,7 @@ export class ProfilePageComponent implements OnInit {
 
   ngOnInit(): void {
     this.getUserOffers();
+    scroll(0,0);
   }
 
   async getUserOffers(): Promise<void> {
