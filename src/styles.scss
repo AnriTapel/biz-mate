@@ -1,17 +1,57 @@
 /* You can add global styles to this file, and also import other style files */
 @import '@angular/material/prebuilt-themes/deeppurple-amber.css';
 
+@font-face {
+  font-family: "Raleway-Regular";
+  src: url("/assets/fonts/Raleway-Regular.ttf");
+}
+
+@font-face {
+  font-family: "Raleway-Thin";
+  src: url("/assets/fonts/Raleway-Thin.ttf");
+}
+
+@font-face {
+  font-family: "Raleway-SemiBold";
+  src: url("/assets/fonts/Raleway-SemiBold.ttf");
+}
+
+@font-face {
+  font-family: "Raleway-Bold";
+  src: url("/assets/fonts/Raleway-Bold.ttf");
+}
+
+@font-face {
+  font-family: "Raleway-Italic";
+  src: url("/assets/fonts/Raleway-Italic.ttf");
+}
+
+@font-face {
+  font-family: "Raleway-Light";
+  src: url("/assets/fonts/Raleway-Light.ttf");
+}
+
+*{
+  font-family: "Raleway-Regular";
+}
+
+button {
+  cursor: pointer;
+  font-family: "Raleway-SemiBold";
+}
+
 $main-theme-color: #673ab7;
 
 html, body {
   height: 100%;
   position: relative;
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
-  background-image: linear-gradient(90deg, #efefef, #ffffff, #efefef);
+  background: linear-gradient(233.4deg, #FCFEFF 41.42%, rgba(202, 245, 255, 0) 104.53%);
 }
 
 app-root {
@@ -29,6 +69,45 @@ main {
   width: 80%;
   margin: 20px auto 40px;
   flex: 1;
+}
+
+.button-primary {
+  padding: 10px 20px;
+  color: #F8FAFF;
+  background: #35A6CA;
+  box-shadow: inset -4px -4px 10px rgba(53, 166, 202, 0.25), inset 4px 4px 4px rgba(101, 202, 235, 0.25), inset -4px 4px 4px rgba(53, 166, 202, 0.25), inset 4px -4px 4px rgba(53, 166, 202, 0.25), inset 0px 4px 4px rgba(53, 166, 202, 0.25), inset 1px -4px 4px #65CAEB;
+  border: none;
+  border-radius: 5px;
+
+  &:hover {
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  }
+
+  &:active {
+    background: #176983;
+  }
+
+  &:disabled {
+    background: #D0D0D0;
+    box-shadow: unset;
+  }
+}
+
+.button-circle {
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  padding: 0 !important;
+}
+
+.button-transparent {
+  background: transparent;
+  border: 1px solid #fff;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+  &:hover {
+    box-shadow: 0px 4px 4px rgba(255, 255, 255, 0.25)
+  }
 }
 
 *:focus {

@@ -2,26 +2,6 @@ $main-theme-color: #673ab7;
 
 header {
 
-  .top-bar {
-    height: 14px;
-    background-color: #efefef;
-    padding: 8px 5%;
-
-    ul {
-      margin: 0;
-      padding: 0;
-      display: flex;
-      list-style-type: none;
-      justify-content: space-between;
-
-      li {
-        cursor: pointer;
-        color: #b5b5b5;
-        font-size: 12px;
-      }
-    }
-  }
-
   nav {
     height: 75px;
     padding: 1em 10% .25em;
@@ -33,23 +13,25 @@ header {
       align-items: center;
     }
 
-    .logo-text-block {
+    .logo-block {
       cursor: pointer;
 
       img {
-        height: calc(100% - 1em);
-        margin-right: .75em;
+        height: calc(100% - 2em);
       }
 
     }
 
     .header-buttons {
-      & > button {
-        margin-right: 1em;
-      }
-
       & > div {
         position: relative;
+      }
+
+      .login-button img{
+        width: 14px;
+        height: 14px;
+        margin-left: .25em;
+        vertical-align: middle;
       }
 
       .header-menu {
@@ -57,25 +39,56 @@ header {
         right: 0;
         z-index: 2147483647;
         flex-direction: column;
-
-        margin: 5px 0 0;
+        margin: 13px 0 0;
         padding: 0;
-        border-radius: 8px;
-        border: 1px solid #b5b5b5;
-        background-color: #fff;
+        border-radius: 5px;
+        background-color: #35A6CA;
+        -webkit-filter: drop-shadow(0 1px 10px rgba(113, 158, 206, 0.8)); /*set shadow colour  and size here*/
+        -moz-box-shadow: 0 1px 10px rgba(113, 158, 206, 0.8);
+        filter: drop-shadow(0 1px 10px rgba(113, 158, 206, 0.8));
 
         li {
+          position: relative;
           list-style: none;
-          padding: 10px 15px;
-          color: $main-theme-color;
+          padding: 7px 15px;
+          font-size: 14px;
+          color: #FCFFFF;
           white-space: nowrap;
           cursor: pointer;
-          transition: transform 100ms;
 
-          &:hover {
-            transform: scale(1.03);
+          &:before{
+            content: none;
+            width: 0;
+            height: 14px;
+            position: absolute;
+            border: .75px solid #FCFFFF;
+            top: 8px;
+            left: 7px;
+          }
+
+          &:hover{
+            &:before{
+              content: "";
+            }
           }
         }
+      }
+
+      .header-menu:before {
+        bottom: 100%;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+      }
+
+      .header-menu:before {
+        border-bottom-color: #35A6CA;
+        border-width: 10px;
+        right: 7px;
+        margin-left: -10px;
       }
     }
   }

@@ -1,12 +1,18 @@
 <footer>
 
-  <div class="footer-container">
-    <img src="/assets/img/logo_footer.svg" alt="Логотип подвала" />
+  <div class="scroll-up-arrow">
+    <a href="#header"><img src="/assets/img/thin_arrow.svg" alt="Вверх"/></a>
+  </div>
 
-    <div class="footer-info">
-      <p>Служба поддержки: <strong>info@bizmate.ru</strong></p>
-      <p>Все права защищены</p>
+  <div class="footer-container">
+    <div class="footer_logo_and_copyright">
+      <img src="/assets/img/logo_footer.svg" alt="Логотип подвала" />
       <p>BizMate &copy; 2020</p>
+    </div>
+
+    <div class="email_and_offer_button">
+      <p>info@bizmate.ru</p>
+      <button class="button-primary button-transparent" [routerLink]="['/new-offer']">Разместить объявление</button>
     </div>
   </div>
 
