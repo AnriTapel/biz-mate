@@ -40,7 +40,7 @@ button {
   font-family: "Raleway-SemiBold";
 }
 
-$main-theme-color: #673ab7;
+$main-theme-color: #2E7990;
 
 html, body {
   height: 100%;
@@ -71,6 +71,22 @@ main {
   flex: 1;
 }
 
+h1, h2, h3, p, span, a, label {
+  color: $main-theme-color !important;
+}
+
+.mat-form-field-ripple {
+  background-color: $main-theme-color !important;
+}
+
+input.mat-input-element{
+  caret-color: $main-theme-color !important;
+}
+
+.mat-form-field.mat-form-field-invalid .mat-form-field-ripple {
+  background-color: #f44336 !important;
+}
+
 .button-primary {
   padding: 10px 20px;
   color: #F8FAFF;
@@ -93,6 +109,17 @@ main {
   }
 }
 
+.button-white {
+  background-color: #fff;
+  color: #35A6CA;
+  border: 1px solid #35A6CA;
+  box-shadow: unset;
+
+  &:active {
+    background: #f1f1f1;
+  }
+}
+
 .button-circle {
   border-radius: 50%;
   width: 35px;
@@ -108,6 +135,10 @@ main {
   &:hover {
     box-shadow: 0px 4px 4px rgba(255, 255, 255, 0.25)
   }
+}
+
+.button-primary-large {
+  padding: 20px 25px;
 }
 
 *:focus {

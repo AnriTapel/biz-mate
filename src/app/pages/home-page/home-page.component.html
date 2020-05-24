@@ -1,38 +1,52 @@
 <main>
 
-  <!-- Панель поиска (может нужно будет вынести в отдельный компонент) -->
-  <form class="search-form-panel" [formGroup]="searchForm">
-    <mat-form-field>
-      <mat-label>Поиск по названию</mat-label>
-      <input matInput placeholder="Мастшабирование бизнеса" formControlName="titleFilter">
-    </mat-form-field>
-    <button mat-raised-button color="primary" (click)="applyFilter()">Искать</button>
+  <div class="top-block">
+    <div class="text">
+      <p>Деловые предложения о сотрудничестве</p>
+      <h1>Поможем найти партнёра по бизнесу</h1>
+      <p>Разместите информацию о своем бизнесе на BezMate сегодня — и уже завтра вы сможете найти надежного партнера по бизнесу в любом регионе.</p>
+      <button class="button-primary button-primary-large" [routerLink]="['/new-offer']">Разместить предложение</button>
+    </div>
+
+    <div class="image-block">
+    </div>
+  </div>
+
+  <div class="search-form-panel">
+    <h3>Поиск офферов</h3>
+    <form [formGroup]="searchForm">
+      <mat-form-field>
+        <mat-label>Поиск по названию</mat-label>
+        <input matInput placeholder="Мастшабирование бизнеса" formControlName="titleFilter">
+      </mat-form-field>
+
+      <mat-form-field>
+        <input type="text" placeholder="Сфера бизнеса" aria-label="Сфера бизнеса" matInput
+               formControlName="businessAreaFilter" [matAutocomplete]="businessArea">
+        <mat-autocomplete #businessArea="matAutocomplete">
+          <mat-option *ngFor="let category of filteredBusinessArea$ | async" [value]="category.name">
+            {{category.name}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
 
 
-    <mat-form-field>
-      <input type="text" placeholder="Сфера бизнеса" aria-label="Сфера бизнеса" matInput
-             formControlName="businessAreaFilter" [matAutocomplete]="businessArea">
-      <mat-autocomplete #businessArea="matAutocomplete">
-        <mat-option *ngFor="let category of filteredBusinessArea$ | async" [value]="category.name">
-          {{category.name}}
-        </mat-option>
-      </mat-autocomplete>
-    </mat-form-field>
+      <mat-form-field>
+        <input type="text" placeholder="Населенный пункт" aria-label="Населенный пункт" matInput
+               formControlName="cityFilter" [matAutocomplete]="cities">
+        <mat-autocomplete #cities="matAutocomplete">
+          <mat-option *ngFor="let city of filteredCities$ | async" [value]="city.name">
+            {{city.name}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
 
-
-    <mat-form-field>
-      <input type="text" placeholder="Населенный пункт" aria-label="Населенный пункт" matInput
-             formControlName="cityFilter" [matAutocomplete]="cities">
-      <mat-autocomplete #cities="matAutocomplete">
-        <mat-option *ngFor="let city of filteredCities$ | async" [value]="city.name">
-          {{city.name}}
-        </mat-option>
-      </mat-autocomplete>
-    </mat-form-field>
-
-    <button mat-stroked-button color="primary" (click)="clearFilterForm()">Сбросить</button>
-  </form>
-
+      <div>
+        <button class="button-primary button-white" (click)="clearFilterForm()">Сбросить</button>
+        <button class="button-primary" (click)="applyFilter()">Искать</button>
+      </div>
+    </form>
+  </div>
 
   <section class="offers-block">
     <div class="title">
