@@ -19,7 +19,6 @@ export class HomePageComponent implements OnInit {
   private readonly OFFER_QUERY_LIMIT: number = 2;
   private lastVisibleOffer: any = null;
 
-  isGridLayout: boolean = true;
   popularOffers$: Observable<any[]>;
   filteredOffers$: Observable<Offer[]>;
 

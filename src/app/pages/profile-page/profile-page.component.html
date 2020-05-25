@@ -39,9 +39,9 @@
 
   <section id="user-offers">
     <h2>Мои офферы</h2>
-    <ng-container *ngIf="userOffers$">
-      <app-offer-card *ngFor="let offer of userOffers$ | async" [offer]="offer" [style.flex-basis]="'100%'"></app-offer-card>
-    </ng-container>
+    <div class="offers-list" *ngIf="userOffers$">
+      <app-offer-card *ngFor="let offer of userOffers$ | async" [offer]="offer"></app-offer-card>
+    </div>
     <ng-container *ngIf="!userOffers$">
       <div class="no-offers-block">
         <p>Размещенных офферов нет</p>

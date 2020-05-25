@@ -1,19 +1,29 @@
-<mat-card>
+<div class="offer-card-container">
   <div>
-    <mat-card-header>
-      <div mat-card-avatar>
+
+
+    <div class="offer-card-header">
+      <div class="avatar">
         <img [src]="offer.photoURL" alt="Аватар"/>
       </div>
-      <mat-card-title>{{offer.title}}</mat-card-title>
-      <mat-card-subtitle>{{offer.displayName}}</mat-card-subtitle>
-      <img *ngIf="editable" class="edit-btn" src="/assets/img/edit.svg" title="Редактировать" (click)="editOffer()"/>
-    </mat-card-header>
-    <mat-card-content>
+
+      <div class="title-and-author">
+        <h3>{{offer.title}}</h3>
+        <span>{{offer.displayName}}</span>
+      </div>
+
+      <div class="date">
+        <span>{{getOfferDate(offer)}}</span>
+      </div>
+    </div>
+
+    <div class="offer-card-desc">
       <p>{{offer.desc}}</p>
-    </mat-card-content>
+    </div>
   </div>
-  <mat-card-actions>
-    <button mat-stroked-button color="primary" (click)="openOfferPage(offer)">Подробнее</button>
-    <span>{{getOfferDate(offer)}}</span>
-  </mat-card-actions>
-</mat-card>
+  <div class="offer-card-footer">
+    <a class="link-underline" (click)="openOfferPage(offer)">Подробнее</a>
+    <img *ngIf="editable" class="edit-btn" src="/assets/img/edit.svg" title="Редактировать" (click)="editOffer()"/>
+  </div>
+
+</div>

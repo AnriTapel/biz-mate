@@ -13,6 +13,8 @@ export class FooterComponent implements OnInit {
   }
 
   scrollToHeader(): void {
-    document.querySelector('#header').scrollIntoView();
+    document.querySelector('#header').scrollIntoView({
+      behavior: "smooth"
+    });
   }
 }

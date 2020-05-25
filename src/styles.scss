@@ -31,6 +31,8 @@
   src: url("/assets/fonts/Raleway-Light.ttf");
 }
 
+$main-theme-color: #2E7990;
+
 *{
   font-family: "Raleway-Regular";
 }
@@ -40,8 +42,6 @@ button {
   font-family: "Raleway-SemiBold";
 }
 
-$main-theme-color: #2E7990;
-
 html, body {
   height: 100%;
   position: relative;
@@ -50,7 +50,6 @@ html, body {
 
 body {
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
   background: linear-gradient(233.4deg, #FCFEFF 41.42%, rgba(202, 245, 255, 0) 104.53%);
 }
 
@@ -71,8 +70,8 @@ main {
   flex: 1;
 }
 
-h1, h2, h3, p, span, a, label {
-  color: $main-theme-color !important;
+h1, h2, h3, p, span, a, label, mat-label {
+  color: $main-theme-color;
 }
 
 .mat-form-field-ripple {
@@ -135,6 +134,13 @@ input.mat-input-element{
   &:hover {
     box-shadow: 0px 4px 4px rgba(255, 255, 255, 0.25)
   }
+}
+
+.link-underline{
+  font-size: 14px;
+  padding: 0 0 .25em;
+  cursor: pointer;
+  border-bottom: .75px solid #2E7990;
 }
 
 .button-primary-large {
@@ -200,5 +206,11 @@ input.mat-input-element{
       }
     }
   }
+}
 
+.offers-list{
+  margin-top: 3em;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-gap: 2em;
 }

@@ -51,22 +51,13 @@
   <section class="offers-block">
     <div class="title">
       <h2>Актуальные офферы</h2>
-      <mat-button-toggle-group>
-        <mat-button-toggle value="left" aria-label="Grid" [checked]="isGridLayout" (click)="isGridLayout = true">
-          <img src="/assets/img/grid_layout.svg" alt="Блочный макет"/>
-        </mat-button-toggle>
-
-        <mat-button-toggle value="left" aria-label="Line" [checked]="!isGridLayout" (click)="isGridLayout = false">
-          <img src="/assets/img/row_layout.svg" alt="Строчный макет"/>
-        </mat-button-toggle>
-      </mat-button-toggle-group>
     </div>
 
     <div class="offers-list">
-        <app-offer-card *ngFor="let offer of (filteredOffers$ ? filteredOffers$ : popularOffers$) | async"
-                        [offer]="offer" [style.flex-basis]="isGridLayout ? '49%' : '100%'"></app-offer-card>
+        <app-offer-card *ngFor="let offer of (filteredOffers$ ? filteredOffers$ : popularOffers$) | async" [offer]="offer"></app-offer-card>
     </div>
-    <button mat-raised-button color="primary" (click)="loadNextOffersChunk()">Больше офферов</button>
+
+    <a class="more-offers link-underline" (click)="loadNextOffersChunk()">Больше офферов</a>
 
   </section>
 
