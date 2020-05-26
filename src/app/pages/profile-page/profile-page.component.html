@@ -1,10 +1,13 @@
 <main>
 
-  <section id="user-info" [formGroup]="userDataForm">
+  <section class="highlight-box user-info-block" [formGroup]="userDataForm">
+    <div class="avatar-container">
+      <img [src]="user.photoURL" (click)="changePhotoURL()" alt="Аватар пользователя"
+           title="{{user.displayName}}" class="user-photo">
+    </div>
     <h2>Мои данные</h2>
-    <div class="name-and-thumb">
+    <div class="name">
       <div>
-        <img [src]="user.photoURL" (click)="changePhotoURL()" alt="Аватар пользователя" title="{{user.displayName}}" class="user-photo">
         <mat-form-field *ngIf="editableFields.displayName" class="example-full-width">
           <mat-label>Имя</mat-label>
           <input matInput autofocus formControlName="displayName" (change)="editUserData('displayName')">
