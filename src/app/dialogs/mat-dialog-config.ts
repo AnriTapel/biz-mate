@@ -1,5 +1,3 @@
-import {config} from "rxjs";
-
 export enum DialogConfigType {
   NARROW_CONFIG = 0,
   WIDE_CONFIG = 1
@@ -9,10 +7,11 @@ export class MatDialogConfig {
 
   static readonly narrowDialogWindow = {
     width: '50vw',
-    maxWidth: '770px',
-    minWidth: '320px',
+    maxWidth: '400px',
+    minWidth: '200px',
     maxHeight: '90vh',
     autoFocus: true,
+    backdropClass: 'dialog-backdrop',
     panelClass: 'dialog-content',
     closeOnNavigation: true
   };
@@ -20,9 +19,10 @@ export class MatDialogConfig {
   static readonly  wideDialogWindow = {
     width: '80vw',
     maxWidth: '1020px',
-    minWidth: '480px',
+    minWidth: '400px',
     maxHeight: '90vh',
     autoFocus: true,
+    backdropClass: 'dialog-backdrop',
     panelClass: 'dialog-content',
     closeOnNavigation: true
   };

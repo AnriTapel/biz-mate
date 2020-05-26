@@ -5,6 +5,7 @@ import {AuthService} from "../../services/auth/auth.service";
 import {EmailVerifyComponent} from "../email-verify-message/email-verify.component";
 import {DialogConfigType, MatDialogConfig} from "../mat-dialog-config";
 import {Messages} from "../../models/Messages";
+import {LoginComponent} from "../login/login.component";
 
 @Component({
   selector: 'app-sign-up',
@@ -28,6 +29,11 @@ export class SignUpComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+
+  logIn(): void {
+    this.dialogRef.close();
+    this.dialog.open(LoginComponent, MatDialogConfig.narrowDialogWindow);
   }
 
   signUp() {

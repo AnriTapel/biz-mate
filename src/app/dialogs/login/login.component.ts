@@ -50,26 +50,14 @@ export class LoginComponent implements OnInit {
       .catch((err) => this.errorMessage = Messages[err.code] || Messages.DEFAULT_MESSAGE);
   }
 
-  loginFacebook() {
-
-  }
-
   signUp() {
     this.dialogRef.close();
-    const dialogRef = this.dialog.open(SignUpComponent, MatDialogConfig.narrowDialogWindow);
-
-    dialogRef.afterClosed().subscribe(() => {
-      console.log('SignUp dialog was closed');
-    });
+    this.dialog.open(SignUpComponent, MatDialogConfig.narrowDialogWindow);
   }
 
   forgotPassword() {
     this.dialogRef.close();
-    const dialogRef = this.dialog.open(ResetPasswordComponent, MatDialogConfig.narrowDialogWindow);
-
-    dialogRef.afterClosed().subscribe(() => {
-      console.log('Reset password dialog was closed');
-    });
+    this.dialog.open(ResetPasswordComponent, MatDialogConfig.narrowDialogWindow);
   }
 
 }
