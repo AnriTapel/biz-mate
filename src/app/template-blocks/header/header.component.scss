@@ -22,7 +22,28 @@ header {
 
     }
 
-    .header-buttons {
+    .nav-buttons {
+      a{
+        font-family: 'Raleway-SemiBold';
+        cursor: pointer;
+        margin: 0 20px;
+        text-decoration: none;
+      }
+
+      a:first-child {
+        margin-left: 0;
+      }
+
+      a:last-child {
+        margin-right: 0;
+      }
+
+      a:hover {
+        color: #35A6CA;
+      }
+    }
+
+    .login-button {
       & > div {
         position: relative;
       }

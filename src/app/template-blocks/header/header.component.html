@@ -4,8 +4,12 @@
       <img src="/assets/img/logo_header.svg" alt="BizMate логотип" [routerLink]="['/']" />
     </div>
 
+    <div class="nav-buttons">
+      <a [routerLink]="['/']">Главная</a>
+      <a [routerLink]="['/offers-page']">Оффреы</a>
+    </div>
 
-    <div class="header-buttons">
+    <div class="login-button">
       <button *ngIf="!loggedIn" class="button-primary login-button" (click)="openLoginDialog()">Вход
         <img src="/assets/img/login_thumb.svg" alt="Войти" />
       </button>
