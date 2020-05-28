@@ -35,6 +35,7 @@ import {ImageCropperModule} from "ngx-image-cropper";
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { NotificationComponent } from './dialogs/notification/notification.component';
 import { NotificationBarComponent } from './template-blocks/notification-bar/notification-bar.component';
+import { OffersPageComponent } from './pages/offers-page/offers-page.component';
 
 export function appInitFactory(auth: AuthService) {
   return (): Promise<any> => {
@@ -59,7 +60,8 @@ export function appInitFactory(auth: AuthService) {
     CustomImageCropperComponent,
     NotFoundComponent,
     NotificationComponent,
-    NotificationBarComponent
+    NotificationBarComponent,
+    OffersPageComponent
   ],
   imports: [
     BrowserModule,

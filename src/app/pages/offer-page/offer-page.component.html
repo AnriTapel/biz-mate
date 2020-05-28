@@ -1,20 +1,42 @@
-<main>
+<main class="aside-section-block">
   <ng-container *ngIf="offer">
+    <aside class="offer-info-card">
+      <div class="avatar-name-block">
+        <div class="avatar-container">
+          <img [src]="offer.photoURL" alt="Аватар оффера"/>
+        </div>
+        <span>{{offer.displayName}}</span>
+      </div>
 
-    <div class="offer-title">
-      <img [src]="offer.photoURL" alt="Аватар оффера"/>
+      <div class="item">
+        <span>Город</span>
+        <span>{{getOfferCity()}}</span>
+      </div>
+
+      <div *ngIf="offer.capital" class="item">
+        <span>{{getCapitalLabel()}}</span>
+        <span>{{offer.capital}}</span>
+      </div>
+
+      <div class="item">
+        <span>Тип объявления</span>
+        <span>{{getOfferTypeTitle()}}</span>
+      </div>
+
+      <div class="item">
+        <span>Сфера бизнеса</span>
+        <span>{{getOfferBusinessArea()}}</span>
+      </div>
+
+      <div class="item">
+        <span>Дата публикации</span>
+        <span>{{getOfferDate()}}</span>
+      </div>
+    </aside>
+
+    <section class="offer-main-data">
       <h2>{{offer.title}}</h2>
-    </div>
 
-    <div class="offer-meta-data">
-      <span><strong>Тип объявления:</strong> {{getOfferTypeTitle()}}</span>
-      <span><strong>Сферы бизнеса:</strong> {{getOfferBusinessArea()}}</span>
-      <span><strong>Дата публикации:</strong> {{getOfferDate()}}</span>
-    </div>
-
-    <hr>
-
-    <div class="offer-main-data">
       <div *ngIf="offer.capital">
         <h3>{{getCapitalLabel()}}</h3>
         <p>{{offer.capital}}</p>
@@ -34,16 +56,14 @@
         <h3>{{getExperienceLabel()}}</h3>
         <p>{{offer.experience}}</p>
       </div>
-    </div>
 
-    <hr>
+      <div class="contacts">
+        <h3>Контакты</h3>
+        <p *ngIf="offer.phone">Номер телефона: <strong>{{offer.phone}}</strong></p>
+        <p *ngIf="offer.email">E-mail: <strong>{{offer.email}}</strong></p>
+      </div>
 
-    <div class="offer-contact-data">
-      <span><strong>Контактное лицо:</strong> {{offer.displayName}}</span>
-      <span><strong>Населенный пункт:</strong> {{getOfferCity()}}</span>
-      <span *ngIf="offer.phone"><strong>Номер телефона:</strong> {{offer.phone}}</span>
-      <span *ngIf="offer.email"><strong>E-mail:</strong> {{offer.email}}</span>
-    </div>
-
+      <button class="button-primary button-primary-large">Откликнуться</button>
+    </section>
   </ng-container>
 </main>

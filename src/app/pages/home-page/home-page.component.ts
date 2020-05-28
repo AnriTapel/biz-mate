@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {of, Observable, zip} from "rxjs";
+import {FormControl, FormGroup} from "@angular/forms";
+import {Observable, of, zip} from "rxjs";
 import {BusinessArea} from "../../models/BusinessArea";
 import {City} from "../../models/City";
 import {AngularFirestore} from "@angular/fire/firestore";
@@ -16,7 +16,7 @@ import * as _ from 'lodash';
 })
 export class HomePageComponent implements OnInit {
 
-  private readonly OFFER_QUERY_LIMIT: number = 2;
+  private readonly OFFER_QUERY_LIMIT: number = 4;
   private lastVisibleOffer: any = null;
 
   popularOffers$: Observable<any[]>;

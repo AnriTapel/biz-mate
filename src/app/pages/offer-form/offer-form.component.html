@@ -1,21 +1,17 @@
-<main>
+<main class="aside-section-block">
 
-  <div class="offer-type-panel">
+  <aside class="offer-type-panel">
     <h2>Выберите тип оффера</h2>
-
-    <mat-button-toggle-group>
-      <mat-button-toggle *ngFor="let type of getOfferTypesArray()" [checked]="getOfferType() === type.id"
-                         (click)="setOfferType(type.id)">{{type.title}}</mat-button-toggle>
-    </mat-button-toggle-group>
-  </div>
+    <div *ngFor="let type of getOfferTypesArray()" [class.active-type]="getOfferType() === type.id"
+                       (click)="setOfferType(type.id)">{{type.title}}</div>
+  </aside>
 
   <section *ngIf="isOfferLoaded">
     <form class="new-offer-form" [formGroup]="newOfferForm">
 
-      <h4>Общая информация</h4>
+      <h3>Общая информация</h3>
 
-      <button mat-raised-button type="reset" color="primary" class="clear-form-btn"
-              (click)="clearForm()">Очистить
+      <button class="button-primary button-white clear-form-btn" (click)="clearForm()">Очистить
       </button>
 
       <mat-form-field>
@@ -73,11 +69,12 @@
       </mat-form-field>
 
       <mat-checkbox class="full-width-field" (change)="attacheEmail = !attacheEmail" [checked]="attacheEmail">
-          &nbsp;Указать Ваш E-mail в качестве контактной информации</mat-checkbox>
+        &nbsp;Указать Ваш E-mail в качестве контактной информации
+      </mat-checkbox>
 
       <div class="bottom-block">
         <p *ngIf="!isFormValid" class="error-message">Корректно заполните обязательные поля</p>
-        <button mat-raised-button color="primary" (click)="sendOffer()">{{editOffer ? 'Сохранить' : 'Отправить'}}</button>
+        <button class="button-primary button-primary-large" (click)="sendOffer()">{{editOffer ? 'Сохранить' : 'Разместить'}}</button>
       </div>
 
     </form>

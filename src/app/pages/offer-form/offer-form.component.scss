@@ -1,19 +1,36 @@
 $main-theme-color: #2E7990;
 
+main {
+
+}
+
 .offer-type-panel {
-  width: 100%;
 
   h2 {
     color: $main-theme-color;
+    text-align: center;
+    margin-bottom: 2em;
   }
 
-  mat-button-toggle-group {
-    display: flex;
+  & > div {
+    width: 100%;
+    height: 45px;
+    text-align: center;
+    line-height: 45px;
+    cursor: pointer;
 
-    mat-button-toggle {
-      flex: 1;
+    &:not(:last-child){
+      margin-bottom: 2em;
     }
   }
+
+  .active-type {
+    color: #35A6CA;
+    border: 1px solid #35A6CA;
+    border-radius: 5px;
+    font-family: 'Raleway-SemiBold';
+  }
+
 }
 
 .new-offer-form {
@@ -21,7 +38,7 @@ $main-theme-color: #2E7990;
   grid-template: auto / 1fr 1fr;
   grid-gap: 1em 2em;
 
-  h4 {
+  h3 {
     color: $main-theme-color;
   }
 
@@ -46,10 +63,11 @@ mat-checkbox {
 
 .bottom-block {
   width: 100%;
-  height: 80px;
+  height: 100px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  grid-column: 2/3;
 
   p {
     margin-bottom: 2em;

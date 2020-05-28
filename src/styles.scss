@@ -43,6 +43,7 @@ button {
 }
 
 html, body {
+  min-height: 100vh;
   height: 100%;
   position: relative;
   scroll-behavior: smooth;
@@ -50,13 +51,13 @@ html, body {
 
 body {
   margin: 0;
-  background: linear-gradient(233.4deg, #FCFEFF 41.42%, rgba(202, 245, 255, 0) 104.53%);
 }
 
 app-root {
-  height: 100%;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
+  background-image: linear-gradient(227deg, #FCFEFF 41.42%, rgba(202, 245, 255));
 }
 
 router-outlet {
@@ -70,7 +71,11 @@ main {
   flex: 1;
 }
 
-h1, h2, h3, p, span, a, label, mat-label {
+app-header, app-footer {
+  z-index: 1;
+}
+
+h1, h2, h3, h4, p, span, a, label, mat-label, div {
   color: $main-theme-color;
 }
 
@@ -156,6 +161,20 @@ input.mat-input-element{
   color: #d70108;
 }
 
+.aside-section-block {
+  display: grid;
+  grid-template-columns: 1fr 2.5fr;
+  grid-column-gap: 4em;
+  margin: 2em auto 5em;
+
+  section {
+    padding: 3em;
+    background-color: #FFF;
+    border-radius: 5px;
+    box-shadow: inset -4px -4px 10px rgba(228, 246, 255, 0.2), inset 4px 4px 10px #FCFFFF, inset -4px 4px 10px rgba(228, 246, 255, 0.25), inset 4px -4px 10px #E4F6FF, inset -1px 4px 10px #E4F6FF, inset 1px -4px 10px #FCFFFF;
+  }
+}
+
 .dialog-backdrop {
   background-color: rgba(46, 121, 144, 0.5);
 }
@@ -239,3 +258,10 @@ input.mat-input-element{
     border-radius: 50%;
   }
 }
+
+.mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
+.mat-checkbox-checked.mat-accent .mat-checkbox-background{
+  background: $main-theme-color !important;
+}
+
+
