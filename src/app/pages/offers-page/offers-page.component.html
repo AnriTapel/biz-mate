@@ -1,0 +1,45 @@
+<main>
+
+  <div class="highlight-box search-form-panel">
+    <h3>Поиск офферов</h3>
+    <form [formGroup]="searchForm">
+      <mat-form-field>
+        <mat-label>Поиск по названию</mat-label>
+        <input matInput placeholder="Мастшабирование бизнеса" formControlName="titleFilter">
+      </mat-form-field>
+
+      <mat-form-field>
+        <input type="text" placeholder="Сфера бизнеса" aria-label="Сфера бизнеса" matInput
+               formControlName="businessAreaFilter" [matAutocomplete]="businessArea">
+        <mat-autocomplete #businessArea="matAutocomplete">
+          <mat-option *ngFor="let category of filteredBusinessArea$ | async" [value]="category.name">
+            {{category.name}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+
+      <mat-form-field>
+        <input type="text" placeholder="Населенный пункт" aria-label="Населенный пункт" matInput
+               formControlName="cityFilter" [matAutocomplete]="cities">
+        <mat-autocomplete #cities="matAutocomplete">
+          <mat-option *ngFor="let city of filteredCities$ | async" [value]="city.name">
+            {{city.name}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <div>
+        <button class="button-primary button-white" (click)="clearFilterForm()">Сбросить</button>
+        <button class="button-primary" (click)="applyFilter()">Искать</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="offers-list">
+    <app-offer-card *ngFor="let offer of (filteredOffers$ ? filteredOffers$ : sortedOffers$) | async" [offer]="offer"></app-offer-card>
+  </div>
+
+  <a *ngIf="!allOffersLoaded && !filteredOffers$" class="more-offers link-underline" (click)="loadNextOffersChunk()">Больше офферов</a>
+  <img *ngIf="allOffersLoaded || filteredOffers$" class="all-offers-loaded" src="/assets/img/all_offers_loaded.svg" title="На этом все..." alt="На этом все..."/>
+</main>

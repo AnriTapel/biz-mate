@@ -12,53 +12,23 @@
     </div>
   </div>
 
-  <div class="highlight-box search-form-panel">
-    <h3>Поиск офферов</h3>
-    <form [formGroup]="searchForm">
-      <mat-form-field>
-        <mat-label>Поиск по названию</mat-label>
-        <input matInput placeholder="Мастшабирование бизнеса" formControlName="titleFilter">
-      </mat-form-field>
-
-      <mat-form-field>
-        <input type="text" placeholder="Сфера бизнеса" aria-label="Сфера бизнеса" matInput
-               formControlName="businessAreaFilter" [matAutocomplete]="businessArea">
-        <mat-autocomplete #businessArea="matAutocomplete">
-          <mat-option *ngFor="let category of filteredBusinessArea$ | async" [value]="category.name">
-            {{category.name}}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
-
-
-      <mat-form-field>
-        <input type="text" placeholder="Населенный пункт" aria-label="Населенный пункт" matInput
-               formControlName="cityFilter" [matAutocomplete]="cities">
-        <mat-autocomplete #cities="matAutocomplete">
-          <mat-option *ngFor="let city of filteredCities$ | async" [value]="city.name">
-            {{city.name}}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
-
-      <div>
-        <button class="button-primary button-white" (click)="clearFilterForm()">Сбросить</button>
-        <button class="button-primary" (click)="applyFilter()">Искать</button>
-      </div>
-    </form>
-  </div>
-
   <section class="offers-block">
     <div class="title">
-      <h2>Актуальные офферы</h2>
+      <h2>Свежие офферы</h2>
     </div>
 
     <div class="offers-list">
-        <app-offer-card *ngFor="let offer of (filteredOffers$ ? filteredOffers$ : popularOffers$) | async" [offer]="offer"></app-offer-card>
+        <app-offer-card *ngFor="let offer of latestOffers$ | async" [offer]="offer"></app-offer-card>
     </div>
 
-    <a class="more-offers link-underline" (click)="loadNextOffersChunk()">Больше офферов</a>
+    <a class="more-offers link-underline" [routerLink]="['/offers-page']">Больше офферов</a>
+  </section>
 
+  <section class="about-platform-block">
+    <h2>О платформе</h2>
+    <p>Есть огромное множество людей с разными идеями и неординарным видением их осуществления. Но порой реализовать новую идею в одиночку не по силам даже самым отчаянным энтузиастам. Причиной этого могут быть самые различные факторы, одним из которых является отсутствие определенных ресурсов. Начинаете ли Вы свой проект с нуля или уже являетесь владельцем работающего бизнеса, для развития, масштабирования и расширения рынка Вам понадобятся финансовые, интеллектуальные или социальные ресурсы, которые могут оказаться недоступны в нужный момент. Для того, чтобы быстро и эффективно претворять идею в жизнь, всегда необходима чья-то помощь. Взаимопомощь и поиск общей выгоды - эти два явления всегда были и остаются одними из главных двигателей успеха во всех сферах деятельности.</p>
+    <p>В связи с этим команда проекта "BizMate" поставила перед собой крайне значимую и амбициозную задачу - создание онлайн платформы, где начинающие предприниматели и опытные деятели бизнеса могут искать, предлагать и обменивать разного рода ценностями и услугами для получения взаимной выгоды и дополнительного импульса к развитию своего дела. Мы продолжаем развивать наш сервис с той целью, чтобы сделать этот процесс максимально эффективным и удобным для всех его участников. Станьте частью платформы "BizMate" и начните использовать эффект взаимопомощи для собственного развития уже сейчас!</p>
+    <img src="/assets/img/hands.svg" alt="Партнерство BizMate"/>
   </section>
 
 </main>
