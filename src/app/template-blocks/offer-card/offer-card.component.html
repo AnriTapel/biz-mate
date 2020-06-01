@@ -8,7 +8,7 @@
       </div>
 
       <div class="title-and-author">
-        <h3>{{offer.title}}</h3>
+        <h3 [routerLink]="['/offer/'+offer.offerId]">{{offer.title}}</h3>
         <span>{{offer.displayName}}</span>
       </div>
 

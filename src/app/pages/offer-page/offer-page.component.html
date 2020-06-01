@@ -61,6 +61,16 @@
         <h3>Контакты</h3>
         <p *ngIf="offer.phone">Номер телефона: <strong>{{offer.phone}}</strong></p>
         <p *ngIf="offer.email">E-mail: <strong>{{offer.email}}</strong></p>
+        <div *ngIf="isContactMethodSelected()" class="prefered-contact-methods">
+          <span>Предпочетаемые способы свзяи:</span>
+          <div>
+            <img *ngIf="offer.contactMethods.email" src="/assets/img/email.svg" title="Электронная пота" alt="Электронная пота"/>
+            <img *ngIf="offer.contactMethods.phone" src="/assets/img/phone.svg" title="Телефонный звонок" alt="Телефонный звонок"/>
+            <img *ngIf="offer.contactMethods.whatsapp" src="/assets/img/whatsapp.svg" title="WhatsApp" alt="WhatsApp"/>
+            <img *ngIf="offer.contactMethods.telegram" src="/assets/img/telegram.svg" title="Telegram" alt="Telegram"/>
+            <img *ngIf="offer.contactMethods.viber" src="/assets/img/viber.svg" title="Viber" alt="Viber"/>
+          </div>
+        </div>
       </div>
 
       <button class="button-primary button-primary-large">Откликнуться</button>

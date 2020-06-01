@@ -36,6 +36,7 @@ import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { NotificationComponent } from './dialogs/notification/notification.component';
 import { NotificationBarComponent } from './template-blocks/notification-bar/notification-bar.component';
 import { OffersPageComponent } from './pages/offers-page/offers-page.component';
+import { PhoneMaskDirective } from './directives/phone-mask/phone-mask.directive';
 
 export function appInitFactory(auth: AuthService) {
   return (): Promise<any> => {
@@ -61,7 +62,8 @@ export function appInitFactory(auth: AuthService) {
     NotFoundComponent,
     NotificationComponent,
     NotificationBarComponent,
-    OffersPageComponent
+    OffersPageComponent,
+    PhoneMaskDirective
   ],
   imports: [
     BrowserModule,

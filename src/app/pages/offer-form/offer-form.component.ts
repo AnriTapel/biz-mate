@@ -31,6 +31,13 @@ export class OfferFormComponent implements OnInit {
   filteredCities$: Observable<City[]>;
   fieldsLabels: any = null;
   attacheEmail: boolean = true;
+  contactMethods: any = {
+    email: true,
+    phone: true,
+    whatsapp: false,
+    telegram: false,
+    viber: false
+  };
 
   isFormValid: boolean = true;
   offerType = OfferTypes;
@@ -49,7 +56,7 @@ export class OfferFormComponent implements OnInit {
       desc: new FormControl(offerData.desc, [Validators.required]),
       experience: new FormControl(offerData.experience),
       conditions: new FormControl(offerData.conditions),
-      phone: new FormControl(offerData.phone),
+      phone: new FormControl(offerData.phone, [Validators.required, Validators.pattern(/^\+7 \(\d{3}\)\s\d{3}-\d{4}$/)])
     });
 
     this.newOfferForm.valueChanges.subscribe(() => this.isFormValid = true);
@@ -94,6 +101,11 @@ export class OfferFormComponent implements OnInit {
     return this.currentType == this.offerType.NEED_INVESTMENTS || this.currentType == this.offerType.HAVE_INVESTMENTS;
   }
 
+  isPhoneValid(): boolean {
+    const phone = this.newOfferForm.controls['phone'];
+    return phone.value && phone.value.length && phone.status === 'VALID';
+  }
+
   clearForm(): void {
     this.newOfferForm.reset();
   }
@@ -119,6 +131,8 @@ export class OfferFormComponent implements OnInit {
       offerData['conditions'] = offer.conditions || '';
       offerData['phone'] = offer.phone || null;
       offerData['city'] = AppService.getCityByFiledValue('id', offer.city).name || '';
+      this.contactMethods = offer.contactMethods || this.contactMethods;
+      this.attacheEmail = !!offerData['email'];
     }
 
     return offerData;
@@ -137,7 +151,7 @@ export class OfferFormComponent implements OnInit {
   }
 
   sendOffer(): Promise<void> {
-    let offerData = this.newOfferForm.getRawValue();
+    let offerData: Offer = this.newOfferForm.getRawValue();
 
     if (this.newOfferForm.status == "INVALID") {
       this.isFormValid = false;
@@ -153,6 +167,9 @@ export class OfferFormComponent implements OnInit {
     offerData.offerId = this.editOfferId || this.db.createId();
     offerData.email = this.attacheEmail ? this.auth.user.email : null;
     offerData.photoURL = this.auth.user.photoURL || AppService.getDefaultAvatar();
+    if (!this.attacheEmail)
+      this.contactMethods.email = false;
+    offerData.contactMethods = this.contactMethods;
 
     let ref = this.db.collection('/offers');
 

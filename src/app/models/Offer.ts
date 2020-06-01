@@ -13,7 +13,8 @@ export interface Offer {
   capital?: Array<number>;
   conditions?: string;
   experience?: string;
-  phone?: string;
+  phone: string;
   email?: string;
   photoURL?: string;
+  contactMethods: any;
 }

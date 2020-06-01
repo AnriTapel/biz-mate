@@ -56,4 +56,15 @@ export class OfferPageComponent implements OnInit {
   getExperienceLabel(): string {
     return AppService.offerFieldsLabels[this.offer.type - 1].experience;
   }
+
+  isContactMethodSelected(): boolean {
+    if (!this.offer.contactMethods)
+      return false;
+
+    for (let key of Object.keys(this.offer.contactMethods)){
+      if (this.offer.contactMethods[key])
+        return true;
+    }
+    return false;
+  }
 }

@@ -65,8 +65,25 @@
 
       <mat-form-field>
         <mat-label>Номер телефона</mat-label>
-        <input matInput formControlName="phone">
+        <input matInput id="tel" formControlName="phone" placeholder="+7 (999) 999-9999" phoneMask maxlength="17"
+               [preValue]="newOfferForm.value.phone" [phoneControl]="newOfferForm.controls['phone']"/>
       </mat-form-field>
+
+      <div *ngIf="isPhoneValid()" class="prefered-contact-methods">
+        <span>Предпочетаемые способы свзяи:</span>
+        <div>
+          <img *ngIf="attacheEmail" src="/assets/img/email.svg" title="Электронная пота" alt="Электронная пота"
+               (click)="contactMethods.email = !contactMethods.email" [style.opacity]="contactMethods.email ? 1 : .3"/>
+          <img src="/assets/img/phone.svg" title="Телефонный звонок" alt="Телефонный звонок"
+               (click)="contactMethods.phone = !contactMethods.phone" [style.opacity]="contactMethods.phone ? 1 : .3"/>
+          <img src="/assets/img/whatsapp.svg" title="WhatsApp" alt="WhatsApp"
+               (click)="contactMethods.whatsapp = !contactMethods.whatsapp" [style.opacity]="contactMethods.whatsapp ? 1 : .3"/>
+          <img src="/assets/img/telegram.svg" title="Telegram" alt="Telegram"
+               (click)="contactMethods.telegram = !contactMethods.telegram" [style.opacity]="contactMethods.telegram ? 1 : .3"/>
+          <img src="/assets/img/viber.svg" title="Viber" alt="Viber"
+               (click)="contactMethods.viber = !contactMethods.viber" [style.opacity]="contactMethods.viber ? 1 : .3"/>
+        </div>
+      </div>
 
       <mat-checkbox class="full-width-field" (change)="attacheEmail = !attacheEmail" [checked]="attacheEmail">
         &nbsp;Указать Ваш E-mail в качестве контактной информации
