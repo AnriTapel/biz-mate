@@ -1,0 +1,22 @@
+<main>
+  <p>Вы можете задать любой интересующий Вас вопрос или описать возникшую проблему ниже. Наш оператор ознакомится с Вашим письмом и в течение 24-х часов ответит по указанному в форме адресу электронной почты.</p>
+
+  <form class="highlight-box" [formGroup]="feedbackForm">
+    <mat-form-field>
+      <mat-label>Ваше имя</mat-label>
+      <input matInput formControlName="name">
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Email для ответа</mat-label>
+      <input matInput formControlName="email">
+    </mat-form-field>
+
+    <mat-form-field class="full-width-field">
+      <mat-label>Сообщение</mat-label>
+      <textarea matInput rows="6" formControlName="text"></textarea>
+    </mat-form-field>
+
+    <button class="button-primary" (click)="sendForm()">Отправить</button>
+  </form>
+</main>

@@ -83,7 +83,8 @@ h1, h2, h3, h4, p, span, a, label, mat-label, div {
   background-color: $main-theme-color !important;
 }
 
-input.mat-input-element{
+input.mat-input-element,
+textarea.mat-input-element{
   caret-color: $main-theme-color !important;
 }
 

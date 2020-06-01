@@ -17,7 +17,7 @@
         <button class="button-primary button-circle" (click)="visibleMenu = !visibleMenu">{{authControlText}}</button>
         <ul class="header-menu" (mouseleave)="visibleMenu = false" [style.display]="visibleMenu ? 'flex' : 'none'">
           <li (click)="openProfile()">Личный кабинет</li>
-          <li>Помощь</li>
+          <li [routerLink]="['/feedback']">Помощь</li>
           <li (click)="logOut()">Выход</li>
         </ul>
       </div>

@@ -1,0 +1,28 @@
+p, form {
+  width: 50%;
+  max-width: 650px;
+  min-width: 400px;
+}
+
+p {
+   margin: 4em auto 3em;
+   text-align: center;
+   line-height: 22px;
+}
+
+form {
+  display: grid;
+  grid-template: auto / 1fr 1fr;
+  grid-gap: 1em 2em;
+
+  padding: 3em;
+  margin: 0 auto 5em;
+
+  .full-width-field {
+    grid-column: 1 / 3;
+  }
+
+  button{
+    grid-column-start: 2;
+  }
+}
