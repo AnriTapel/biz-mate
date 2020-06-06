@@ -47,8 +47,7 @@ h2 {
     }
   }
 
-  .name {
-
+  .name, .email {
     & > div {
       width: $field-width-minus-edit;
       display: flex;
@@ -56,6 +55,22 @@ h2 {
       mat-form-field {
         width: calc(100% - 40px - 1.25em);
       }
+    }
+  }
+
+  @media screen and (max-width: 770px) {
+    grid-template: auto / 1fr;
+    grid-gap: 1em;
+    margin: 2em auto;
+
+    h2 {
+      grid-column: unset;
+      font-size: 20px;
+      margin-top: 1.5em;
+    }
+
+    & > div {
+      justify-content: center;
     }
   }
 }
@@ -72,5 +87,13 @@ h2 {
     font-size: 20px;
     color: #6b6b6b;
     margin-bottom: 1.5em;
+  }
+}
+
+#user-offers {
+  @media screen and (max-width: 770px) {
+    h2 {
+      font-size: 20px;
+    }
   }
 }

@@ -13,12 +13,13 @@
   .offer-card-header {
     position: relative;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
 
     .avatar-container{
       position: absolute;
       top: -35px;
       left: 20px;
+      flex-shrink: 0;
     }
 
     .title-and-author{
@@ -41,11 +42,30 @@
     }
 
     .date {
+      position: absolute;
+      top: -5px;
+      right: 0;
+
       span {
         color: rgba(46, 121, 144, 0.6);
         font-family: "Raleway-Light";
         font-size: 14px;
         line-height: 17px;
+      }
+    }
+
+    @media screen and (max-width: 770px) {
+      .avatar-container {
+        position: initial;
+      }
+
+      .title-and-author {
+        margin-left: 1em;
+        height: auto;
+
+        h3 {
+          max-height: none;
+        }
       }
     }
   }

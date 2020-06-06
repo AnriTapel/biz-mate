@@ -16,8 +16,6 @@ footer {
   }
 
   .footer-container {
-    max-width: 1190px;
-    width: 80%;
     height: 100px;
     margin: auto;
     padding-bottom: 2em;
@@ -32,7 +30,7 @@ footer {
       justify-content: space-between;
     }
 
-    .footer_logo_and_copyright{
+    .footer_logo_and_copyright {
       align-items: flex-start;
 
       img {
@@ -50,7 +48,7 @@ footer {
       flex-direction: row;
       align-items: center;
 
-      a{
+      a {
         font-family: 'Raleway-SemiBold';
         cursor: pointer;
         margin: 0 20px;
@@ -74,6 +72,35 @@ footer {
       p {
         font-size: 14px;
         color: #fff;
+      }
+    }
+
+    @media screen and (max-width: 770px) {
+      height: auto;
+      flex-wrap: wrap;
+
+      div {
+        height: auto;
+      }
+
+      .nav-buttons {
+        order: 0;
+        flex-wrap: wrap;
+        flex-basis: 100%;
+
+        a {
+          margin: 0 0 .75em;
+        }
+      }
+
+      .email_and_offer_button {
+        order: 1;
+        align-items: flex-start;
+        margin: 1.5em 0 2.5em;
+      }
+
+      .footer_logo_and_copyright {
+        order: 2;
       }
     }
   }

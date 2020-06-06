@@ -6,7 +6,7 @@ export enum DialogConfigType {
 export class MatDialogConfig {
 
   static readonly narrowDialogWindow = {
-    width: '50vw',
+    width: '90vw',
     maxWidth: '400px',
     minWidth: '200px',
     maxHeight: '90vh',
@@ -17,7 +17,7 @@ export class MatDialogConfig {
   };
 
   static readonly  wideDialogWindow = {
-    width: '80vw',
+    width: '90vw',
     maxWidth: '1020px',
     minWidth: '400px',
     maxHeight: '90vh',

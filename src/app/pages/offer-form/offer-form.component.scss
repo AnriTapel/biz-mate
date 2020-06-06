@@ -1,9 +1,5 @@
 $main-theme-color: #2E7990;
 
-main {
-
-}
-
 .offer-type-panel {
 
   h2 {
@@ -31,6 +27,22 @@ main {
     font-family: 'Raleway-SemiBold';
   }
 
+  @media screen and (max-width: 770px) {
+    h2 {
+      text-align: left;
+      font-size: 20px;
+      margin-bottom: 1em;
+    }
+
+    & > div {
+      height: 35px;
+      line-height: 35px;
+
+      &:not(:last-child){
+        margin-bottom: 1em;
+      }
+    }
+  }
 }
 
 .new-offer-form {
@@ -38,8 +50,10 @@ main {
   grid-template: auto / 1fr 1fr;
   grid-gap: 1em 2em;
 
-  h3 {
-    color: $main-theme-color;
+  .header-and-clear {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .full-width-field {
@@ -80,6 +94,14 @@ main {
       }
     }
   }
+
+  @media screen and (max-width: 770px) {
+    grid-template: auto / 1fr;
+
+    .full-width-field {
+      grid-column: unset;
+    }
+  }
 }
 
 mat-checkbox {
@@ -97,5 +119,9 @@ mat-checkbox {
   p {
     margin-bottom: 2em;
     margin-top: 0;
+  }
+
+  @media screen and (max-width: 770px) {
+    grid-column: unset;
   }
 }

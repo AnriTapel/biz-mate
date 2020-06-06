@@ -15,14 +15,12 @@
       font-size: 13px;
       margin: 1em 0 0;
       line-height: 15px;
-      color: #2E7990;
     }
 
     h1 {
       font-family: Raleway-SemiBold;
       font-size: 63px;
       line-height: 75px;
-      color: #2E7990;
       margin: 0;
     }
 
@@ -31,7 +29,6 @@
       width: 50%;
       min-width: 350px;
       line-height: 23px;
-      color: #2E7990;
       margin-bottom: 2em;
     }
   }
@@ -42,11 +39,43 @@
     height: 100%;
     top: 0;
     right: 0;
-    background-image: url('/assets/img/home_page_img_@2.png');
+    background-image: url('/assets/img/home_page_img.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: top right;
     z-index: 0;
+  }
+
+  @media screen and (max-width: 770px) {
+    margin-top: 1.5em;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+
+    .text{
+      width: 90%;
+      margin: 0 auto;
+      min-width: unset;
+      max-width: 400px;
+      text-align: center;
+
+      h1 {
+        font-size: 48px;
+        line-height: 52px;
+        margin-top: 15px;
+      }
+
+      p:nth-of-type(2) {
+        margin: 1em auto;
+        width: 100%;
+        min-width: unset;
+        max-width: 400px;
+      }
+    }
+
+    .image-block{
+      display: none;
+    }
   }
 }
 
@@ -81,6 +110,12 @@
     display: block;
     width: 150px;
     margin: auto;
+  }
+
+  @media screen and (max-width: 770px) {
+    p {
+      line-height: 22px;
+    }
   }
 }
 

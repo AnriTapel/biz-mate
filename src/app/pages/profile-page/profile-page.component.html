@@ -25,15 +25,17 @@
     </div>
 
     <div class="email">
-      <mat-form-field *ngIf="editableFields.email" class="example-full-width">
-        <mat-label>E-mail</mat-label>
-        <input matInput autofocus formControlName="email" (change)="editUserData('email')">
-      </mat-form-field>
+      <div>
+        <mat-form-field *ngIf="editableFields.email" class="example-full-width">
+          <mat-label>E-mail</mat-label>
+          <input matInput autofocus formControlName="email" (change)="editUserData('email')">
+        </mat-form-field>
 
-      <mat-form-field *ngIf="!editableFields.email" class="example-full-width">
-        <mat-label>E-mail</mat-label>
-        <input matInput disabled placeholder="Не указан" [value]="userDataForm.getRawValue().email">
-      </mat-form-field>
+        <mat-form-field *ngIf="!editableFields.email" class="example-full-width">
+          <mat-label>E-mail</mat-label>
+          <input matInput disabled placeholder="Не указан" [value]="userDataForm.getRawValue().email">
+        </mat-form-field>
+      </div>
 
       <img class="edit-field" src="/assets/img/edit.svg" alt="Изменить поле"
            [style.opacity]="editableFields.email ? 1 : 0.4" (click)="switchEditableField('email')"/>

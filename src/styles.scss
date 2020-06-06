@@ -64,14 +64,21 @@ router-outlet {
   flex: 1 0 auto;
 }
 
-main {
+main, header, .footer-container {
   max-width: 1190px;
   width: 80%;
+
+  @media screen and (max-width: 770px) {
+    width: 90%;
+  }
+}
+
+main {
   margin: 20px auto 40px;
   flex: 1;
 }
 
-app-header, app-footer {
+app-header, app-footer, app-offer-card {
   z-index: 1;
 }
 
@@ -165,7 +172,7 @@ textarea.mat-input-element{
 
 .aside-section-block {
   display: grid;
-  grid-template-columns: 1fr 2.5fr;
+  grid-template-columns: 1.5fr 2.5fr;
   grid-column-gap: 4em;
   margin: 2em auto 5em;
 
@@ -174,6 +181,15 @@ textarea.mat-input-element{
     background-color: #FFF;
     border-radius: 5px;
     box-shadow: inset -4px -4px 10px rgba(228, 246, 255, 0.2), inset 4px 4px 10px #FCFFFF, inset -4px 4px 10px rgba(228, 246, 255, 0.25), inset 4px -4px 10px #E4F6FF, inset -1px 4px 10px #E4F6FF, inset 1px -4px 10px #FCFFFF;
+  }
+
+  @media screen and (max-width: 770px) {
+    grid-template-columns: 1fr;
+    margin: 1em auto 3em;
+
+    section {
+      padding: 1.5em 2em;
+    }
   }
 }
 
@@ -236,6 +252,12 @@ textarea.mat-input-element{
   box-shadow: inset -4px -4px 10px rgba(228, 246, 255, 0.5), inset 4px 4px 10px #FCFFFF, inset -4px 4px 10px rgba(228, 246, 255, 0.5), inset 4px -4px 10px rgba(228, 246, 255, 0.5), inset -1px 4px 10px rgba(228, 246, 255, 0.5);
   border-radius: 5px;
   border: 1px solid rgba(228, 246, 255, 0.8);
+
+  @media screen and (max-width: 770px) {
+    width: calc(90% - 4em);
+    padding: 1em 2em;
+    min-width: unset;
+  }
 }
 
 .offers-list{
@@ -243,6 +265,11 @@ textarea.mat-input-element{
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   grid-gap: 2em;
+
+  @media screen and (max-width: 770px) {
+    grid-template-columns: 1fr;
+    margin-top: 2em;
+  }
 }
 
 .avatar-container {
@@ -266,4 +293,12 @@ textarea.mat-input-element{
   background: $main-theme-color !important;
 }
 
+@media screen and (max-width: 770px) {
+  app-home-page {
+    background-image: url('/assets/img/watermark.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: top center;
+  }
+}
 

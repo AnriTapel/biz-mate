@@ -27,6 +27,7 @@ export class OffersPageComponent implements OnInit {
   searchForm: FormGroup;
   filteredBusinessArea$: Observable<BusinessArea[]>;
   filteredCities$: Observable<City[]>;
+  isSearchFormVisible: boolean = false;
 
   constructor(private appService: AppService, private db: AngularFirestore) { }
 

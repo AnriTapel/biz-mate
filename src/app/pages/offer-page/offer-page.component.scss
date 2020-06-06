@@ -1,9 +1,5 @@
 $main-theme-color: #2E7990;
 
-main {
-  grid-template-columns: 1.5fr 2.5fr;
-}
-
 .offer-info-card{
   display: flex;
   flex-direction: column;
@@ -49,15 +45,17 @@ main {
       margin-bottom: 1.5em;
     }
   }
+
+  @media screen and (max-width: 770px) {
+    order: 1;
+    margin-top: 1em;
+    padding: 1.5em 2em;
+  }
 }
 
 .offer-main-data{
 
-  h2 {
-    margin-bottom: 2.5em;
-  }
-
-  & > div:not(:last-child) {
+  h2, & > div:not(:last-child) {
     margin-bottom: 2em;
   }
 
@@ -95,5 +93,11 @@ main {
 
   button {
     float: right;
+  }
+
+  @media screen and (max-width: 770px) {
+    h2, & > div:not(:last-child) {
+      margin-bottom: 1em;
+    }
   }
 }

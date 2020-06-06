@@ -1,10 +1,11 @@
 $main-theme-color: #2E7990;
 
 header {
+  margin: 0 auto;
 
   nav {
     height: 75px;
-    padding: 1em 10% .25em;
+    padding: 1em 0 .25em;
     display: flex;
     justify-content: space-between;
 
@@ -111,6 +112,33 @@ header {
         border-width: 10px;
         right: 7px;
         margin-left: -10px;
+      }
+    }
+  }
+
+  @media screen and (max-width: 770px) {
+    nav {
+      height: auto;
+      flex-wrap: wrap;
+
+      .logo-block {
+        flex-basis: 100%;
+        justify-content: center;
+        margin-bottom: 1.5em;
+
+        img {
+          height: 35px;
+          transform: translateX(10px);
+        }
+      }
+
+      .nav-buttons {
+        justify-content: flex-start;
+
+        a {
+          font-size: 12px;
+          margin: 0 10px;
+        }
       }
     }
   }

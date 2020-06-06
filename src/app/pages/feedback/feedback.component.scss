@@ -1,21 +1,20 @@
 p, form {
-  width: 50%;
+  //width: 50%;
   max-width: 650px;
   min-width: 400px;
 }
 
 p {
-   margin: 4em auto 3em;
-   text-align: center;
-   line-height: 22px;
+  width: 50%;
+  margin: 4em auto 3em;
+  text-align: center;
+  line-height: 22px;
 }
 
 form {
   display: grid;
   grid-template: auto / 1fr 1fr;
   grid-gap: 1em 2em;
-
-  padding: 3em;
   margin: 0 auto 5em;
 
   .full-width-field {
@@ -24,5 +23,26 @@ form {
 
   button{
     grid-column-start: 2;
+  }
+}
+
+@media screen and (max-width: 770px) {
+  p {
+    width: calc(90% - 3em);
+    min-width: unset;
+    margin: 2em auto;
+  }
+
+  form {
+    grid-template: auto / 1fr;
+    min-width: unset;
+  }
+
+  .full-width-field {
+    grid-column: unset !important;
+  }
+
+  button{
+    grid-column-start: unset !important;
   }
 }
