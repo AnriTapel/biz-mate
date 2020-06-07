@@ -16,7 +16,7 @@ export class AuthService {
   constructor(private afAuth: AngularFireAuth) {
     this.user$ = this.afAuth.authState.pipe(
       switchMap(user => {
-        if (user) {
+        if (user && !user.isAnonymous) {
           this.user = {
             displayName: user.displayName, uid: user.uid,
             email: user.email, photoURL: user.photoURL,
@@ -32,15 +32,19 @@ export class AuthService {
     return new Promise<void>((resolve, reject) => {
       this.afAuth.auth.useDeviceLanguage();
       let handler = this.afAuth.authState.subscribe((userData) => {
-        if (userData) {
+        if (userData && !userData.isAnonymous) {
           this.user = {
             displayName: userData.displayName, uid: userData.uid,
             email: userData.email, photoURL: userData.photoURL,
             emailVerified: userData.emailVerified
           };
           resolve();
+        } else if (!userData) {
+          this.afAuth.auth.signInAnonymously().then(() => {
+            this.user = null;
+            resolve();
+          }).catch((err) => reject(err));
         } else {
-          this.user = null;
           resolve();
         }
         handler.unsubscribe();
@@ -140,6 +144,8 @@ export class AuthService {
 
   signOut() {
     this.user = null;
-    return this.afAuth.auth.signOut();
+    return this.afAuth.auth.signOut().then(() => {
+      this.afAuth.auth.signInAnonymously();
+    });
   }
 }

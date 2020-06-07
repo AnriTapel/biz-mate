@@ -20,7 +20,7 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit(): void {
     this.auth.user$.subscribe((res) => {
-      if (res) {
+      if (res && !res.isAnonymous) {
         this.loggedIn = true;
         this.authControlText = this.auth.user.displayName.substr(0, 1);
       } else {
