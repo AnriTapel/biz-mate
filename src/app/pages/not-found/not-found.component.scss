@@ -3,6 +3,10 @@ $main-theme-color: #2E7990;
 h1 {
   text-align: center;
   color: $main-theme-color;
+
+  @media screen and (max-width: 770px) {
+    font-size: 28px;
+  }
 }
 
 img {

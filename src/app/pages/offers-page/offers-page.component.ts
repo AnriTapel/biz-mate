@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Observable, of, zip} from "rxjs";
 import {Offer} from "../../models/Offer";
 import {FormControl, FormGroup} from "@angular/forms";
@@ -7,7 +7,8 @@ import {City} from "../../models/City";
 import {AppService} from "../../services/app/app.service";
 import {map, startWith} from "rxjs/operators";
 import {AngularFirestore} from "@angular/fire/firestore";
-import * as _ from "lodash";
+import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
+import {Messages} from "../../models/Messages";
 
 @Component({
   selector: 'app-offers-page',
@@ -19,44 +20,53 @@ export class OffersPageComponent implements OnInit {
   private readonly OFFER_QUERY_LIMIT: number = 4;
   private lastVisibleOffer: any = null;
   allOffersLoaded: boolean = false;
+  emptyFilterResult: boolean = false;
 
+  offersRef: any;
   sortedOffers$: Observable<any[]>;
   filteredOffers$: Observable<Offer[]>;
 
   // Панель поиска
   searchForm: FormGroup;
+  filteredOfferTypes$: Observable<any[]>;
   filteredBusinessArea$: Observable<BusinessArea[]>;
   filteredCities$: Observable<City[]>;
   isSearchFormVisible: boolean = false;
 
-  constructor(private appService: AppService, private db: AngularFirestore) { }
+  constructor(private appService: AppService, private db: AngularFirestore, private notificationService: NotificationBarService) {
+  }
 
   ngOnInit(): void {
     this.searchForm = new FormGroup({
-      titleFilter: new FormControl(null),
-      businessAreaFilter: new FormControl(null, [AppService.businessAreaFieldValidator()]),
-      cityFilter: new FormControl(null, [AppService.cityFieldValidator()])
+      type: new FormControl(null, [AppService.offerTypeValidator()]),
+      businessArea: new FormControl(null, [AppService.businessAreaFieldValidator()]),
+      city: new FormControl(null, [AppService.cityFieldValidator()])
     });
 
-    this.filteredCities$ = this.searchForm.controls.cityFilter.valueChanges
+    this.filteredOfferTypes$ = this.searchForm.controls.type.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => AppService._filterOfferTypes(value))
+      );
+
+    this.filteredCities$ = this.searchForm.controls.city.valueChanges
       .pipe(
         startWith(''),
         map(value => AppService._filterCities(value))
       );
 
-    this.filteredBusinessArea$ = this.searchForm.controls.businessAreaFilter.valueChanges
+    this.filteredBusinessArea$ = this.searchForm.controls.businessArea.valueChanges
       .pipe(
         startWith(''),
         map(value => AppService._filterCategories(value))
       );
-
+    this.offersRef = this.db.collection('offers').ref;
     this.getInitialOffers();
-    scroll(0,0);
+    scroll(0, 0);
   }
 
   async getInitialOffers(): Promise<void> {
-    let initialQuery = await this.db.collection<Offer>('/offers').ref
-      .orderBy('date', 'desc').limit(this.OFFER_QUERY_LIMIT).get();
+    let initialQuery = await this.offersRef.orderBy('date', 'desc').limit(this.OFFER_QUERY_LIMIT).get();
 
     let offers = [];
 
@@ -72,52 +82,77 @@ export class OffersPageComponent implements OnInit {
     if (this.searchForm.status === 'INVALID')
       return;
 
-    let filterResults = {
-      titleFiltered: [],
-      areaFiltered: [],
-      cityFiltered: []
-    };
+    this.emptyFilterResult = false;
+
+    let formValue = this.searchForm.getRawValue();
+    let queryParams = [];
+
+    if (formValue.type && formValue.type.length)
+      queryParams.push('type', AppService.getOfferTypeByFiledValue('title', formValue.type).id);
+
+    if (formValue.city && formValue.city.length)
+      queryParams.push('city', AppService.getCityByFiledValue('name', formValue.city).id);
+
+    if (formValue.businessArea && formValue.businessArea.length)
+      queryParams.push('city', AppService.getBusinessAreaByFiledValue('name', formValue.businessArea).id);
 
     try {
-      const filterValues = this.searchForm.getRawValue();
-      const offersRef = this.db.collection('offers').ref;
-
-      if (filterValues.titleFilter && filterValues.titleFilter !== "") {
-        let titleRes = await offersRef.where('title', '>=', filterValues.titleFilter).get();
-
-        if (!titleRes.empty)
-          titleRes.forEach(it => filterResults.titleFiltered.push(it.data()))
+      switch (queryParams.length) {
+        case 2:
+          await this.applyOneParamFilter(queryParams[0], queryParams[1]);
+          break;
+        case 4:
+          await this.applyTwoParamFilter(queryParams[0], queryParams[1], queryParams[2], queryParams[3]);
+          break;
+        default:
+          await this.applyThreeParamFilter(queryParams[0], queryParams[1], queryParams[2], queryParams[3], queryParams[4], queryParams[5]);
+          break;
       }
-
-      if (filterValues.businessAreaFilter && filterValues.businessAreaFilter !== "") {
-        let areaRes = await offersRef
-          .where('businessArea', 'array-contains', AppService.getBusinessAreaByFiledValue('name', filterValues.businessAreaFilter).id).get();
-
-        if (!areaRes.empty) {
-          areaRes.forEach(it => filterResults.areaFiltered.push(it.data()))
-        }
-      }
-
-      if (filterValues.cityFilter && filterValues.cityFilter !== "") {
-        let cityRes = await offersRef
-          .where('city', '>=', AppService.getCityByFiledValue('name', filterValues.cityFilter).id).get();
-
-        if (!cityRes.empty)
-          cityRes.forEach(it => filterResults.cityFiltered.push(it.data()))
-      }
-
-      if (!filterResults.cityFiltered.length && !filterResults.areaFiltered.length && !filterResults.titleFiltered)
-        return;
-
-      this.filteredOffers$ = of(_.union<Offer>(filterResults.titleFiltered, filterResults.areaFiltered, filterResults.cityFiltered)
-        .sort((a,b) => b.date - a.date));
     } catch (e) {
-      console.error(e);
+      this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false);
+      this.filteredOffers$ = null;
+    }
+  }
+
+  async applyOneParamFilter(param: string, value: number): Promise<void> {
+    let resp = await this.offersRef.where(param, '==', value).get();
+    let filterRes = [];
+    if (!resp.empty) {
+      resp.forEach(it => filterRes.push(it.data()));
+      this.filteredOffers$ = of<Offer[]>(filterRes.sort((a,b) => b.date - a.date));
+    } else {
+      this.emptyFilterResult = true;
+      this.filteredOffers$ = null;
+    }
+  }
+
+  async applyTwoParamFilter(param_1, value_1, param_2, value_2): Promise<void> {
+    let resp = await this.offersRef.where(param_1, '==', value_1).where(param_2, '==', value_2).get();
+    let filterRes = [];
+    if (!resp.empty) {
+      resp.forEach(it => filterRes.push(it.data()));
+      this.filteredOffers$ = of<Offer[]>(filterRes.sort((a,b) => b.date - a.date));
+    } else {
+      this.emptyFilterResult = true;
+      this.filteredOffers$ = null;
+    }
+  }
+
+  async applyThreeParamFilter(param_1, value_1, param_2, value_2, param_3, value_3): Promise<void> {
+    let resp = await this.offersRef.where(param_1, '==', value_1).where(param_2, '==', value_2)
+      .where(param_3, '==', value_3).get();
+    let filterRes = [];
+    if (!resp.empty) {
+      resp.forEach(it => filterRes.push(it.data()));
+      this.filteredOffers$ = of<Offer[]>(filterRes.sort((a,b) => b.date - a.date));
+    } else {
+      this.emptyFilterResult = true;
       this.filteredOffers$ = null;
     }
   }
 
   clearFilterForm(): void {
+    this.emptyFilterResult = false;
     this.searchForm.reset();
 
     Object.keys(this.searchForm.controls).forEach(key => {

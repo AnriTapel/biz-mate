@@ -9,13 +9,18 @@
     <!-- Desktop form -->
     <form class="desktop-form" [formGroup]="searchForm">
       <mat-form-field>
-        <mat-label>Поиск по названию</mat-label>
-        <input matInput placeholder="Мастшабирование бизнеса" formControlName="titleFilter">
+        <input type="text" placeholder="Тип объявления" aria-label="Тип объявления" matInput
+               formControlName="type" [matAutocomplete]="offerType">
+        <mat-autocomplete #offerType="matAutocomplete">
+          <mat-option *ngFor="let type of filteredOfferTypes$ | async" [value]="type.title">
+            {{type.title}}
+          </mat-option>
+        </mat-autocomplete>
       </mat-form-field>
 
       <mat-form-field>
         <input type="text" placeholder="Сфера бизнеса" aria-label="Сфера бизнеса" matInput
-               formControlName="businessAreaFilter" [matAutocomplete]="businessArea">
+               formControlName="businessArea" [matAutocomplete]="businessArea">
         <mat-autocomplete #businessArea="matAutocomplete">
           <mat-option *ngFor="let category of filteredBusinessArea$ | async" [value]="category.name">
             {{category.name}}
@@ -26,7 +31,7 @@
 
       <mat-form-field>
         <input type="text" placeholder="Населенный пункт" aria-label="Населенный пункт" matInput
-               formControlName="cityFilter" [matAutocomplete]="cities">
+               formControlName="city" [matAutocomplete]="cities">
         <mat-autocomplete #cities="matAutocomplete">
           <mat-option *ngFor="let city of filteredCities$ | async" [value]="city.name">
             {{city.name}}
@@ -43,13 +48,18 @@
     <!-- Mobile form -->
     <form class="mobile-form" *ngIf="isSearchFormVisible" [formGroup]="searchForm">
       <mat-form-field>
-        <mat-label>Поиск по названию</mat-label>
-        <input matInput placeholder="Мастшабирование бизнеса" formControlName="titleFilter">
+        <input type="text" placeholder="Тип объявления" aria-label="Тип объявления" matInput
+               formControlName="type" [matAutocomplete]="offerType">
+        <mat-autocomplete #offerType="matAutocomplete">
+          <mat-option *ngFor="let type of filteredOfferTypes$ | async" [value]="type.title">
+            {{type.title}}
+          </mat-option>
+        </mat-autocomplete>
       </mat-form-field>
 
       <mat-form-field>
         <input type="text" placeholder="Сфера бизнеса" aria-label="Сфера бизнеса" matInput
-               formControlName="businessAreaFilter" [matAutocomplete]="businessArea">
+               formControlName="businessArea" [matAutocomplete]="businessArea">
         <mat-autocomplete #businessArea="matAutocomplete">
           <mat-option *ngFor="let category of filteredBusinessArea$ | async" [value]="category.name">
             {{category.name}}
@@ -60,7 +70,7 @@
 
       <mat-form-field>
         <input type="text" placeholder="Населенный пункт" aria-label="Населенный пункт" matInput
-               formControlName="cityFilter" [matAutocomplete]="cities">
+               formControlName="city" [matAutocomplete]="cities">
         <mat-autocomplete #cities="matAutocomplete">
           <mat-option *ngFor="let city of filteredCities$ | async" [value]="city.name">
             {{city.name}}
@@ -76,10 +86,17 @@
 
   </div>
 
-  <div class="offers-list">
+  <div *ngIf="!emptyFilterResult" class="offers-list">
     <app-offer-card *ngFor="let offer of (filteredOffers$ ? filteredOffers$ : sortedOffers$) | async" [offer]="offer"></app-offer-card>
   </div>
 
-  <a *ngIf="!allOffersLoaded && !filteredOffers$" class="more-offers link-underline" (click)="loadNextOffersChunk()">Больше офферов</a>
-  <img *ngIf="allOffersLoaded || filteredOffers$" class="all-offers-loaded" src="/assets/img/all_offers_loaded.svg" title="На этом все..." alt="На этом все..."/>
+  <div *ngIf="emptyFilterResult" class="empty-filter-result">
+    <img src="/assets/img/404.svg" alt="Не найдено"/>
+    <p>Не удалось найти ни одного объявления. Измените параметры поиска и попробуйте еще раз.</p>
+  </div>
+
+  <a *ngIf="!allOffersLoaded && !filteredOffers$ && !emptyFilterResult" class="more-offers link-underline"
+     (click)="loadNextOffersChunk()">Больше офферов</a>
+  <img *ngIf="(allOffersLoaded || filteredOffers$) && !emptyFilterResult" class="all-offers-loaded"
+       src="/assets/img/all_offers_loaded.svg" title="На этом все..." alt="На этом все..."/>
 </main>

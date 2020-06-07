@@ -60,6 +60,10 @@ export class AppService {
     return AppService.businessArea.filter(it => it[field] == value)[0] || null;
   }
 
+  public static getOfferTypeByFiledValue(field: string, value: any): any {
+    return AppService.offerTypes.filter(it => it[field] == value)[0] || null;
+  }
+
   public static _filterCities(value: string): any[] {
     if (value === null)
       value = '';
@@ -76,6 +80,14 @@ export class AppService {
     return AppService.businessArea.filter(option => option.name.toLowerCase().includes(filterValue));
   }
 
+  public static _filterOfferTypes(value: string): any[] {
+    if (value === null)
+      value = '';
+
+    const filterValue = value.toLowerCase();
+    return AppService.offerTypes.filter(option => option.title.toLowerCase().includes(filterValue));
+  }
+
   public static cityFieldValidator(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } | null => {
       const valid = AppService.cities.filter(it => it.name === control.value).length == 1;
@@ -86,6 +98,13 @@ export class AppService {
   public static businessAreaFieldValidator(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } | null => {
       const valid = AppService.businessArea.filter(it => it.name === control.value).length == 1;
+      return !control.value ? null : !valid ? {'validArea': {value: control.value}} : null;
+    };
+  }
+
+  public static offerTypeValidator(): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      const valid = AppService.offerTypes.filter(it => it.title === control.value).length == 1;
       return !control.value ? null : !valid ? {'validArea': {value: control.value}} : null;
     };
   }
