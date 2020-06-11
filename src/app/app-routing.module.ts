@@ -8,6 +8,7 @@ import {AuthGuardService} from "./services/auth-guard/auth-guard.service";
 import {NotFoundComponent} from "./pages/not-found/not-found.component";
 import {OffersPageComponent} from "./pages/offers-page/offers-page.component";
 import {FeedbackComponent} from "./pages/feedback/feedback.component";
+import {RulesComponent} from "./pages/rules/rules.component";
 
 
 
@@ -19,6 +20,7 @@ const routes: Routes = [
   {path: 'profile', component: ProfilePageComponent, pathMatch: "full", canActivate: [AuthGuardService]},
   {path: 'offer/:id', component: OfferPageComponent},
   {path: 'feedback', component: FeedbackComponent},
+  {path: 'rules', component: RulesComponent},
   {path: '**', component: NotFoundComponent}
 ];
 

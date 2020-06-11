@@ -15,6 +15,7 @@ import {LoginComponent} from "../login/login.component";
 export class SignUpComponent implements OnInit {
 
   signUpFormGroup: FormGroup;
+  acceptRules: boolean = true;
   hidePassword: boolean = true;
   errorMessage: string = null;
 

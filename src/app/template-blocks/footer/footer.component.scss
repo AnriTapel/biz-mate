@@ -104,4 +104,17 @@ footer {
       }
     }
   }
+
+  .rules-link {
+    flex-basis: 100%;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 2em;
+
+    a {
+      font-size: 12px;
+      text-decoration: #2E7990 underline;
+      cursor: pointer;
+    }
+  }
 }

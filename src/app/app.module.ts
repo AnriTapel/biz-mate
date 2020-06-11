@@ -38,6 +38,7 @@ import { NotificationBarComponent } from './template-blocks/notification-bar/not
 import { OffersPageComponent } from './pages/offers-page/offers-page.component';
 import { PhoneMaskDirective } from './directives/phone-mask/phone-mask.directive';
 import { FeedbackComponent } from './pages/feedback/feedback.component';
+import { RulesComponent } from './pages/rules/rules.component';
 
 export function appInitFactory(auth: AuthService) {
   return (): Promise<any> => {
@@ -65,7 +66,8 @@ export function appInitFactory(auth: AuthService) {
     NotificationBarComponent,
     OffersPageComponent,
     PhoneMaskDirective,
-    FeedbackComponent
+    FeedbackComponent,
+    RulesComponent
   ],
   imports: [
     BrowserModule,

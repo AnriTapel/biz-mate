@@ -218,16 +218,27 @@ textarea.mat-input-element{
     flex-direction: column;
   }
 
-  mat-form-field,
-  .full-width-action-buttons {
+  mat-form-field, mat-checkbox,
+  .full-width-action-buttons{
     display: flex;
     width: 80%;
     max-width: 450px;
   }
 
-  mat-form-field {
+  mat-form-field, mat-checkbox {
     flex-direction: column;
     margin: 1em auto 0;
+  }
+
+  mat-checkbox {
+    text-align: left;
+    margin-bottom: .5em;
+
+    span {
+      font-size: 12px;
+      line-height: 12px !important;
+      white-space: normal;
+    }
   }
 
   .full-width-action-buttons {

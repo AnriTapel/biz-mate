@@ -23,9 +23,12 @@
     </button>
   </mat-form-field>
 
+  <mat-checkbox (change)="acceptRules = !acceptRules" [checked]="acceptRules">
+    &nbsp;Ознакомлен и согласен с <a target="_blank" rel="noopener noreferrer" href="/rules">правилами размещения объявлений</a>
+  </mat-checkbox>
 </div>
 
 <div mat-dialog-actions class="full-width-action-buttons">
-  <button class="button-primary" (click)="signUp()">Зарегистрироваться</button>
+  <button class="button-primary" (click)="signUp()" [disabled]="!acceptRules">Зарегистрироваться</button>
   <button class="button-primary button-white" (click)="logIn()">Войти</button>
 </div>
