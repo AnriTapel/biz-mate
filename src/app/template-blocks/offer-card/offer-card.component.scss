@@ -91,9 +91,16 @@
       margin-left: 1em;
     }
 
-    .edit-btn {
-      width: 17px;
-      cursor: pointer;
+    div {
+      img:nth-of-type(1) {
+        margin-right: .75em;
+      }
+
+      .edit-btn {
+        width: 17px;
+        cursor: pointer;
+      }
     }
+
   }
 }

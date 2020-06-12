@@ -39,6 +39,7 @@ import { OffersPageComponent } from './pages/offers-page/offers-page.component';
 import { PhoneMaskDirective } from './directives/phone-mask/phone-mask.directive';
 import { FeedbackComponent } from './pages/feedback/feedback.component';
 import { RulesComponent } from './pages/rules/rules.component';
+import { DeleteOfferComponent } from './dialogs/delete-offer/delete-offer.component';
 
 export function appInitFactory(auth: AuthService) {
   return (): Promise<any> => {
@@ -67,7 +68,8 @@ export function appInitFactory(auth: AuthService) {
     OffersPageComponent,
     PhoneMaskDirective,
     FeedbackComponent,
-    RulesComponent
+    RulesComponent,
+    DeleteOfferComponent
   ],
   imports: [
     BrowserModule,

@@ -2,7 +2,13 @@ import {Component, Input, OnInit} from '@angular/core';
 import {Offer} from "../../models/Offer";
 import {AppService} from "../../services/app/app.service";
 import {AuthService} from "../../services/auth/auth.service";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
+import {MatDialog} from "@angular/material/dialog";
+import {DeleteOfferComponent} from "../../dialogs/delete-offer/delete-offer.component";
+import {MatDialogConfig} from "../../dialogs/mat-dialog-config";
+import {AngularFirestore} from "@angular/fire/firestore";
+import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
+import {Messages} from "../../models/Messages";
 
 @Component({
   selector: 'app-offer-card',
@@ -14,10 +20,11 @@ export class OfferCardComponent implements OnInit {
   @Input() offer: Offer;
   editable: boolean;
 
-  constructor(private auth: AuthService, private router: Router) { }
+  constructor(private auth: AuthService, private router: Router, private dialog: MatDialog, private route: ActivatedRoute,
+              private db: AngularFirestore, private notificationService: NotificationBarService) { }
 
   ngOnInit(): void {
-    this.editable = this.auth.user && this.auth.user.uid === this.offer.userId;
+    this.editable = this.route.pathFromRoot[1].snapshot.url[0].path === 'profile';
   }
 
   getOfferDate(offer: Offer): string {
@@ -30,6 +37,17 @@ export class OfferCardComponent implements OnInit {
 
   editOffer(): void {
     this.router.navigateByUrl(`/edit-offer/${this.offer.offerId}`);
+  }
+
+  deleteOffer(): void {
+    let dialog = this.dialog.open(DeleteOfferComponent, MatDialogConfig.narrowDialogWindow);
+    dialog.afterClosed().subscribe((res) => {
+      if (res === true) {
+        this.db.collection('/offers').doc(this.offer.offerId).delete()
+          .then(() => this.notificationService.showNotificationBar(Messages.DELETE_OFFER_SUCCESS, true))
+          .catch(() => this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false))
+      }
+    })
   }
 
 }

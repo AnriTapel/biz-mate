@@ -67,16 +67,16 @@ export class ProfilePageComponent implements OnInit {
   }
 
   async getUserOffers(): Promise<void> {
-    const userOffersRef = await this.db.collection<Offer[]>('/offers').ref
-      .where('userId', '==', this.user.uid).get();
+    await this.db.collection<Offer[]>('/offers').ref
+      .where('userId', '==', this.user.uid).onSnapshot((res) => {
+        let offers = [];
+        if (res.empty)
+          return;
 
-    let offers = [];
-    if (userOffersRef.empty)
-      return;
-
-    userOffersRef.forEach(it => offers.push(it.data() as Offer));
-    offers.sort((a, b) => b.date - a.date);
-    this.userOffers$ = of(offers);
+        res.forEach(it => offers.push(it.data() as Offer));
+        offers.sort((a, b) => b.date - a.date);
+        this.userOffers$ = of(offers);
+      });
   }
 
   switchEditableField(field: string): void {

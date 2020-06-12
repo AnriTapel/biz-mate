@@ -23,7 +23,10 @@
   </div>
   <div class="offer-card-footer">
     <a class="link-underline" (click)="openOfferPage(offer)">Подробнее</a>
-    <img *ngIf="editable" class="edit-btn" src="/assets/img/edit.svg" title="Редактировать" (click)="editOffer()"/>
+    <div *ngIf="editable">
+      <img class="edit-btn" src="/assets/img/edit.svg" title="Редактировать" (click)="editOffer()"/>
+      <img class="edit-btn" src="/assets/img/delete_offer.svg" title="Удалить" (click)="deleteOffer()"/>
+    </div>
   </div>
 
 </div>
