@@ -17,7 +17,7 @@
     </div>
 
     <div class="offers-list">
-        <app-offer-card *ngFor="let offer of latestOffers$ | async" [offer]="offer"></app-offer-card>
+        <app-offer-card *ngFor="let offer of latestOffers$ | async" [offer]="offer" [editable]="false"></app-offer-card>
     </div>
 
     <a class="more-offers link-underline" [routerLink]="['/offers-page']">Больше офферов</a>

@@ -283,6 +283,37 @@ textarea.mat-input-element{
   }
 }
 
+.images-container {
+  display: flex;
+  align-items: center;
+  height: auto;
+  flex-wrap: wrap;
+
+  .image-block {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 120px;
+    height: 120px;
+    margin-right: 1em;
+    margin-bottom: .75em;
+    background-color: #FFFFFF;
+    border: 1px solid #35A6CA;
+    border-radius: 5px;
+    cursor: pointer;
+
+    img:nth-of-type(1) {
+      max-width: 95%;
+      max-height: 95%;
+    }
+  }
+
+  @media screen and (max-width: 770px) {
+    justify-content: space-between;
+  }
+}
+
 .avatar-container {
   width: 80px;
   height: 80px;
@@ -302,6 +333,20 @@ textarea.mat-input-element{
 .mat-checkbox-checked:not(.mat-checkbox-disabled).mat-accent .mat-ripple-element,
 .mat-checkbox-checked.mat-accent .mat-checkbox-background{
   background: $main-theme-color !important;
+}
+
+.mat-option {
+  overflow: unset !important;
+  text-overflow: unset !important;
+  white-space: unset !important;
+  border-bottom: 1px solid rgba(46,121,144, .2);
+  line-height: 24px !important;
+  padding: 10px 16px !important;
+  height: auto !important;
+
+  &:last-child {
+    border-bottom: unset;
+  }
 }
 
 @media screen and (max-width: 770px) {

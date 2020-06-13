@@ -12,6 +12,8 @@ import {ActivatedRoute} from "@angular/router";
 import {Offer} from "../../models/Offer";
 import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
 import {Messages} from "../../models/Messages";
+import * as firebase from 'firebase/app';
+import 'firebase/storage';
 
 @Component({
   selector: 'app-offer-form',
@@ -30,6 +32,8 @@ export class OfferFormComponent implements OnInit {
   filteredBusinessArea$: Observable<BusinessArea[]>;
   filteredCities$: Observable<City[]>;
   fieldsLabels: any = null;
+  offerImages: string[] = [];
+  removedImages: string[] = [];
   attacheEmail: boolean = true;
   contactMethods: any = {
     email: true,
@@ -97,21 +101,51 @@ export class OfferFormComponent implements OnInit {
     return AppService.offerTypes;
   }
 
-  isCapitalFieldVisible(): boolean {
+  public async fileChangeEvent(event): Promise<void> {
+    let files = event.target.files;
+    let imgCount = files.length > 5 ? 5 : files.length;
+    for (let i = 0; i < imgCount; i++) {
+      let fileName = files[i].name;
+      try {
+        await firebase.storage().ref().child(fileName).getDownloadURL();
+        fileName = `${Date.now()}_${fileName}`;
+      } catch (err) {
+        console.warn(`File with name ${fileName} doesn't exist.`);
+      }
+
+      let imageRef = firebase.storage().ref().child(fileName);
+
+      let uploadRef = await imageRef.put(files[i]);
+      if (uploadRef.state === 'success') {
+        let photoURL = await uploadRef.ref.getDownloadURL();
+        this.offerImages.push(photoURL);
+      }
+    }
+  }
+
+  public openImage(url: string): void {
+    window.open(url, '_blank');
+  }
+
+  public deleteImage(image: string): void {
+    this.removedImages.push(image);
+    this.offerImages = this.offerImages.filter(it => it !== image);
+  }
+
+  public isCapitalFieldVisible(): boolean {
     return this.currentType == this.offerType.NEED_INVESTMENTS || this.currentType == this.offerType.HAVE_INVESTMENTS;
   }
 
-  isPhoneValid(): boolean {
+  public isPhoneValid(): boolean {
     const phone = this.newOfferForm.controls['phone'];
     return phone.value && phone.value.length && phone.status === 'VALID';
   }
 
-  clearForm(): void {
+  public clearForm(): void {
     this.newOfferForm.reset();
   }
 
-  async getOfferData(): Promise<any> {
-
+  public async getOfferData(): Promise<any> {
     let offerData = {};
     // TODO: привести валидацию урлы в соответствующие вид
     if (this.activeRoute.snapshot.url[0].path == 'edit-offer') {
@@ -132,6 +166,7 @@ export class OfferFormComponent implements OnInit {
       offerData['phone'] = offer.phone || null;
       offerData['city'] = AppService.getCityByFiledValue('id', offer.city).name || '';
       this.contactMethods = offer.contactMethods || this.contactMethods;
+      this.offerImages = offer.imagesURL || [];
       this.attacheEmail = !!offerData['email'];
     }
 
@@ -150,7 +185,7 @@ export class OfferFormComponent implements OnInit {
     };
   }
 
-  sendOffer(): Promise<void> {
+  public sendOffer(): Promise<void> {
     let offerData: Offer = this.newOfferForm.getRawValue();
 
     if (this.newOfferForm.status == "INVALID") {
@@ -158,15 +193,20 @@ export class OfferFormComponent implements OnInit {
       return;
     }
 
+    for (let img of this.removedImages) {
+      firebase.storage().refFromURL(img).delete().catch(() => console.error(`Error occured while deleting image ${img}`));
+    }
+
     offerData.type = this.currentType;
     offerData.displayName = this.auth.user.displayName;
-    offerData.userId = this.auth.user ? this.auth.user.uid : null;
+    offerData.userId = this.auth.user.uid;
     offerData.city = AppService.getCityByFiledValue('name', offerData.city).id;
     offerData.businessArea = AppService.getBusinessAreaByFiledValue('name', offerData.businessArea).id;
     offerData.date = Date.now();
     offerData.offerId = this.editOfferId || this.db.createId();
     offerData.email = this.attacheEmail ? this.auth.user.email : null;
     offerData.photoURL = this.auth.user.photoURL || AppService.getDefaultAvatar();
+    offerData.imagesURL = this.offerImages;
     if (!this.attacheEmail)
       this.contactMethods.email = false;
     offerData.contactMethods = this.contactMethods;

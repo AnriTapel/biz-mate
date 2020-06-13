@@ -1,7 +1,5 @@
 <div class="offer-card-container">
   <div>
-
-
     <div class="offer-card-header">
       <div class="avatar-container">
         <img [src]="offer.photoURL" alt="Аватар"/>
@@ -25,7 +23,7 @@
     <a class="link-underline" (click)="openOfferPage(offer)">Подробнее</a>
     <div *ngIf="editable">
       <img class="edit-btn" src="/assets/img/edit.svg" title="Редактировать" (click)="editOffer()"/>
-      <img class="edit-btn" src="/assets/img/delete_offer.svg" title="Удалить" (click)="deleteOffer()"/>
+      <img class="edit-btn" src="/assets/img/delete.svg" title="Удалить" (click)="deleteOffer()"/>
     </div>
   </div>
 

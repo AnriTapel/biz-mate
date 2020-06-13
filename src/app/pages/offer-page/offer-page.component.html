@@ -52,6 +52,12 @@
         <p>{{offer.experience}}</p>
       </div>
 
+      <div *ngIf="offer.imagesURL && offer.imagesURL.length" class="full-width-field images-container">
+        <div *ngFor="let url of offer.imagesURL" class="image-block">
+          <img [src]="url" alt="Изображение" (click)="openImage(url)"/>
+        </div>
+      </div>
+
       <div class="contacts">
         <h3>Контакты</h3>
         <p *ngIf="offer.phone">Номер телефона: <strong>{{offer.phone}}</strong></p>
@@ -68,7 +74,7 @@
         </div>
       </div>
 
-      <button class="button-primary button-primary-large">Откликнуться</button>
+      <!--<button class="button-primary button-primary-large">Откликнуться</button>-->
     </section>
   </ng-container>
 </main>

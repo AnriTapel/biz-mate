@@ -45,7 +45,7 @@
   <section id="user-offers">
     <h2>Мои офферы</h2>
     <div class="offers-list" *ngIf="userOffers$">
-      <app-offer-card *ngFor="let offer of userOffers$ | async" [offer]="offer"></app-offer-card>
+      <app-offer-card *ngFor="let offer of userOffers$ | async" [offer]="offer" [editable]="true"></app-offer-card>
     </div>
     <ng-container *ngIf="!userOffers$">
       <div class="no-offers-block">

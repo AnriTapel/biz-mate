@@ -18,13 +18,12 @@ import {Messages} from "../../models/Messages";
 export class OfferCardComponent implements OnInit {
 
   @Input() offer: Offer;
-  editable: boolean;
+  @Input() editable: boolean;
 
   constructor(private auth: AuthService, private router: Router, private dialog: MatDialog, private route: ActivatedRoute,
               private db: AngularFirestore, private notificationService: NotificationBarService) { }
 
   ngOnInit(): void {
-    this.editable = this.route.pathFromRoot[1].snapshot.url[0].path === 'profile';
   }
 
   getOfferDate(offer: Offer): string {

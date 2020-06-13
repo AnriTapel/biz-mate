@@ -29,35 +29,40 @@ export class OfferPageComponent implements OnInit {
     scroll(0,0);
   }
 
-  getOfferDate(): string {
+  public getOfferDate(): string {
     return AppService.getOfferDate(this.offer);
   }
 
-  getOfferCity(): string {
+  public getOfferCity(): string {
     return AppService.getCityByFiledValue('id', this.offer.city).name;
   }
 
-  getOfferBusinessArea(): string {
+  public getOfferBusinessArea(): string {
     return AppService.getBusinessAreaByFiledValue('id', this.offer.businessArea).name;
   }
 
-  getOfferTypeTitle(): string {
+  public getOfferTypeTitle(): string {
     return AppService.offerTypes.filter(it => it.id === this.offer.type)[0].title;
   }
 
-  getCapitalLabel(): string {
+  public getCapitalLabel(): string {
     return AppService.offerFieldsLabels[this.offer.type - 1].capital;
   }
 
-  getConditionsLabel(): string {
+  public getConditionsLabel(): string {
     return AppService.offerFieldsLabels[this.offer.type - 1].conditions;
   }
 
-  getExperienceLabel(): string {
+  public getExperienceLabel(): string {
     return AppService.offerFieldsLabels[this.offer.type - 1].experience;
   }
 
-  isContactMethodSelected(): boolean {
+  public openImage(url: string): void {
+    window.open(url, '_blank');
+  }
+
+
+  public isContactMethodSelected(): boolean {
     if (!this.offer.contactMethods)
       return false;
 

@@ -17,4 +17,5 @@ export interface Offer {
   email?: string;
   photoURL?: string;
   contactMethods: any;
+  imagesURL?: string[];
 }

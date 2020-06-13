@@ -14,7 +14,7 @@
       </div>
 
       <mat-form-field>
-        <input type="text" placeholder="Населенный пункт" aria-label="Населенный пункт" matInput
+        <input type="text" placeholder="Населенный пункт *" aria-label="Населенный пункт" matInput
                formControlName="city" [matAutocomplete]="cities">
         <mat-autocomplete #cities="matAutocomplete">
           <mat-option *ngFor="let city of filteredCities$ | async" [value]="city.name">
@@ -24,7 +24,7 @@
       </mat-form-field>
 
       <mat-form-field>
-        <input type="text" placeholder="Сфера бизнеса" aria-label="Сфера бизнеса" matInput
+        <input type="text" placeholder="Сфера бизнеса *" aria-label="Сфера бизнеса" matInput
                formControlName="businessArea" [matAutocomplete]="businessArea">
         <mat-autocomplete #businessArea="matAutocomplete">
           <mat-option *ngFor="let category of filteredBusinessArea$ | async" [value]="category.name">
@@ -36,17 +36,17 @@
       <h4 class="full-width-field">Детали оффера</h4>
 
       <mat-form-field>
-        <mat-label>Заголовок оффера</mat-label>
+        <mat-label>Заголовок оффера *</mat-label>
         <input matInput formControlName="title">
       </mat-form-field>
 
       <mat-form-field *ngIf="isCapitalFieldVisible()">
-        <mat-label>{{fieldsLabels.capital}}</mat-label>
+        <mat-label>{{fieldsLabels.capital}} *</mat-label>
         <input matInput type="number" formControlName="capital">
       </mat-form-field>
 
       <mat-form-field class="full-width-field">
-        <mat-label>Описание оффера</mat-label>
+        <mat-label>Описание оффера *</mat-label>
         <textarea matInput formControlName="desc"></textarea>
       </mat-form-field>
 
@@ -60,10 +60,26 @@
         <textarea matInput formControlName="conditions"></textarea>
       </mat-form-field>
 
+      <h4 class="full-width-field">Фотографии и изображения</h4>
+
+      <div class="images-container full-width-field">
+        <div *ngFor="let img of offerImages" class="image-block">
+          <img [src]="img" alt="Изображение" (click)="openImage(img)"/>
+          <img src="/assets/img/delete.svg" title="Удалить" alt="Удалить" (click)="deleteImage(img)"/>
+        </div>
+        <div *ngIf="offerImages.length === 0" class="image-block text-thumb" (click)="_fileInput.click()">
+          <span>Загрузить изображение</span>
+          <span>(максимум 5)</span>
+        </div>
+        <button *ngIf="offerImages.length > 0 && offerImages.length <5" class="button-primary button-circle button-primary-large"
+                (click)="_fileInput.click()">+</button>
+        <input #_fileInput type="file" (change)="fileChangeEvent($event)" multiple accept=".jpg, .jpeg, .png" hidden>
+      </div>
+
       <h4 class="full-width-field">Контактная информация</h4>
 
       <mat-form-field>
-        <mat-label>Номер телефона</mat-label>
+        <mat-label>Номер телефона *</mat-label>
         <input matInput id="tel" formControlName="phone" placeholder="+7 (999) 999-9999" phoneMask maxlength="17"
                [preValue]="newOfferForm.value.phone" [phoneControl]="newOfferForm.controls['phone']"/>
       </mat-form-field>
