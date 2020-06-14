@@ -38,7 +38,13 @@ export class HeaderComponent implements OnInit {
     });
   }
 
+  openFeedback(): void {
+    this.visibleMenu = false;
+    this.router.navigateByUrl('/feedback');
+  }
+
   openProfile(): void {
+    this.visibleMenu = false;
     this.router.navigateByUrl('/profile');
   }
 

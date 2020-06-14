@@ -230,17 +230,6 @@ textarea.mat-input-element{
     margin: 1em auto 0;
   }
 
-  mat-checkbox {
-    text-align: left;
-    margin-bottom: .5em;
-
-    span {
-      font-size: 12px;
-      line-height: 12px !important;
-      white-space: normal;
-    }
-  }
-
   .full-width-action-buttons {
     flex-direction: column;
     margin: 0 auto;
@@ -346,6 +335,17 @@ textarea.mat-input-element{
 
   &:last-child {
     border-bottom: unset;
+  }
+}
+
+mat-checkbox {
+  text-align: left;
+  margin-bottom: .5em;
+
+  span {
+    font-size: 12px;
+    line-height: 12px !important;
+    white-space: normal;
   }
 }
 
