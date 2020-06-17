@@ -147,8 +147,7 @@ export class OfferFormComponent implements OnInit {
 
   public async getOfferData(): Promise<any> {
     let offerData = {};
-    // TODO: привести валидацию урлы в соответствующие вид
-    if (this.activeRoute.snapshot.url[0].path == 'edit-offer') {
+    if (this.activeRoute.snapshot.url[0] && this.activeRoute.snapshot.url[0].path == 'edit-offer') {
       this.editOffer = true;
       this.editOfferId = this.activeRoute.snapshot.url[1].path;
       let offerRef = await this.db.doc(`/offers/${this.editOfferId}`).ref.get();
