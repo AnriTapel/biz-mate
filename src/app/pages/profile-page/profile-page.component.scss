@@ -1,5 +1,5 @@
 $main-theme-color: #2E7990;
-$field-width-minus-edit: 85%;
+$field-width-minus-edit: calc(100% - 20px);
 
 h2 {
   color: $main-theme-color;
@@ -23,10 +23,6 @@ h2 {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-
-    mat-form-field {
-      width: $field-width-minus-edit;
-    }
 
     img.edit-field {
       width: 20px;
@@ -53,7 +49,7 @@ h2 {
       display: flex;
 
       mat-form-field {
-        width: calc(100% - 40px - 1.25em);
+        width: calc(100% - 1.25em);
       }
     }
   }
@@ -71,6 +67,16 @@ h2 {
 
     & > div {
       justify-content: center;
+    }
+
+    .name, .email{
+      & > div {
+        width: 100%;
+
+        mat-form-field {
+          width: 90% !important;
+        }
+      }
     }
   }
 }
