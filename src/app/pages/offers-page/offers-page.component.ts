@@ -37,6 +37,7 @@ export class OffersPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    AppService.showOverlay();
     this.searchForm = new FormGroup({
       type: new FormControl(null, [AppService.offerTypeValidator()]),
       businessArea: new FormControl(null, [AppService.businessAreaFieldValidator()]),
@@ -61,7 +62,7 @@ export class OffersPageComponent implements OnInit {
         map(value => AppService._filterCategories(value))
       );
     this.offersRef = this.db.collection('offers').ref;
-    this.getInitialOffers();
+    this.getInitialOffers().finally(() => AppService.hideOverlay());
     scroll(0, 0);
   }
 

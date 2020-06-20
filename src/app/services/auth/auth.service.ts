@@ -4,6 +4,7 @@ import {AngularFireAuth} from '@angular/fire/auth';
 import {User} from "../../models/User";
 import {Observable, of} from "rxjs";
 import {switchMap} from "rxjs/operators";
+import {AppService} from "../app/app.service";
 
 @Injectable({
   providedIn: 'root'
@@ -70,6 +71,11 @@ export class AuthService {
     return new Promise<void>(async (resolve, reject) => {
       try {
         await this.afAuth.auth.createUserWithEmailAndPassword(credentials.email, credentials.password);
+        await this.afAuth.auth.currentUser.updateProfile({
+          'displayName': credentials.name,
+          'photoURL': AppService.getDefaultAvatar()
+        });
+        this.updateCurrentUserData();
         await this.sendEmailVerification();
         resolve();
       } catch (e) {
@@ -91,10 +97,13 @@ export class AuthService {
   resetPasswordByEmail(email: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.afAuth.auth.sendPasswordResetEmail(email, {
-        url: 'https://biz-mate.ru/profile?password_reset=true'
+        url: 'https://biz-mate.ru/?password_reset=true'
       })
         .then((res) => resolve(res))
-        .catch((error) => reject(error));
+        .catch((error) => {
+          console.log(error);
+          reject(error);
+        });
     });
   }
 

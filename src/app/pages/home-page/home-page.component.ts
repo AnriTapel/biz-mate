@@ -2,6 +2,10 @@ import {Component, OnInit} from '@angular/core';
 import {Observable, of} from "rxjs";
 import {AngularFirestore} from "@angular/fire/firestore";
 import {Offer} from "../../models/Offer";
+import {NotificationComponent} from "../../dialogs/notification/notification.component";
+import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
+import {ActivatedRoute} from "@angular/router";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
   selector: 'app-home-page',
@@ -9,9 +13,26 @@ import {Offer} from "../../models/Offer";
   styleUrls: ['./home-page.component.scss']
 })
 export class HomePageComponent implements OnInit {
+  readonly emailVerifyEvent = {
+    title: 'Электронная почта подтверждена',
+    text: 'Вы успешно подтвердили свой адрес электронной почты! Теперь Вы можете отредактировать информацию о себе и перейти к созданию своего первого оффера.'
+  };
+
+  readonly resetPasswordEvent = {
+    title: 'Пароль изменен',
+    text: 'Вы успешно сменили пароль к своей учетной записи!'
+  };
+
   latestOffers$: Observable<Offer[]>;
 
-  constructor(private db: AngularFirestore) {
+  constructor(private db: AngularFirestore, private route: ActivatedRoute, private dialog: MatDialog) {
+    this.route.queryParams.subscribe(params => {
+      if (params['email_verify']) {
+        this.dialog.open(NotificationComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, this.emailVerifyEvent))
+      } else if (params['password_reset']) {
+        this.dialog.open(NotificationComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, this.resetPasswordEvent))
+      }
+    });
   }
 
   ngOnInit(): void {

@@ -14,6 +14,7 @@ export class OfferPageComponent implements OnInit {
   offer: Offer = null;
 
   constructor(private db: AngularFirestore, private route: ActivatedRoute) {
+    AppService.showOverlay();
     db.collection('/offers').doc(route.snapshot.paramMap.get("id").toString()).get().subscribe((doc) => {
       if (!doc.exists) {
         console.error('No such document!');
@@ -22,6 +23,8 @@ export class OfferPageComponent implements OnInit {
       }
     }, (err) => {
       console.error(err);
+    }, () => {
+      AppService.hideOverlay();
     });
   }
 

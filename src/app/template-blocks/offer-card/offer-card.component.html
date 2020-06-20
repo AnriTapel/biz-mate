@@ -20,7 +20,7 @@
     </div>
   </div>
   <div class="offer-card-footer">
-    <a class="link-underline" (click)="openOfferPage(offer)">Подробнее</a>
+    <a class="link-underline" [routerLink]="['/offer/'+offer.offerId]">Подробнее</a>
     <div *ngIf="editable">
       <img class="edit-btn" src="/assets/img/edit.svg" title="Редактировать" (click)="editOffer()"/>
       <img class="edit-btn" src="/assets/img/delete.svg" title="Удалить" (click)="deleteOffer()"/>

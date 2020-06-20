@@ -9,8 +9,7 @@ import {Observable, of} from "rxjs";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {MatDialog} from "@angular/material/dialog";
 import {CustomImageCropperComponent} from "../../template-blocks/image-cropper/custom-image-cropper.component";
-import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
-import {NotificationComponent} from "../../dialogs/notification/notification.component";
+import {MatDialogConfig} from "../../dialogs/mat-dialog-config";
 import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
 import {Messages} from "../../models/Messages";
 
@@ -20,16 +19,6 @@ import {Messages} from "../../models/Messages";
   styleUrls: ['./profile-page.component.scss']
 })
 export class ProfilePageComponent implements OnInit {
-
-  readonly emailVerifyEvent = {
-    title: 'Электронная почта подтверждена',
-    text: 'Вы успешно подтвердили свой адрес электронной почты! Теперь Вы можете отредактировать информацию о себе и перейти к созданию своего первого оффера.'
-  };
-
-  readonly resetPasswordEvent = {
-    title: 'Пароль изменен',
-    text: 'Вы успешно сменили пароль к своей учетной записи!'
-  };
 
   user: User = null;
   userOffers$: Observable<Offer[]> = null;
@@ -44,15 +33,6 @@ export class ProfilePageComponent implements OnInit {
   constructor(private appService: AppService, private authService: AuthService, private router: Router,
               private db: AngularFirestore, private dialog: MatDialog, private route: ActivatedRoute,
               private notificationBarService: NotificationBarService) {
-
-    this.route.queryParams.subscribe(params => {
-      if (params['email_verify']) {
-        this.dialog.open(NotificationComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, this.emailVerifyEvent))
-      } else if (params['password_reset']) {
-        this.dialog.open(NotificationComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, this.resetPasswordEvent))
-      }
-    });
-
     this.user = this.authService.user;
     this.userDataForm = new FormGroup({
       email: new FormControl(this.user.email || '', [Validators.required]),
@@ -93,11 +73,15 @@ export class ProfilePageComponent implements OnInit {
 
         this.authService.updateUserDisplayNameOrPhotoURL('photoURL', res)
           .then(() => {
+            AppService.hideOverlay();
             this.updateUserDataInOffers('photoURL', res);
             this.user = this.authService.updateCurrentUserData();
             this.notificationBarService.showNotificationBar(Messages.SAVE_SUCCESS, true);
           })
-          .catch(() => this.notificationBarService.showNotificationBar(Messages.SAVE_ERROR, false));
+          .catch(() => {
+            AppService.hideOverlay();
+            this.notificationBarService.showNotificationBar(Messages.SAVE_ERROR, false);
+          });
       }
     });
   }
@@ -106,6 +90,7 @@ export class ProfilePageComponent implements OnInit {
     if (this.userDataForm.get(field).status == "INVALID")
       return;
 
+    AppService.showOverlay();
     let newValue = this.userDataForm.get(field).value;
 
     let result: Promise<void>;
@@ -116,11 +101,15 @@ export class ProfilePageComponent implements OnInit {
 
     result
       .then(() => {
+        AppService.hideOverlay();
         this.editableFields[field] = false;
         this.updateUserDataInOffers(field, newValue);
         this.user = this.authService.updateCurrentUserData();
         this.notificationBarService.showNotificationBar(Messages.SAVE_SUCCESS, true);
-      }).catch(() => this.notificationBarService.showNotificationBar(Messages.SAVE_ERROR, false));
+      }).catch(() => {
+        AppService.hideOverlay();
+        this.notificationBarService.showNotificationBar(Messages.SAVE_ERROR, false)
+      });
   }
 
   updateUserDataInOffers(field: string, newValue: string) {

@@ -104,6 +104,7 @@ export class OfferFormComponent implements OnInit {
   public async fileChangeEvent(event): Promise<void> {
     let files = event.target.files;
     let imgCount = files.length > 5 ? 5 : files.length;
+    AppService.showOverlay();
     for (let i = 0; i < imgCount; i++) {
       let fileName = files[i].name;
       try {
@@ -121,6 +122,7 @@ export class OfferFormComponent implements OnInit {
         this.offerImages.push(photoURL);
       }
     }
+    AppService.hideOverlay();
   }
 
   public openImage(url: string): void {
@@ -148,6 +150,7 @@ export class OfferFormComponent implements OnInit {
   public async getOfferData(): Promise<any> {
     let offerData = {};
     if (this.activeRoute.snapshot.url[0] && this.activeRoute.snapshot.url[0].path == 'edit-offer') {
+      AppService.showOverlay();
       this.editOffer = true;
       this.editOfferId = this.activeRoute.snapshot.url[1].path;
       let offerRef = await this.db.doc(`/offers/${this.editOfferId}`).ref.get();
@@ -167,6 +170,7 @@ export class OfferFormComponent implements OnInit {
       this.contactMethods = offer.contactMethods || this.contactMethods;
       this.offerImages = offer.imagesURL || [];
       this.attacheEmail = !!offerData['email'];
+      AppService.hideOverlay();
     }
 
     return offerData;
@@ -192,6 +196,8 @@ export class OfferFormComponent implements OnInit {
       return;
     }
 
+    AppService.showOverlay();
+
     for (let img of this.removedImages) {
       firebase.storage().refFromURL(img).delete().catch(() => console.error(`Error occured while deleting image ${img}`));
     }
@@ -215,9 +221,11 @@ export class OfferFormComponent implements OnInit {
     let request = this.editOffer ? ref.doc(offerData.offerId).update(offerData) : ref.doc(offerData.offerId).set(offerData);
     return request
       .then(() => {
+        AppService.hideOverlay();
         this.notificationBarService.showNotificationBar(this.editOffer ? Messages.SAVE_SUCCESS : Messages.OFFER_CREATED, true);
       })
       .catch(() => {
+        AppService.hideOverlay();
         this.notificationBarService.showNotificationBar(this.editOffer ? Messages.SAVE_ERROR : Messages.OFFER_ERROR, false);
       })
   }

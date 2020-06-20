@@ -4,6 +4,7 @@ import * as firebase from 'firebase/app';
 import 'firebase/storage';
 import {Messages} from "../../models/Messages";
 import {MatDialogRef} from "@angular/material/dialog";
+import {AppService} from "../../services/app/app.service";
 
 @Component({
   selector: 'app-image-cropper',
@@ -39,6 +40,7 @@ export class CustomImageCropperComponent {
 
   async imageCropped(event: ImageCroppedEvent) {
     //Find out if file with such fileName already exists
+    AppService.showOverlay();
     try {
       await firebase.storage().ref().child(this.fileName).getDownloadURL();
       this.fileName = `${Date.now()}_${this.fileName}`;
