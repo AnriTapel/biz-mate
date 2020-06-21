@@ -8,6 +8,8 @@ import {AppService} from "../app/app.service";
 import {MatDialog} from "@angular/material/dialog";
 import {EmailVerifyComponent} from "../../dialogs/email-verify-message/email-verify.component";
 import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
+import * as firebase from 'firebase/app';
+import 'firebase/analytics';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +26,7 @@ export class AuthService {
           this.user = {
             displayName: user.displayName, uid: user.uid,
             email: user.email, photoURL: user.photoURL,
-            emailVerified: false
+            emailVerified: user.emailVerified
           };
           if (!this.user.emailVerified) {
             this.openEmailVerificationDialog();
@@ -38,6 +40,7 @@ export class AuthService {
   appInitAuth(): Promise<any> {
     return new Promise<void>((resolve, reject) => {
       this.afAuth.auth.useDeviceLanguage();
+      firebase.analytics();
       let handler = this.afAuth.authState.subscribe((userData) => {
         if (userData && !userData.isAnonymous) {
           this.user = {
