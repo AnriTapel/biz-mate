@@ -5,6 +5,9 @@ import {User} from "../../models/User";
 import {Observable, of} from "rxjs";
 import {switchMap} from "rxjs/operators";
 import {AppService} from "../app/app.service";
+import {MatDialog} from "@angular/material/dialog";
+import {EmailVerifyComponent} from "../../dialogs/email-verify-message/email-verify.component";
+import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
 
 @Injectable({
   providedIn: 'root'
@@ -14,15 +17,18 @@ export class AuthService {
   user$: Observable<any>;
   user: User;
 
-  constructor(private afAuth: AngularFireAuth) {
+  constructor(private afAuth: AngularFireAuth, private dialog: MatDialog) {
     this.user$ = this.afAuth.authState.pipe(
       switchMap(user => {
         if (user && !user.isAnonymous) {
           this.user = {
             displayName: user.displayName, uid: user.uid,
             email: user.email, photoURL: user.photoURL,
-            emailVerified: user.emailVerified
+            emailVerified: false
           };
+          if (!this.user.emailVerified) {
+            this.openEmailVerificationDialog();
+          }
         } else
           this.user = null;
         return of(user);
@@ -39,6 +45,7 @@ export class AuthService {
             email: userData.email, photoURL: userData.photoURL,
             emailVerified: userData.emailVerified
           };
+
           resolve();
         } else if (!userData) {
           this.afAuth.auth.signInAnonymously().then(() => {
@@ -143,10 +150,15 @@ export class AuthService {
     });
   }
 
-  private async sendEmailVerification(): Promise<void> {
+  public async sendEmailVerification(): Promise<void> {
     await this.afAuth.auth.currentUser.sendEmailVerification({
       url: 'https://biz-mate.ru/profile?email_verify=true'
     });
+  }
+
+  private openEmailVerificationDialog(): void {
+    this.dialog.open(EmailVerifyComponent,
+      MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, {email: this.user.email, alreadySent: false}));
   }
 
   signOut() {

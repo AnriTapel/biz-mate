@@ -17,7 +17,7 @@ import {Messages} from "../../models/Messages";
 })
 export class OffersPageComponent implements OnInit {
 
-  private readonly OFFER_QUERY_LIMIT: number = 4;
+  private readonly OFFER_QUERY_LIMIT: number = 20;
   private lastVisibleOffer: any = null;
   allOffersLoaded: boolean = false;
   emptyFilterResult: boolean = false;

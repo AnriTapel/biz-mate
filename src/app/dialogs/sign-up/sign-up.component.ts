@@ -50,7 +50,7 @@ export class SignUpComponent implements OnInit {
     this.auth.emailPasswordSignUp(credentials).then(() => {
       this.dialogRef.close();
       this.dialog.open(EmailVerifyComponent,
-        MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, credentials.email));
+        MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, {email: credentials.email, alreadySent: true}));
     }).catch((err) => {
       this.errorMessage = Messages[err.code] || Messages.DEFAULT_MESSAGE;
     });

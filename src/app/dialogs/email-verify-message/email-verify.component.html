@@ -1,8 +1,11 @@
 <h1 mat-dialog-title>Подтвердите почту</h1>
 <div mat-dialog-content>
-  <p>На указанный Вам адрес электронной почты, <strong>{{data}}</strong>, было отправлено письмо с ссылкой для подтверждения.</p>
+  <p>На указанный Вам адрес электронной почты, <strong>{{data.email}}</strong>, было отправлено письмо с ссылкой для подтверждения.</p>
   <p>Нажав на нее, Вы завершите процесс регистраиции и сможете разместить свой первый оффер!</p>
+  <span *ngIf="!resendEnabled">Запросить повторную отправку письма можно будет через 2 минуты</span>
 </div>
+
 <div mat-dialog-actions class="full-width-action-buttons">
-  <button class="button-primary" [mat-dialog-close]>Понятно</button>
+  <button class="button-primary" [disabled]="!resendEnabled" (click)="sendEmailVerificationEmail()">Выслать повторно</button>
+  <button class="button-primary button-white" [mat-dialog-close]>Закрыть</button>
 </div>
