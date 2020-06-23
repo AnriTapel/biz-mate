@@ -25,7 +25,7 @@
     </div>
 
     <div class="email">
-      <div>
+      <!--<div>
         <mat-form-field *ngIf="editableFields.email" class="example-full-width">
           <mat-label>E-mail</mat-label>
           <input matInput autofocus formControlName="email" (change)="editUserData('email')">
@@ -38,12 +38,21 @@
       </div>
 
       <img class="edit-field" src="/assets/img/edit.svg" alt="Изменить поле"
-           [style.opacity]="editableFields.email ? 1 : 0.4" (click)="switchEditableField('email')"/>
+           [style.opacity]="editableFields.email ? 1 : 0.4" (click)="switchEditableField('email')"/>-->
+      <div>
+        <mat-form-field *ngIf="!editableFields.email" class="example-full-width">
+          <mat-label>E-mail</mat-label>
+          <input matInput disabled placeholder="Не указан" [value]="userDataForm.getRawValue().email">
+        </mat-form-field>
+      </div>
     </div>
   </section>
 
   <section id="user-offers">
-    <h2>Мои офферы</h2>
+    <div class="title-block">
+      <h2>Мои офферы</h2>
+      <button class="button-primary button-circle button-primary-large" [routerLink]="['/new-offer']">+</button>
+    </div>
     <div class="offers-list" *ngIf="userOffers$">
       <app-offer-card *ngFor="let offer of userOffers$ | async" [offer]="offer" [editable]="true"></app-offer-card>
     </div>

@@ -9,9 +9,10 @@ import {Observable, of} from "rxjs";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {MatDialog} from "@angular/material/dialog";
 import {CustomImageCropperComponent} from "../../template-blocks/image-cropper/custom-image-cropper.component";
-import {MatDialogConfig} from "../../dialogs/mat-dialog-config";
+import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
 import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
 import {Messages} from "../../models/Messages";
+import {NotificationComponent} from "../../dialogs/notification/notification.component";
 
 @Component({
   selector: 'app-profile-page',
@@ -19,6 +20,11 @@ import {Messages} from "../../models/Messages";
   styleUrls: ['./profile-page.component.scss']
 })
 export class ProfilePageComponent implements OnInit {
+
+  readonly emailVerifyEvent = {
+    title: 'Электронная почта подтверждена',
+    text: 'Вы успешно подтвердили свой адрес электронной почты! Теперь Вы можете отредактировать информацию о себе и перейти к созданию своего первого оффера.'
+  };
 
   user: User = null;
   userOffers$: Observable<Offer[]> = null;
@@ -33,6 +39,11 @@ export class ProfilePageComponent implements OnInit {
   constructor(private appService: AppService, private authService: AuthService, private router: Router,
               private db: AngularFirestore, private dialog: MatDialog, private route: ActivatedRoute,
               private notificationBarService: NotificationBarService) {
+    this.route.queryParams.subscribe(params => {
+      if (params['email_verify']) {
+        this.dialog.open(NotificationComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, this.emailVerifyEvent))
+      }
+    });
     this.user = this.authService.user;
     this.userDataForm = new FormGroup({
       email: new FormControl(this.user.email || '', [Validators.required]),
@@ -46,7 +57,7 @@ export class ProfilePageComponent implements OnInit {
     scroll(0,0);
   }
 
-  async getUserOffers(): Promise<void> {
+  private async getUserOffers(): Promise<void> {
     await this.db.collection<Offer[]>('/offers').ref
       .where('userId', '==', this.user.uid).onSnapshot((res) => {
         let offers = [];
@@ -59,23 +70,24 @@ export class ProfilePageComponent implements OnInit {
       });
   }
 
-  switchEditableField(field: string): void {
+  public switchEditableField(field: string): void {
     if (this.editableFields[field] && this.userDataForm.get(field).errors)
       return;
 
     this.editableFields[field] = !this.editableFields[field];
   }
 
-  async changePhotoURL(): Promise<void> {
+  public changePhotoURL(): void {
     const dialogRef = this.dialog.open(CustomImageCropperComponent, MatDialogConfig.narrowDialogWindow);
     dialogRef.afterClosed().subscribe((res) => {
       if (res && typeof res === "string") {
-
         this.authService.updateUserDisplayNameOrPhotoURL('photoURL', res)
           .then(() => {
             AppService.hideOverlay();
             this.updateUserDataInOffers('photoURL', res);
-            this.user = this.authService.updateCurrentUserData();
+            this.authService.updateCurrentUserData().then((user) => {
+              this.user = user;
+            });
             this.notificationBarService.showNotificationBar(Messages.SAVE_SUCCESS, true);
           })
           .catch(() => {
@@ -86,7 +98,7 @@ export class ProfilePageComponent implements OnInit {
     });
   }
 
-  async editUserData(field: string): Promise<void> {
+  public async editUserData(field: string): Promise<void> {
     if (this.userDataForm.get(field).status == "INVALID")
       return;
 
@@ -104,7 +116,10 @@ export class ProfilePageComponent implements OnInit {
         AppService.hideOverlay();
         this.editableFields[field] = false;
         this.updateUserDataInOffers(field, newValue);
-        this.user = this.authService.updateCurrentUserData();
+        this.authService.updateCurrentUserData().then((user) => {
+          this.user = user;
+        });
+        this.user = this.authService.user;
         this.notificationBarService.showNotificationBar(Messages.SAVE_SUCCESS, true);
       }).catch(() => {
         AppService.hideOverlay();
@@ -112,7 +127,7 @@ export class ProfilePageComponent implements OnInit {
       });
   }
 
-  updateUserDataInOffers(field: string, newValue: string) {
+  private updateUserDataInOffers(field: string, newValue: string) {
     this.db.collection<Offer[]>('/offers').ref.where('userId', '==', this.user.uid).get()
       .then((resp) => {
         let batch = this.db.firestore.batch();

@@ -13,10 +13,6 @@ import {MatDialog} from "@angular/material/dialog";
   styleUrls: ['./home-page.component.scss']
 })
 export class HomePageComponent implements OnInit {
-  readonly emailVerifyEvent = {
-    title: 'Электронная почта подтверждена',
-    text: 'Вы успешно подтвердили свой адрес электронной почты! Теперь Вы можете отредактировать информацию о себе и перейти к созданию своего первого оффера.'
-  };
 
   readonly resetPasswordEvent = {
     title: 'Пароль изменен',
@@ -27,9 +23,7 @@ export class HomePageComponent implements OnInit {
 
   constructor(private db: AngularFirestore, private route: ActivatedRoute, private dialog: MatDialog) {
     this.route.queryParams.subscribe(params => {
-      if (params['email_verify']) {
-        this.dialog.open(NotificationComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, this.emailVerifyEvent))
-      } else if (params['password_reset']) {
+      if (params['password_reset']) {
         this.dialog.open(NotificationComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, this.resetPasswordEvent))
       }
     });

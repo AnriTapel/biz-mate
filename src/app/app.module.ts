@@ -1,36 +1,35 @@
-import { BrowserModule } from '@angular/platform-browser';
+import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HomePageComponent } from './pages/home-page/home-page.component';
+import {AppRoutingModule} from './app-routing.module';
+import {AppComponent} from './app.component';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {HomePageComponent} from './pages/home-page/home-page.component';
 import {MatCardModule} from "@angular/material/card";
 import {MatButtonModule} from "@angular/material/button";
 import {ReactiveFormsModule} from "@angular/forms";
 import {MatInputModule} from "@angular/material/input";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
-import { OfferFormComponent } from './pages/offer-form/offer-form.component';
-import { AngularFireModule } from '@angular/fire';
-import { AngularFirestoreModule } from '@angular/fire/firestore';
-import { AngularFireDatabaseModule } from '@angular/fire/database';
-import { AngularFireAuthModule } from '@angular/fire/auth';
+import {OfferFormComponent} from './pages/offer-form/offer-form.component';
+import {AngularFireModule} from '@angular/fire';
+import {AngularFirestoreModule} from '@angular/fire/firestore';
+import {AngularFireDatabaseModule} from '@angular/fire/database';
+import {AngularFireAuthModule} from '@angular/fire/auth';
 import {environment} from "../environments/environment";
-import { HeaderComponent } from './template-blocks/header/header.component';
+import {HeaderComponent} from './template-blocks/header/header.component';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatDialogModule} from '@angular/material/dialog';
-import { SignUpComponent } from './dialogs/sign-up/sign-up.component';
-import { LoginComponent } from './dialogs/login/login.component';
+import {SignUpComponent} from './dialogs/sign-up/sign-up.component';
+import {LoginComponent} from './dialogs/login/login.component';
 import {MatIconModule} from "@angular/material/icon";
-import {AuthService} from "./services/auth/auth.service";
-import { OfferPageComponent } from './pages/offer-page/offer-page.component';
-import { FooterComponent } from './template-blocks/footer/footer.component';
-import { OfferCardComponent } from './template-blocks/offer-card/offer-card.component';
-import { ProfilePageComponent } from './pages/profile-page/profile-page.component';
+import {OfferPageComponent} from './pages/offer-page/offer-page.component';
+import {FooterComponent} from './template-blocks/footer/footer.component';
+import {OfferCardComponent} from './template-blocks/offer-card/offer-card.component';
+import {ProfilePageComponent} from './pages/profile-page/profile-page.component';
 import {MatCheckboxModule} from "@angular/material/checkbox";
-import { ResetPasswordComponent } from './dialogs/reset-password/reset-password.component';
-import { EmailVerifyComponent } from './dialogs/email-verify-message/email-verify.component';
-import { CustomImageCropperComponent } from './template-blocks/image-cropper/custom-image-cropper.component';
+import {ResetPasswordComponent} from './dialogs/reset-password/reset-password.component';
+import {EmailVerifyComponent} from './dialogs/email-verify-message/email-verify.component';
+import {CustomImageCropperComponent} from './template-blocks/image-cropper/custom-image-cropper.component';
 import {ImageCropperModule} from "ngx-image-cropper";
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { NotificationComponent } from './dialogs/notification/notification.component';
@@ -41,6 +40,8 @@ import { FeedbackComponent } from './pages/feedback/feedback.component';
 import { RulesComponent } from './pages/rules/rules.component';
 import { DeleteOfferComponent } from './dialogs/delete-offer/delete-offer.component';
 import { OverlayComponent } from './template-blocks/overlay/overlay.component';
+import {AuthService} from "./services/auth/auth.service";
+import {AngularFireAnalyticsModule} from "@angular/fire/analytics";
 
 export function appInitFactory(auth: AuthService) {
   return (): Promise<any> => {
@@ -74,14 +75,16 @@ export function appInitFactory(auth: AuthService) {
     OverlayComponent
   ],
   imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
     AngularFirestoreModule,
     AngularFireAuthModule,
+    AngularFirestoreModule,
+    AngularFireAnalyticsModule,
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    ReactiveFormsModule,
     ImageCropperModule,
 
     // Material

@@ -8,14 +8,11 @@ import {AppService} from "../app/app.service";
 import {MatDialog} from "@angular/material/dialog";
 import {EmailVerifyComponent} from "../../dialogs/email-verify-message/email-verify.component";
 import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
-import * as firebase from 'firebase/app';
-import 'firebase/analytics';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-
   user$: Observable<any>;
   user: User;
 
@@ -37,10 +34,9 @@ export class AuthService {
       }));
   }
 
-  appInitAuth(): Promise<any> {
+  public appInitAuth(): Promise<any> {
     return new Promise<void>((resolve, reject) => {
-      this.afAuth.auth.useDeviceLanguage();
-      firebase.analytics();
+      this.afAuth.useDeviceLanguage();
       let handler = this.afAuth.authState.subscribe((userData) => {
         if (userData && !userData.isAnonymous) {
           this.user = {
@@ -51,7 +47,7 @@ export class AuthService {
 
           resolve();
         } else if (!userData) {
-          this.afAuth.auth.signInAnonymously().then(() => {
+          this.afAuth.signInAnonymously().then(() => {
             this.user = null;
             resolve();
           }).catch((err) => reject(err));
@@ -66,27 +62,10 @@ export class AuthService {
     });
   }
 
-  emailAndPasswordLogin(credentials: any): Promise<void> {
-    return new Promise<void>(async(resolve, reject) => {
-      try {
-        await this.afAuth.auth.signInWithEmailAndPassword(credentials.login, credentials.password);
-        resolve();
-      } catch (e) {
-        reject(e);
-      }
-    });
-  }
-
-  emailPasswordSignUp(credentials: any): Promise<void> {
+  public emailAndPasswordLogin(credentials: any): Promise<void> {
     return new Promise<void>(async (resolve, reject) => {
       try {
-        await this.afAuth.auth.createUserWithEmailAndPassword(credentials.email, credentials.password);
-        await this.afAuth.auth.currentUser.updateProfile({
-          'displayName': credentials.name,
-          'photoURL': AppService.getDefaultAvatar()
-        });
-        this.updateCurrentUserData();
-        await this.sendEmailVerification();
+        await this.afAuth.signInWithEmailAndPassword(credentials.login, credentials.password);
         resolve();
       } catch (e) {
         reject(e);
@@ -94,19 +73,34 @@ export class AuthService {
     });
   }
 
-  updateUserEmail(newValue: string): Promise<void> {
+  public async emailPasswordSignUp(credentials: any): Promise<void> {
+    try {
+      await this.afAuth.createUserWithEmailAndPassword(credentials.email, credentials.password);
+      let userData = await this.afAuth.currentUser;
+      userData.displayName = credentials.name;
+      userData.photoURL = AppService.getDefaultAvatar();
+      await this.afAuth.updateCurrentUser(userData);
+      await this.updateCurrentUserData();
+      await this.sendEmailVerification();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  public updateUserEmail(newValue: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      this.afAuth.auth.currentUser.updateEmail(newValue)
-        .then(() => {
-          this.afAuth.auth.currentUser.sendEmailVerification();
+      this.afAuth.currentUser.then((user) => {
+        user.updateEmail(newValue).then(() => {
+          user.sendEmailVerification();
           resolve();
         }).catch(() => reject())
+      });
     });
   }
 
-  resetPasswordByEmail(email: string): Promise<void> {
+  public resetPasswordByEmail(email: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      this.afAuth.auth.sendPasswordResetEmail(email, {
+      this.afAuth.sendPasswordResetEmail(email, {
         url: 'https://biz-mate.ru/?password_reset=true'
       })
         .then((res) => resolve(res))
@@ -117,35 +111,39 @@ export class AuthService {
     });
   }
 
-  updateUserDisplayNameOrPhotoURL(field: string, newValue: string): Promise<void> {
+  public updateUserDisplayNameOrPhotoURL(field: string, newValue: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      this.afAuth.auth.currentUser.updateProfile({[field]: newValue})
-        .then(() => resolve()).catch(() => reject());
+      this.afAuth.currentUser.then(user => {
+        user.updateProfile({[field]: newValue})
+          .then(() => resolve())
+          .catch(() => reject());
+      });
     });
   }
 
   // Update this.user when firebaseUser data is changed
-  updateCurrentUserData(): User {
-    const user = this.afAuth.auth.currentUser;
-    if (user)
-      this.user = {
-        displayName: user.displayName,
-        uid: user.uid,
-        email: user.email,
-        emailVerified: user.emailVerified,
-        photoURL: user.photoURL
-      };
-    else
-      this.user = null;
-
+  public async updateCurrentUserData(): Promise<User> {
+    let user = await this.afAuth.currentUser;
+    if (user) {
+      if (user)
+        this.user = {
+          displayName: user.displayName,
+          uid: user.uid,
+          email: user.email,
+          emailVerified: user.emailVerified,
+          photoURL: user.photoURL
+        };
+      else
+        this.user = null;
+    }
     return this.user;
   }
 
-  googleAuth(): Promise<void> {
-    return new Promise<void>(async(resolve, reject) => {
+  public googleAuth(): Promise<void> {
+    return new Promise<void>(async (resolve, reject) => {
       try {
         const provider = new auth.GoogleAuthProvider();
-        await this.afAuth.auth.signInWithPopup(provider);
+        await this.afAuth.signInWithPopup(provider);
         resolve();
       } catch (e) {
         reject(e);
@@ -153,9 +151,11 @@ export class AuthService {
     });
   }
 
-  public async sendEmailVerification(): Promise<void> {
-    await this.afAuth.auth.currentUser.sendEmailVerification({
-      url: 'https://biz-mate.ru/profile?email_verify=true'
+  public sendEmailVerification(): void {
+    this.afAuth.currentUser.then((user) => {
+      user.sendEmailVerification({
+        url: 'https://biz-mate.ru/profile?email_verify=true'
+      });
     });
   }
 
@@ -164,10 +164,9 @@ export class AuthService {
       MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, {email: this.user.email, alreadySent: false}));
   }
 
-  signOut() {
+  async signOut(): Promise<void> {
     this.user = null;
-    return this.afAuth.auth.signOut().then(() => {
-      this.afAuth.auth.signInAnonymously();
-    });
+    await this.afAuth.signOut();
+    await this.afAuth.signInAnonymously();
   }
 }

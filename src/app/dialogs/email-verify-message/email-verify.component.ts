@@ -30,8 +30,8 @@ export class EmailVerifyComponent implements OnInit {
   }
 
   sendEmailVerificationEmail(): void {
-    this.authService.sendEmailVerification()
-      .finally(() => this.startTimer())
+    this.authService.sendEmailVerification();
+    this.startTimer();
   }
 
 }

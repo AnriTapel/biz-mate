@@ -1,10 +1,9 @@
 import {Component, ViewChild} from '@angular/core';
 import {ImageCroppedEvent, ImageCropperComponent} from "ngx-image-cropper";
-import * as firebase from 'firebase/app';
-import 'firebase/storage';
 import {Messages} from "../../models/Messages";
 import {MatDialogRef} from "@angular/material/dialog";
 import {AppService} from "../../services/app/app.service";
+import {AngularFireStorage} from "@angular/fire/storage";
 
 @Component({
   selector: 'app-image-cropper',
@@ -20,7 +19,7 @@ export class CustomImageCropperComponent {
   croppedImageFile: File = null;
   fileName: string = null;
 
-  constructor(private dialogRef: MatDialogRef<CustomImageCropperComponent>) {
+  constructor(private dialogRef: MatDialogRef<CustomImageCropperComponent>, private db: AngularFireStorage) {
   }
 
   fileChangeEvent(event: any): void {
@@ -42,14 +41,14 @@ export class CustomImageCropperComponent {
     //Find out if file with such fileName already exists
     AppService.showOverlay();
     try {
-      await firebase.storage().ref().child(this.fileName).getDownloadURL();
+      await this.db.ref('/').child(this.fileName).getDownloadURL();
       this.fileName = `${Date.now()}_${this.fileName}`;
     } catch (err) {
       console.log(`File with name ${this.fileName} doesn't exist.`);
     }
 
     this.croppedImageFile = this.base64toFile(event.base64);
-    let imageRef = firebase.storage().ref().child(this.fileName);
+    let imageRef = this.db.ref('/').child(this.fileName);
 
     let uploadRef = await imageRef.put(this.croppedImageFile);
     if (uploadRef.state === 'success') {
