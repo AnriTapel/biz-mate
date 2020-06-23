@@ -83,11 +83,12 @@ export class ProfilePageComponent implements OnInit {
       if (res && typeof res === "string") {
         this.authService.updateUserDisplayNameOrPhotoURL('photoURL', res)
           .then(() => {
-            AppService.hideOverlay();
+            this.authService.deleteUserImage(this.user.photoURL);
             this.updateUserDataInOffers('photoURL', res);
             this.authService.updateCurrentUserData().then((user) => {
               this.user = user;
             });
+            AppService.hideOverlay();
             this.notificationBarService.showNotificationBar(Messages.SAVE_SUCCESS, true);
           })
           .catch(() => {

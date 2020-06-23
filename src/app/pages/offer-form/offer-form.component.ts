@@ -12,8 +12,6 @@ import {ActivatedRoute} from "@angular/router";
 import {Offer} from "../../models/Offer";
 import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
 import {Messages} from "../../models/Messages";
-import * as firebase from 'firebase/app';
-import 'firebase/storage';
 
 @Component({
   selector: 'app-offer-form',
@@ -106,20 +104,11 @@ export class OfferFormComponent implements OnInit {
     let imgCount = files.length > 5 ? 5 : files.length;
     AppService.showOverlay();
     for (let i = 0; i < imgCount; i++) {
-      let fileName = files[i].name;
-      try {
-        await firebase.storage().ref().child(fileName).getDownloadURL();
-        fileName = `${Date.now()}_${fileName}`;
-      } catch (err) {
-        console.warn(`File with name ${fileName} doesn't exist.`);
-      }
-
-      let imageRef = firebase.storage().ref().child(fileName);
-
-      let uploadRef = await imageRef.put(files[i]);
-      if (uploadRef.state === 'success') {
-        let photoURL = await uploadRef.ref.getDownloadURL();
-        this.offerImages.push(photoURL);
+      let res = await this.auth.uploadUserImage(files[i]);
+      if (res)
+        this.offerImages.push(res);
+      else {
+        this.notificationBarService.showNotificationBar(Messages["image/could_not_load"], false);
       }
     }
     AppService.hideOverlay();
@@ -199,7 +188,7 @@ export class OfferFormComponent implements OnInit {
     AppService.showOverlay();
 
     for (let img of this.removedImages) {
-      firebase.storage().refFromURL(img).delete().catch(() => console.error(`Error occured while deleting image ${img}`));
+      this.auth.deleteUserImage(img);
     }
 
     offerData.type = this.currentType;
