@@ -16,6 +16,7 @@ export class AppService {
     { id: OfferTypes.HAVE_INVESTMENTS, title: 'Предлагаю инвестиции' },
     { id: OfferTypes.NEED_PARTNER, title: 'Ищу партнера' },
     { id: OfferTypes.SEARCH_BUSINESS, title: 'Войду в бизнес' },
+    { id: OfferTypes.SELL_BUSINESS, title: 'Продам бизнес'}
   ];
 
   static readonly cities: Array<City> = [{"id":0,"name":"Абакан"},{"id":1,"name":"Альметьевск"},{"id":2,"name":"Ангарск"},{"id":3,"name":"Арзамас"},{"id":4,"name":"Армавир"},{"id":5,"name":"Артем"},{"id":6,"name":"Архангельск"},{"id":7,"name":"Астрахань"},{"id":8,"name":"Ачинск"},{"id":9,"name":"Балаково"},{"id":10,"name":"Балашиха"},{"id":11,"name":"Барнаул"},{"id":12,"name":"Батайск"},{"id":13,"name":"Белгород"},{"id":14,"name":"Бердск"},{"id":15,"name":"Березники"},{"id":16,"name":"Бийск"},{"id":17,"name":"Благовещенск"},{"id":18,"name":"Братск"},{"id":19,"name":"Брянск"},{"id":20,"name":"Великий Новгород"},{"id":21,"name":"Владивосток"},{"id":22,"name":"Владикавказ"},{"id":23,"name":"Владимир"},{"id":24,"name":"Волгоград"},{"id":25,"name":"Волгодонск"},{"id":26,"name":"Волжский"},{"id":27,"name":"Вологда"},{"id":28,"name":"Воронеж"},{"id":29,"name":"Грозный"},{"id":30,"name":"Дербент"},{"id":31,"name":"Дзержинск"},{"id":32,"name":"Димитровград"},{"id":33,"name":"Долгопрудный"},
@@ -29,7 +30,8 @@ export class AppService {
     {experience: 'О бизнесе', conditions: 'Предлагаемые условия', capital: 'Требуемый капитал'},
     {experience: 'Инвестиционный опыт', conditions: 'Условия партнерства', capital: 'Предлагаемый капитал'},
     {experience: 'О бизнесе', conditions: 'Условия партнерства'},
-    {experience: 'Опыт партнерства', conditions: 'Условия партнерства'}
+    {experience: 'Опыт партнерства', conditions: 'Условия партнерства'},
+    {experience: 'О бизнесе', conditions: 'Условия продажи', capital: 'Запрашиваемая цена'}
   ];
 
   static readonly defaultAvatars = [

@@ -124,7 +124,8 @@ export class OfferFormComponent implements OnInit {
   }
 
   public isCapitalFieldVisible(): boolean {
-    return this.currentType == this.offerType.NEED_INVESTMENTS || this.currentType == this.offerType.HAVE_INVESTMENTS;
+    return this.currentType == this.offerType.NEED_INVESTMENTS || this.currentType == this.offerType.HAVE_INVESTMENTS ||
+      this.currentType == this.offerType.SELL_BUSINESS;
   }
 
   public isPhoneValid(): boolean {
