@@ -19,6 +19,7 @@ export class FeedbackComponent implements OnInit {
               private db: AngularFirestore) { }
 
   ngOnInit(): void {
+    scroll(0,0);
     this.feedbackForm = new FormGroup({
       name: new FormControl(this.authService.user ? this.authService.user.displayName : '', [Validators.required]),
       email: new FormControl(this.authService.user ? this.authService.user.email : '', [Validators.required, Validators.email]),
