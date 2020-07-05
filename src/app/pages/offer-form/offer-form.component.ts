@@ -32,7 +32,6 @@ export class OfferFormComponent implements OnInit {
   fieldsLabels: any = null;
   offerImages: string[] = [];
   removedImages: string[] = [];
-  attacheEmail: boolean = true;
   contactMethods: any = {
     email: true,
     phone: true,
@@ -58,7 +57,7 @@ export class OfferFormComponent implements OnInit {
       desc: new FormControl(offerData.desc, [Validators.required]),
       experience: new FormControl(offerData.experience),
       conditions: new FormControl(offerData.conditions),
-      phone: new FormControl(offerData.phone, [Validators.required, Validators.pattern(/^\+7 \(\d{3}\)\s\d{3}-\d{4}$/)])
+      phone: new FormControl(offerData.phone, [Validators.pattern(/^\+7 \(\d{3}\)\s\d{3}-\d{4}$/)])
     });
 
     this.newOfferForm.valueChanges.subscribe(() => this.isFormValid = true);
@@ -159,7 +158,6 @@ export class OfferFormComponent implements OnInit {
       offerData['city'] = AppService.getCityByFiledValue('id', offer.city).name || '';
       this.contactMethods = offer.contactMethods || this.contactMethods;
       this.offerImages = offer.imagesURL || [];
-      this.attacheEmail = !!offerData['email'];
       AppService.hideOverlay();
     }
 
@@ -199,11 +197,9 @@ export class OfferFormComponent implements OnInit {
     offerData.businessArea = AppService.getBusinessAreaByFiledValue('name', offerData.businessArea).id;
     offerData.date = Date.now();
     offerData.offerId = this.editOfferId || this.db.createId();
-    offerData.email = this.attacheEmail ? this.auth.user.email : null;
+    offerData.email = this.auth.user.email;
     offerData.photoURL = this.auth.user.photoURL || AppService.getDefaultAvatar();
     offerData.imagesURL = this.offerImages;
-    if (!this.attacheEmail)
-      this.contactMethods.email = false;
     offerData.contactMethods = this.contactMethods;
 
     let ref = this.db.collection('/offers');

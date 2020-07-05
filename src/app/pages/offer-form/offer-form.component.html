@@ -79,7 +79,7 @@
       <h4 class="full-width-field">Контактная информация</h4>
 
       <mat-form-field>
-        <mat-label>Номер телефона *</mat-label>
+        <mat-label>Номер телефона</mat-label>
         <input matInput id="tel" formControlName="phone" placeholder="+7 (999) 999-9999" phoneMask maxlength="17"
                [preValue]="newOfferForm.value.phone" [phoneControl]="newOfferForm.controls['phone']"/>
       </mat-form-field>
@@ -87,7 +87,7 @@
       <div *ngIf="isPhoneValid()" class="prefered-contact-methods">
         <span>Предпочетаемые способы свзяи:</span>
         <div>
-          <img *ngIf="attacheEmail" src="/assets/img/email.svg" title="Электронная пота" alt="Электронная пота"
+          <img src="/assets/img/email.svg" title="Электронная пота" alt="Электронная пота"
                (click)="contactMethods.email = !contactMethods.email" [style.opacity]="contactMethods.email ? 1 : .3"/>
           <img src="/assets/img/phone.svg" title="Телефонный звонок" alt="Телефонный звонок"
                (click)="contactMethods.phone = !contactMethods.phone" [style.opacity]="contactMethods.phone ? 1 : .3"/>
@@ -100,9 +100,7 @@
         </div>
       </div>
 
-      <mat-checkbox class="full-width-field" (change)="attacheEmail = !attacheEmail" [checked]="attacheEmail">
-        Указать Ваш E-mail в качестве контактной информации
-      </mat-checkbox>
+      <span class="email-info full-width-field">Ваш E-mail будет автоматически добавлен в качестве контактный информации</span>
 
       <div class="bottom-block">
         <p *ngIf="!isFormValid" class="error-message">Корректно заполните обязательные поля</p>
