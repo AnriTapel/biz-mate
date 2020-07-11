@@ -1,16 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {SeoService} from "../../services/seo/seo.service";
 
 @Component({
   selector: 'app-rules',
   templateUrl: './rules.component.html',
   styleUrls: ['./rules.component.scss']
 })
-export class RulesComponent implements OnInit {
+export class RulesComponent implements OnInit, OnDestroy {
 
-  constructor() { }
+  constructor(private seoService: SeoService) { }
 
   ngOnInit(): void {
-    scroll(0,0);
+    this.seoService.updateRouteMetaTagsByData({title: 'Правила размещения предложений | BizMate'});
   }
 
+  ngOnDestroy(): void {
+    window.scrollTo(0,0);
+  }
 }

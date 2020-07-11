@@ -10,8 +10,6 @@ import {OffersPageComponent} from "./pages/offers-page/offers-page.component";
 import {FeedbackComponent} from "./pages/feedback/feedback.component";
 import {RulesComponent} from "./pages/rules/rules.component";
 
-
-
 const routes: Routes = [
   {path: '', component: HomePageComponent, pathMatch: "full"},
   {path: 'offers-page', component: OffersPageComponent, pathMatch: "full"},

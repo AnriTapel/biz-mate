@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Observable, of, zip} from "rxjs";
 import {Offer} from "../../models/Offer";
 import {FormControl, FormGroup} from "@angular/forms";
@@ -9,34 +9,45 @@ import {map, startWith} from "rxjs/operators";
 import {AngularFirestore} from "@angular/fire/firestore";
 import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
 import {Messages} from "../../models/Messages";
+import {Meta, Title} from "@angular/platform-browser";
+import {SeoService} from "../../services/seo/seo.service";
 
 @Component({
   selector: 'app-offers-page',
   templateUrl: './offers-page.component.html',
   styleUrls: ['./offers-page.component.scss']
 })
-export class OffersPageComponent implements OnInit {
+export class OffersPageComponent implements OnInit, OnDestroy {
 
   private readonly OFFER_QUERY_LIMIT: number = 20;
-  private lastVisibleOffer: any = null;
-  allOffersLoaded: boolean = false;
-  emptyFilterResult: boolean = false;
+  private readonly metaTags = {
+    title: 'Доска предложений | BizMate',
+    description: 'Здесь Вы найдете подходящее бизнес-предложение по партнерсту, инвестициям или покупке/продаже готового проекта, используя фильтры по регионам, сферам бизнеса и типам предложений.',
+    keywords: 'бизнес инвестор, партнер по бизнесу, инвестор искать, куда вклыдвать деньги, вложить в бизнес, купить бизнес, купить готовый бизнес, начинающий бизнес, бизнес партнер, частный инвестор',
+    site: location.href
+  };
 
-  offersRef: any;
-  sortedOffers$: Observable<any[]>;
-  filteredOffers$: Observable<Offer[]>;
+  private lastVisibleOffer: any = null;
+  public allOffersLoaded: boolean = false;
+  public emptyFilterResult: boolean = false;
+
+  private offersRef: any;
+  public sortedOffers$: Observable<any[]>;
+  public filteredOffers$: Observable<Offer[]>;
 
   // Панель поиска
-  searchForm: FormGroup;
-  filteredOfferTypes$: Observable<any[]>;
-  filteredBusinessArea$: Observable<BusinessArea[]>;
-  filteredCities$: Observable<City[]>;
-  isSearchFormVisible: boolean = false;
+  public searchForm: FormGroup;
+  public filteredOfferTypes$: Observable<any[]>;
+  public filteredBusinessArea$: Observable<BusinessArea[]>;
+  public filteredCities$: Observable<City[]>;
+  public isSearchFormVisible: boolean = false;
 
-  constructor(private appService: AppService, private db: AngularFirestore, private notificationService: NotificationBarService) {
+  constructor(private appService: AppService, private db: AngularFirestore, private notificationService: NotificationBarService,
+              private seoService: SeoService) {
   }
 
   ngOnInit(): void {
+    this.seoService.updateRouteMetaTagsByData(this.metaTags);
     AppService.showOverlay();
     this.searchForm = new FormGroup({
       type: new FormControl(null, [AppService.offerTypeValidator()]),
@@ -63,10 +74,13 @@ export class OffersPageComponent implements OnInit {
       );
     this.offersRef = this.db.collection('offers').ref;
     this.getInitialOffers().finally(() => AppService.hideOverlay());
-    scroll(0, 0);
   }
 
-  async getInitialOffers(): Promise<void> {
+  ngOnDestroy(): void {
+    window.scrollTo(0,0);
+  }
+
+  private async getInitialOffers(): Promise<void> {
     let initialQuery = await this.offersRef.orderBy('date', 'desc').limit(this.OFFER_QUERY_LIMIT).get();
 
     let offers = [];
@@ -79,7 +93,7 @@ export class OffersPageComponent implements OnInit {
     }
   }
 
-  async applyFilter(): Promise<void> {
+  public async applyFilter(): Promise<void> {
     if (this.searchForm.status === 'INVALID')
       return;
 
@@ -115,7 +129,7 @@ export class OffersPageComponent implements OnInit {
     }
   }
 
-  async applyOneParamFilter(param: string, value: number): Promise<void> {
+  private async applyOneParamFilter(param: string, value: number): Promise<void> {
     let resp = await this.offersRef.where(param, '==', value).get();
     let filterRes = [];
     if (!resp.empty) {
@@ -127,7 +141,7 @@ export class OffersPageComponent implements OnInit {
     }
   }
 
-  async applyTwoParamFilter(param_1, value_1, param_2, value_2): Promise<void> {
+  private async applyTwoParamFilter(param_1, value_1, param_2, value_2): Promise<void> {
     let resp = await this.offersRef.where(param_1, '==', value_1).where(param_2, '==', value_2).get();
     let filterRes = [];
     if (!resp.empty) {
@@ -139,7 +153,7 @@ export class OffersPageComponent implements OnInit {
     }
   }
 
-  async applyThreeParamFilter(param_1, value_1, param_2, value_2, param_3, value_3): Promise<void> {
+  private async applyThreeParamFilter(param_1, value_1, param_2, value_2, param_3, value_3): Promise<void> {
     let resp = await this.offersRef.where(param_1, '==', value_1).where(param_2, '==', value_2)
       .where(param_3, '==', value_3).get();
     let filterRes = [];
@@ -152,7 +166,7 @@ export class OffersPageComponent implements OnInit {
     }
   }
 
-  clearFilterForm(): void {
+  public clearFilterForm(): void {
     this.emptyFilterResult = false;
     this.searchForm.reset();
 
@@ -163,7 +177,7 @@ export class OffersPageComponent implements OnInit {
     this.filteredOffers$ = null;
   }
 
-  async loadNextOffersChunk(): Promise<void> {
+  public async loadNextOffersChunk(): Promise<void> {
     let query = await this.db.collection<Offer>('/offers').ref
       .orderBy('date', 'desc').limit(this.OFFER_QUERY_LIMIT).startAfter(this.lastVisibleOffer).get();
 

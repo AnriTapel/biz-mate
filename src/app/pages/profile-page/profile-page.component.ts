@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {User} from "../../models/User";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AppService} from "../../services/app/app.service";
@@ -13,32 +13,33 @@ import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config
 import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
 import {Messages} from "../../models/Messages";
 import {NotificationComponent} from "../../dialogs/notification/notification.component";
+import {SeoService} from "../../services/seo/seo.service";
 
 @Component({
   selector: 'app-profile-page',
   templateUrl: './profile-page.component.html',
   styleUrls: ['./profile-page.component.scss']
 })
-export class ProfilePageComponent implements OnInit {
+export class ProfilePageComponent implements OnInit, OnDestroy {
 
-  readonly emailVerifyEvent = {
+  private readonly emailVerifyEvent = {
     title: 'Электронная почта подтверждена',
     text: 'Вы успешно подтвердили свой адрес электронной почты! Теперь Вы можете отредактировать информацию о себе и перейти к созданию своего первого оффера.'
   };
 
-  user: User = null;
-  userOffers$: Observable<Offer[]> = null;
+  public user: User = null;
+  public userOffers$: Observable<Offer[]> = null;
 
-  userDataForm: FormGroup;
+  public userDataForm: FormGroup;
 
-  editableFields = {
+  public editableFields = {
     displayName: false,
     email: false
   };
 
   constructor(private appService: AppService, private authService: AuthService, private router: Router,
               private db: AngularFirestore, private dialog: MatDialog, private route: ActivatedRoute,
-              private notificationBarService: NotificationBarService) {
+              private notificationBarService: NotificationBarService, private seoService: SeoService) {
     this.route.queryParams.subscribe(params => {
       if (params['email_verify']) {
         this.dialog.open(NotificationComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, this.emailVerifyEvent))
@@ -53,8 +54,12 @@ export class ProfilePageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.seoService.updateRouteMetaTagsByData({title: 'Мой профиль | BizMate'});
     this.getUserOffers();
-    scroll(0,0);
+  }
+
+  ngOnDestroy(): void {
+    window.scrollTo(0,0);
   }
 
   private async getUserOffers(): Promise<void> {

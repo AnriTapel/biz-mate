@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {OfferTypes} from "../../models/OfferTypes";
 import {AppService} from "../../services/app/app.service";
 import {AuthService} from "../../services/auth/auth.service";
@@ -12,27 +12,29 @@ import {ActivatedRoute} from "@angular/router";
 import {Offer} from "../../models/Offer";
 import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
 import {Messages} from "../../models/Messages";
+import {Meta, Title} from "@angular/platform-browser";
+import {SeoService} from "../../services/seo/seo.service";
 
 @Component({
   selector: 'app-offer-form',
   templateUrl: './offer-form.component.html',
   styleUrls: ['./offer-form.component.scss']
 })
-export class OfferFormComponent implements OnInit {
+export class OfferFormComponent implements OnInit, OnDestroy {
 
   private currentType: number = 1;
 
-  editOffer: boolean = false;
-  editOfferId: string = null;
-  isOfferLoaded: boolean = false;
+  private editOfferId: string = null;
+  public editOffer: boolean = false;
+  public isOfferLoaded: boolean = false;
 
-  newOfferForm: FormGroup;
-  filteredBusinessArea$: Observable<BusinessArea[]>;
-  filteredCities$: Observable<City[]>;
-  fieldsLabels: any = null;
-  offerImages: string[] = [];
-  removedImages: string[] = [];
-  contactMethods: any = {
+  public newOfferForm: FormGroup;
+  public filteredBusinessArea$: Observable<BusinessArea[]>;
+  public filteredCities$: Observable<City[]>;
+  public fieldsLabels: any = null;
+  public offerImages: string[] = [];
+  private removedImages: string[] = [];
+  public contactMethods: any = {
     email: true,
     phone: true,
     whatsapp: false,
@@ -40,14 +42,22 @@ export class OfferFormComponent implements OnInit {
     viber: false
   };
 
-  isFormValid: boolean = true;
-  offerType = OfferTypes;
+  public isFormValid: boolean = true;
+  private offerType = OfferTypes;
+
+  private readonly metaTags = {
+    title: 'Разместить предложение | BizMate',
+    description: 'Составьте и разместите в сервисе BizMate предложение о поиске партнера по бизнесу, поиску и предложения инвестиций, а также покупке или продаже бизнеса.',
+    keywords: 'бизнес инвестор, партнер по бизнесу, инвестор искать, куда вклыдвать деньги, вложить в бизнес, купить бизнес, купить готовый бизнес, начинающий бизнес, бизнес партнер, частный инвестор',
+    site: location.href
+  };
 
   constructor(private db: AngularFirestore, private auth: AuthService, private activeRoute: ActivatedRoute,
-              private notificationBarService: NotificationBarService) {
+              private notificationBarService: NotificationBarService, private seoService: SeoService) {
   }
 
   async ngOnInit(): Promise<void> {
+    this.seoService.updateRouteMetaTagsByData(this.metaTags);
     const offerData = await this.getOfferData();
     this.newOfferForm = new FormGroup({
       city: new FormControl(offerData.city, [Validators.required, AppService.cityFieldValidator()]),
@@ -75,8 +85,10 @@ export class OfferFormComponent implements OnInit {
         startWith(''),
         map(value => AppService._filterCategories(value))
       );
+  }
 
-    scroll(0,0);
+  ngOnDestroy(): void {
+    window.scrollTo(0,0);
   }
 
   public setOfferType(type: OfferTypes): void {

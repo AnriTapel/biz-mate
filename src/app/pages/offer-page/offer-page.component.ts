@@ -1,25 +1,27 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy} from '@angular/core';
 import {AngularFirestore} from "@angular/fire/firestore";
 import {ActivatedRoute} from "@angular/router";
 import {Offer} from "../../models/Offer";
 import {AppService} from "../../services/app/app.service";
+import {SeoService} from "../../services/seo/seo.service";
 
 @Component({
   selector: 'app-offer-page',
   templateUrl: './offer-page.component.html',
   styleUrls: ['./offer-page.component.scss']
 })
-export class OfferPageComponent implements OnInit {
+export class OfferPageComponent implements OnDestroy {
 
-  offer: Offer = null;
+  public offer: Offer = null;
 
-  constructor(private db: AngularFirestore, private route: ActivatedRoute) {
+  constructor(private db: AngularFirestore, private route: ActivatedRoute, private seoService: SeoService) {
     AppService.showOverlay();
     db.collection('/offers').doc(route.snapshot.paramMap.get("id").toString()).get().subscribe((doc) => {
       if (!doc.exists) {
         console.error('No such document!');
       } else {
         this.offer = doc.data() as Offer;
+        this.seoService.updateRouteMetaTagsByOffer(this.offer);
       }
     }, (err) => {
       console.error(err);
@@ -28,8 +30,8 @@ export class OfferPageComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    scroll(0,0);
+  ngOnDestroy(): void {
+    window.scrollTo(0,0);
   }
 
   public getOfferDate(): string {
