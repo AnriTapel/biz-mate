@@ -1,4 +1,6 @@
 import {Component} from '@angular/core';
+import {AuthService} from "./services/auth/auth.service";
+import {AppService} from "./services/app/app.service";
 
 @Component({
   selector: 'app-root',
@@ -7,6 +9,9 @@ import {Component} from '@angular/core';
 })
 export class AppComponent {
 
-  constructor() {
+  constructor(private auth: AuthService) {
+    AppService.showOverlay();
+    this.auth.appInitAuth()
+      .finally(() => AppService.hideOverlay())
   }
 }
