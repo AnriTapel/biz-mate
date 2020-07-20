@@ -1,20 +1,22 @@
-import {Component, OnDestroy} from '@angular/core';
+import {Component} from '@angular/core';
 import {AngularFirestore} from "@angular/fire/firestore";
 import {ActivatedRoute} from "@angular/router";
 import {Offer} from "../../models/Offer";
 import {AppService} from "../../services/app/app.service";
 import {SeoService} from "../../services/seo/seo.service";
+import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
 
 @Component({
   selector: 'app-offer-page',
   templateUrl: './offer-page.component.html',
   styleUrls: ['./offer-page.component.scss']
 })
-export class OfferPageComponent implements OnDestroy {
+export class OfferPageComponent extends ComponentBrowserAbstractClass {
 
   public offer: Offer = null;
 
   constructor(private db: AngularFirestore, private route: ActivatedRoute, private seoService: SeoService) {
+    super();
     AppService.showOverlay();
     db.collection('/offers').doc(route.snapshot.paramMap.get("id").toString()).get().subscribe((doc) => {
       if (!doc.exists) {
@@ -28,10 +30,6 @@ export class OfferPageComponent implements OnDestroy {
     }, () => {
       AppService.hideOverlay();
     });
-  }
-
-  ngOnDestroy(): void {
-    window.scrollTo(0,0);
   }
 
   public getOfferDate(): string {
@@ -63,7 +61,9 @@ export class OfferPageComponent implements OnDestroy {
   }
 
   public openImage(url: string): void {
-    window.open(url, '_blank');
+    if (AppService.isPlatformBrowser()) {
+      window.open(url, '_blank');
+    }
   }
 
 

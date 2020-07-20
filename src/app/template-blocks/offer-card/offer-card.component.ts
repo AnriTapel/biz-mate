@@ -26,19 +26,15 @@ export class OfferCardComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  getOfferDate(offer: Offer): string {
+  public getOfferDate(offer: Offer): string {
     return AppService.getOfferDate(offer);
   }
 
-  openOfferPage(offer: Offer): void {
-    window.open(`/offer/${offer.offerId}`, '_blank');
-  }
-
-  editOffer(): void {
+  public editOffer(): void {
     this.router.navigateByUrl(`/edit-offer/${this.offer.offerId}`);
   }
 
-  deleteOffer(): void {
+  public deleteOffer(): void {
     let dialog = this.dialog.open(DeleteOfferComponent, MatDialogConfig.narrowDialogWindow);
     dialog.afterClosed().subscribe((res) => {
       if (res === true) {

@@ -7,7 +7,7 @@
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
-    "public": "dist/biz-mate",
+    "public": "dist/biz-mate/browser",
     "ignore": [
       "firebase.json",
       "**/.*",

@@ -1,5 +1,5 @@
-import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import {BrowserModule, BrowserTransferStateModule} from '@angular/platform-browser';
+import {APP_INITIALIZER, NgModule} from '@angular/core';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
@@ -39,6 +39,13 @@ import {RulesComponent} from './pages/rules/rules.component';
 import {DeleteOfferComponent} from './dialogs/delete-offer/delete-offer.component';
 import {OverlayComponent} from './template-blocks/overlay/overlay.component';
 import {AngularFireAnalyticsModule} from "@angular/fire/analytics";
+import {AuthService} from "./services/auth/auth.service";
+
+export function appInitFactory(auth: AuthService) {
+  return (): Promise<any> => {
+    return auth.appInitAuth();
+  }
+}
 
 @NgModule({
   declarations: [
@@ -70,9 +77,9 @@ import {AngularFireAnalyticsModule} from "@angular/fire/analytics";
     AngularFireDatabaseModule,
     AngularFirestoreModule,
     AngularFireAuthModule,
-    AngularFirestoreModule,
     AngularFireAnalyticsModule,
-    BrowserModule,
+    BrowserModule.withServerTransition({ appId: 'serverApp' }),
+    BrowserTransferStateModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
@@ -85,7 +92,8 @@ import {AngularFireAnalyticsModule} from "@angular/fire/analytics";
     MatDialogModule,
     MatIconModule,
     MatCheckboxModule
-
+  ], providers: [
+    {provide: APP_INITIALIZER, useFactory: appInitFactory, deps: [AuthService], multi: true}
   ],
   bootstrap: [AppComponent]
 })

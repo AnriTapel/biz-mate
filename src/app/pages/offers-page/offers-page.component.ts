@@ -11,20 +11,21 @@ import {NotificationBarService} from "../../services/notification-bar/notificati
 import {Messages} from "../../models/Messages";
 import {Meta, Title} from "@angular/platform-browser";
 import {SeoService} from "../../services/seo/seo.service";
+import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
 
 @Component({
   selector: 'app-offers-page',
   templateUrl: './offers-page.component.html',
   styleUrls: ['./offers-page.component.scss']
 })
-export class OffersPageComponent implements OnInit, OnDestroy {
+export class OffersPageComponent extends ComponentBrowserAbstractClass implements OnInit {
 
   private readonly OFFER_QUERY_LIMIT: number = 20;
   private readonly metaTags = {
     title: 'Доска предложений | BizMate',
     description: 'Здесь Вы найдете подходящее бизнес-предложение по партнерсту, инвестициям или покупке/продаже готового проекта, используя фильтры по регионам, сферам бизнеса и типам предложений.',
     keywords: 'бизнес инвестор, партнер по бизнесу, инвестор искать, куда вклыдвать деньги, вложить в бизнес, купить бизнес, купить готовый бизнес, начинающий бизнес, бизнес партнер, частный инвестор',
-    site: location.href
+    site: '/offers-page'
   };
 
   private lastVisibleOffer: any = null;
@@ -44,6 +45,7 @@ export class OffersPageComponent implements OnInit, OnDestroy {
 
   constructor(private appService: AppService, private db: AngularFirestore, private notificationService: NotificationBarService,
               private seoService: SeoService) {
+    super();
   }
 
   ngOnInit(): void {
@@ -74,10 +76,6 @@ export class OffersPageComponent implements OnInit, OnDestroy {
       );
     this.offersRef = this.db.collection('offers').ref;
     this.getInitialOffers().finally(() => AppService.hideOverlay());
-  }
-
-  ngOnDestroy(): void {
-    window.scrollTo(0,0);
   }
 
   private async getInitialOffers(): Promise<void> {

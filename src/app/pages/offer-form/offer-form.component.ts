@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {OfferTypes} from "../../models/OfferTypes";
 import {AppService} from "../../services/app/app.service";
 import {AuthService} from "../../services/auth/auth.service";
@@ -12,15 +12,15 @@ import {ActivatedRoute} from "@angular/router";
 import {Offer} from "../../models/Offer";
 import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
 import {Messages} from "../../models/Messages";
-import {Meta, Title} from "@angular/platform-browser";
 import {SeoService} from "../../services/seo/seo.service";
+import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
 
 @Component({
   selector: 'app-offer-form',
   templateUrl: './offer-form.component.html',
   styleUrls: ['./offer-form.component.scss']
 })
-export class OfferFormComponent implements OnInit, OnDestroy {
+export class OfferFormComponent extends ComponentBrowserAbstractClass implements OnInit {
 
   private currentType: number = 1;
 
@@ -49,11 +49,12 @@ export class OfferFormComponent implements OnInit, OnDestroy {
     title: 'Разместить предложение | BizMate',
     description: 'Составьте и разместите в сервисе BizMate предложение о поиске партнера по бизнесу, поиску и предложения инвестиций, а также покупке или продаже бизнеса.',
     keywords: 'бизнес инвестор, партнер по бизнесу, инвестор искать, куда вклыдвать деньги, вложить в бизнес, купить бизнес, купить готовый бизнес, начинающий бизнес, бизнес партнер, частный инвестор',
-    site: location.href
+    site: '/new-offer'
   };
 
   constructor(private db: AngularFirestore, private auth: AuthService, private activeRoute: ActivatedRoute,
               private notificationBarService: NotificationBarService, private seoService: SeoService) {
+    super();
   }
 
   async ngOnInit(): Promise<void> {
@@ -85,10 +86,6 @@ export class OfferFormComponent implements OnInit, OnDestroy {
         startWith(''),
         map(value => AppService._filterCategories(value))
       );
-  }
-
-  ngOnDestroy(): void {
-    window.scrollTo(0,0);
   }
 
   public setOfferType(type: OfferTypes): void {
@@ -126,7 +123,9 @@ export class OfferFormComponent implements OnInit, OnDestroy {
   }
 
   public openImage(url: string): void {
-    window.open(url, '_blank');
+    if (AppService.isPlatformBrowser()) {
+      window.open(url, '_blank');
+    }
   }
 
   public deleteImage(image: string): void {

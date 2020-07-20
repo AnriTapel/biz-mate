@@ -35,7 +35,7 @@ export class SeoService {
           this.meta.addTag({name: 'keywords', content: data[key]});
           break;
         case 'site':
-          this.meta.addTag({name: 'twitter:site', content: data[key]});
+          this.meta.addTag({name: 'twitter:site', content: `https://biz-mate.ru${data[key]}`});
           break;
         default:
           break;

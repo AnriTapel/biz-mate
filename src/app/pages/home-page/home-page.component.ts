@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Observable, of} from "rxjs";
 import {AngularFirestore} from "@angular/fire/firestore";
 import {Offer} from "../../models/Offer";
@@ -7,13 +7,14 @@ import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config
 import {ActivatedRoute} from "@angular/router";
 import {MatDialog} from "@angular/material/dialog";
 import {SeoService} from "../../services/seo/seo.service";
+import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
 
 @Component({
   selector: 'app-home-page',
   templateUrl: './home-page.component.html',
   styleUrls: ['./home-page.component.scss']
 })
-export class HomePageComponent implements OnInit, OnDestroy {
+export class HomePageComponent extends ComponentBrowserAbstractClass implements OnInit {
 
   public latestOffers$: Observable<Offer[]>;
 
@@ -21,7 +22,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
     title: 'BizMate - поиск партнеров и инвестиций для бизнеса',
     description: 'Сервис BizMate помогает найти партнёра по бизнесу, привлечь или предложить инвестиции, а также продать работающий бизнес. И все это абсолютно бесплатно!',
     keywords: 'бизнес инвестор, партнер по бизнесу, инвестор искать, куда вклыдвать деньги, вложить в бизнес, купить бизнес, купить готовый бизнес, начинающий бизнес, бизнес партнер, частный инвестор',
-    site: location.href,
+    site: '',
   };
   private readonly resetPasswordEvent = {
     title: 'Пароль изменен',
@@ -31,6 +32,7 @@ export class HomePageComponent implements OnInit, OnDestroy {
 
   constructor(private db: AngularFirestore, private route: ActivatedRoute, private dialog: MatDialog,
               private seoService: SeoService) {
+    super();
     this.route.queryParams.subscribe(params => {
       if (params['password_reset']) {
         this.dialog.open(NotificationComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, this.resetPasswordEvent))
@@ -41,10 +43,6 @@ export class HomePageComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.seoService.updateRouteMetaTagsByData(this.metaTags);
     this.getLatestOffers();
-  }
-
-  ngOnDestroy(): void {
-    window.scrollTo(0,0);
   }
 
   private async getLatestOffers(): Promise<void> {

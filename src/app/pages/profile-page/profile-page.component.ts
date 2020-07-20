@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {User} from "../../models/User";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AppService} from "../../services/app/app.service";
@@ -14,13 +14,14 @@ import {NotificationBarService} from "../../services/notification-bar/notificati
 import {Messages} from "../../models/Messages";
 import {NotificationComponent} from "../../dialogs/notification/notification.component";
 import {SeoService} from "../../services/seo/seo.service";
+import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
 
 @Component({
   selector: 'app-profile-page',
   templateUrl: './profile-page.component.html',
   styleUrls: ['./profile-page.component.scss']
 })
-export class ProfilePageComponent implements OnInit, OnDestroy {
+export class ProfilePageComponent extends ComponentBrowserAbstractClass implements OnInit {
 
   private readonly emailVerifyEvent = {
     title: 'Электронная почта подтверждена',
@@ -40,6 +41,7 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
   constructor(private appService: AppService, private authService: AuthService, private router: Router,
               private db: AngularFirestore, private dialog: MatDialog, private route: ActivatedRoute,
               private notificationBarService: NotificationBarService, private seoService: SeoService) {
+    super();
     this.route.queryParams.subscribe(params => {
       if (params['email_verify']) {
         this.dialog.open(NotificationComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, this.emailVerifyEvent))
@@ -56,10 +58,6 @@ export class ProfilePageComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.seoService.updateRouteMetaTagsByData({title: 'Мой профиль | BizMate'});
     this.getUserOffers();
-  }
-
-  ngOnDestroy(): void {
-    window.scrollTo(0,0);
   }
 
   private async getUserOffers(): Promise<void> {
