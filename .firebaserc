@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "bizmate-5f9a4"
+  },
+  "targets": {
+    "bizmate-5f9a4": {
+      "hosting": {
+        "biz-mate": [
+          "bizmate-5f9a4"
+        ]
+      }
+    }
   }
 }

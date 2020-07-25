@@ -31,7 +31,16 @@ export function app() {
 
   // All regular routes use the Universal engine
   server.get('*', (req, res) => {
-    res.render(indexHtml, { req, providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }] });
+    const requestInfo = new Date().toISOString() + ` GET: ${req.originalUrl}`;
+    console.time(requestInfo);
+
+    res.render(indexHtml,
+      { req, providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }] },
+      (error, html) => {
+        if (error) console.log(error);
+        res.send(html);
+        console.timeEnd(requestInfo);
+      });
   });
 
   return server;
@@ -42,9 +51,9 @@ function run() {
 
   // Start up the Node server
   const server = app();
-  server.listen(port, () => {
+  /*server.listen(port, () => {
     console.log(`Node Express server listening on http://localhost:${port}`);
-  });
+  });*/
 }
 
 // Webpack will replace 'require' with '__webpack_require__'

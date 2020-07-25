@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/biz-mate/browser",
+            "outputPath": "dist/biz-mate/dist/biz-mate/browser",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -127,10 +127,14 @@
         "server": {
           "builder": "@angular-devkit/build-angular:server",
           "options": {
-            "outputPath": "dist/biz-mate/server",
+            "outputPath": "dist/biz-mate/dist/biz-mate/server",
             "main": "server.ts",
             "tsConfig": "tsconfig.server.json",
-            "externalDependencies": ["grpc", "@grpc/proto-loader", "@firebase/firestore"]
+            "externalDependencies": [
+              "grpc",
+              "@grpc/proto-loader",
+              "@firebase/firestore"
+            ]
           },
           "configurations": {
             "production": {
@@ -170,6 +174,12 @@
           },
           "configurations": {
             "production": {}
+          }
+        },
+        "deploy": {
+          "builder": "@angular/fire:deploy",
+          "options": {
+            "ssr": true
           }
         }
       }
