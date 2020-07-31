@@ -1,6 +1,5 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-import {HomePageComponent} from "./pages/home-page/home-page.component";
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
 import {OfferFormComponent} from "./pages/offer-form/offer-form.component";
 import {OfferPageComponent} from "./pages/offer-page/offer-page.component";
 import {ProfilePageComponent} from "./pages/profile-page/profile-page.component";
@@ -9,6 +8,7 @@ import {NotFoundComponent} from "./pages/not-found/not-found.component";
 import {OffersPageComponent} from "./pages/offers-page/offers-page.component";
 import {FeedbackComponent} from "./pages/feedback/feedback.component";
 import {RulesComponent} from "./pages/rules/rules.component";
+import {HomePageComponent} from "./pages/home-page/home-page.component";
 
 const routes: Routes = [
   {path: '', component: HomePageComponent, pathMatch: "full"},
@@ -23,9 +23,8 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {
-    initialNavigation: 'enabled'
-})],
+  imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {
+}

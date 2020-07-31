@@ -6,27 +6,22 @@
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
-  "hosting": [
-    {
-      "target": "biz-mate",
-      "public": "dist/biz-mate/dist/biz-mate/browser",
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
-      ],
-      "rewrites": [
-        {
-          "source": "**",
-          "function": "ssr"
-        }
-      ]
-    }
-  ],
+  "hosting": {
+    "target": "biz-mate",
+    "public": "dist/biz-mate",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
   "storage": {
     "rules": "storage.rules"
-  },
-  "functions": {
-    "source": "dist/biz-mate"
   }
 }

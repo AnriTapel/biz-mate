@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/biz-mate/dist/biz-mate/browser",
+            "outputPath": "dist/biz-mate",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -122,64 +122,6 @@
             "production": {
               "devServerTarget": "biz-mate:serve:production"
             }
-          }
-        },
-        "server": {
-          "builder": "@angular-devkit/build-angular:server",
-          "options": {
-            "outputPath": "dist/biz-mate/dist/biz-mate/server",
-            "main": "server.ts",
-            "tsConfig": "tsconfig.server.json",
-            "externalDependencies": [
-              "grpc",
-              "@grpc/proto-loader",
-              "@firebase/firestore"
-            ]
-          },
-          "configurations": {
-            "production": {
-              "outputHashing": "media",
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
-              "sourceMap": false,
-              "optimization": true
-            }
-          }
-        },
-        "serve-ssr": {
-          "builder": "@nguniversal/builders:ssr-dev-server",
-          "options": {
-            "browserTarget": "biz-mate:build",
-            "serverTarget": "biz-mate:server"
-          },
-          "configurations": {
-            "production": {
-              "browserTarget": "biz-mate:build:production",
-              "serverTarget": "biz-mate:server:production"
-            }
-          }
-        },
-        "prerender": {
-          "builder": "@nguniversal/builders:prerender",
-          "options": {
-            "browserTarget": "biz-mate:build:production",
-            "serverTarget": "biz-mate:server:production",
-            "routes": [
-              "/"
-            ]
-          },
-          "configurations": {
-            "production": {}
-          }
-        },
-        "deploy": {
-          "builder": "@angular/fire:deploy",
-          "options": {
-            "ssr": true
           }
         }
       }
