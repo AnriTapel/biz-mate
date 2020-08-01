@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Inject, Injectable, Injector} from '@angular/core';
 import {auth} from 'firebase/app';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {User} from "../../models/User";
@@ -9,6 +9,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {EmailVerifyComponent} from "../../dialogs/email-verify-message/email-verify.component";
 import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
 import {AngularFireStorage} from "@angular/fire/storage";
+import {Router} from "@angular/router";
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class AuthService {
   user$: Observable<any>;
   user: User;
 
-  constructor(private afAuth: AngularFireAuth, private afStorage: AngularFireStorage, private dialog: MatDialog) {
+  constructor(private afAuth: AngularFireAuth, private afStorage: AngularFireStorage, private dialog: MatDialog, private injector: Injector) {
     this.user$ = this.afAuth.authState.pipe(
       switchMap(user => {
         if (user && !user.isAnonymous) {
@@ -29,6 +30,8 @@ export class AuthService {
           if (!this.user.emailVerified) {
             this.openEmailVerificationDialog();
           }
+          let router = this.injector.get(Router);
+          router.navigateByUrl('/profile')
         } else
           this.user = null;
         return of(user);
