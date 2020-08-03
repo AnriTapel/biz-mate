@@ -23,7 +23,9 @@ export class HeaderComponent implements OnInit {
     this.auth.user$.subscribe((res) => {
       if (res && !res.isAnonymous) {
         this.loggedIn = true;
-        this.authControlText = this.auth.user.displayName.substr(0, 1);
+        this.authControlText = this.auth.user.displayName ?
+            this.auth.user.displayName.substr(0, 1).toUpperCase() :
+            this.auth.user.email.substr(0, 1).toUpperCase();
       } else {
         this.loggedIn = false;
         this.authControlText = 'Вход/Регистрация'

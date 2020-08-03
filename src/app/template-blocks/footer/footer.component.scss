@@ -70,8 +70,24 @@ footer {
       align-items: flex-end;
 
       p {
+        width: 100%;
         font-size: 14px;
         color: #fff;
+        margin: 0 0 1.25em;
+        text-align: right;
+
+        a {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          color: white;
+        }
+
+        img {
+          max-height: 20px;
+          max-width: 20px;
+          float: left;
+        }
       }
     }
 

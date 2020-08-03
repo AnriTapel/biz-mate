@@ -1,4 +1,4 @@
-import {Inject, Injectable, Injector} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {auth} from 'firebase/app';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {User} from "../../models/User";
@@ -9,16 +9,16 @@ import {MatDialog} from "@angular/material/dialog";
 import {EmailVerifyComponent} from "../../dialogs/email-verify-message/email-verify.component";
 import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
 import {AngularFireStorage} from "@angular/fire/storage";
-import {Router} from "@angular/router";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  user$: Observable<any>;
-  user: User;
+  public user$: Observable<any>;
+  public user: User;
+  private firstUserSession: boolean = undefined;
 
-  constructor(private afAuth: AngularFireAuth, private afStorage: AngularFireStorage, private dialog: MatDialog, private injector: Injector) {
+  constructor(private afAuth: AngularFireAuth, private afStorage: AngularFireStorage, private dialog: MatDialog) {
     this.user$ = this.afAuth.authState.pipe(
       switchMap(user => {
         if (user && !user.isAnonymous) {
@@ -27,11 +27,9 @@ export class AuthService {
             email: user.email, photoURL: user.photoURL,
             emailVerified: user.emailVerified
           };
-          if (!this.user.emailVerified) {
+          if (!this.user.emailVerified && !this.firstUserSession) {
             this.openEmailVerificationDialog();
           }
-          let router = this.injector.get(Router);
-          router.navigateByUrl('/profile')
         } else
           this.user = null;
         return of(user);
@@ -79,14 +77,18 @@ export class AuthService {
 
   public async emailPasswordSignUp(credentials: any): Promise<void> {
     try {
+      this.firstUserSession = true;
       await this.afAuth.createUserWithEmailAndPassword(credentials.email, credentials.password);
       let userData = await this.afAuth.currentUser;
-      userData.displayName = credentials.name;
-      userData.photoURL = AppService.getDefaultAvatar();
-      await this.afAuth.updateCurrentUser(userData);
-      await this.updateCurrentUserData();
-      await this.sendEmailVerification();
+      await userData.updateProfile({
+        displayName: credentials.name,
+        photoURL: AppService.getDefaultAvatar()
+      });
+      this.updateCurrentUserData();
+      this.sendEmailVerification();
     } catch (e) {
+      this.firstUserSession = undefined;
+      this.signOut();
       console.error(e);
     }
   }

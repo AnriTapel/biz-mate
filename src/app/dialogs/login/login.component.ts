@@ -6,6 +6,7 @@ import {MatDialogConfig} from "../mat-dialog-config";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {ResetPasswordComponent} from "../reset-password/reset-password.component";
 import {Messages} from "../../models/Messages";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-login',
@@ -18,7 +19,7 @@ export class LoginComponent implements OnInit {
   loginFormGroup: FormGroup;
   errorMessage: string = null;
 
-  constructor(private auth: AuthService, private dialog: MatDialog, private dialogRef: MatDialogRef<LoginComponent>) {
+  constructor(private auth: AuthService, private dialog: MatDialog, private dialogRef: MatDialogRef<LoginComponent>, private router: Router) {
     this.loginFormGroup = new FormGroup({
       login: new FormControl('', Validators.required),
       password: new FormControl('', Validators.required)
@@ -40,13 +41,18 @@ export class LoginComponent implements OnInit {
     };
 
     this.auth.emailAndPasswordLogin(credentials)
-      .then(() => this.dialogRef.close())
-      .catch((err) => this.errorMessage = Messages[err.code] || Messages.DEFAULT_MESSAGE);
+      .then(() => {
+        this.dialogRef.close();
+        setTimeout(() => this.router.navigateByUrl('/profile'), 0);
+      }).catch((err) => this.errorMessage = Messages[err.code] || Messages.DEFAULT_MESSAGE);
   }
 
   loginGoogle() {
     this.auth.googleAuth()
-      .then(() => this.dialogRef.close())
+      .then(() => {
+        this.dialogRef.close();
+        setTimeout(() => this.router.navigateByUrl('/profile'), 0);
+      })
       .catch((err) => this.errorMessage = Messages[err.code] || Messages.DEFAULT_MESSAGE);
   }
 

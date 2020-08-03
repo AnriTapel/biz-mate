@@ -30,6 +30,7 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
 
   public user: User = null;
   public userOffers$: Observable<Offer[]> = null;
+  public hasOffers: boolean = true;
 
   public userDataForm: FormGroup;
 
@@ -63,10 +64,8 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
   private async getUserOffers(): Promise<void> {
     await this.db.collection<Offer[]>('/offers').ref
       .where('userId', '==', this.user.uid).onSnapshot((res) => {
+        this.hasOffers = !res.empty;
         let offers = [];
-        if (res.empty)
-          return;
-
         res.forEach(it => offers.push(it.data() as Offer));
         offers.sort((a, b) => b.date - a.date);
         this.userOffers$ = of(offers);

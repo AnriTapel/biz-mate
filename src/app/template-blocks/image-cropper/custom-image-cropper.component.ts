@@ -41,14 +41,14 @@ export class CustomImageCropperComponent {
     //Find out if file with such fileName already exists
     AppService.showOverlay();
     try {
-      await this.db.ref('/').child(this.fileName).getDownloadURL();
+      await this.db.ref('/user-images/').child(this.fileName).getDownloadURL();
       this.fileName = `${Date.now()}_${this.fileName}`;
     } catch (err) {
       console.log(`File with name ${this.fileName} doesn't exist.`);
     }
 
     this.croppedImageFile = this.base64toFile(event.base64);
-    let imageRef = this.db.ref('/').child(this.fileName);
+    let imageRef = this.db.ref('/user-images/').child(this.fileName);
 
     let uploadRef = await imageRef.put(this.croppedImageFile);
     if (uploadRef.state === 'success') {

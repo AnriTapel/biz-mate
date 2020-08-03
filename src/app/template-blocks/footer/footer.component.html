@@ -12,12 +12,13 @@
 
     <div class="nav-buttons">
       <a [routerLink]="['/']">Главная</a>
-      <a [routerLink]="['/offers-page']">Оффреы</a>
+      <a [routerLink]="['/offers-page']">Офферы</a>
       <a [routerLink]="['/feedback']">Помощь</a>
     </div>
 
     <div class="email_and_offer_button">
-      <p>info@bizmate.ru</p>
+      <p><a href="mailto:info@biz-mate.ru"><img src="/assets/img/email_footer.svg" alt="Почта">info@biz-mate.ru</a></p>
+      <p><a href="https://vk.com/bizmate" target="_blank"><img src="/assets/img/vk_logo.svg" alt="Вконтакте">vk.com/bizmate</a></p>
       <button class="button-primary button-transparent" [routerLink]="['/new-offer']">Разместить оффер</button>
     </div>
   </div>

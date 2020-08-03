@@ -1,9 +1,9 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {OfferTypes} from "../../models/OfferTypes";
 import {AppService} from "../../services/app/app.service";
 import {AuthService} from "../../services/auth/auth.service";
 import {AngularFirestore} from "@angular/fire/firestore";
-import {AbstractControl, FormControl, FormGroup, ValidatorFn, Validators} from "@angular/forms";
+import {AbstractControl, FormControl, FormGroup, FormGroupDirective, ValidatorFn, Validators} from "@angular/forms";
 import {map, startWith} from "rxjs/operators";
 import {Observable} from "rxjs";
 import {BusinessArea} from "../../models/BusinessArea";
@@ -21,6 +21,8 @@ import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstra
   styleUrls: ['./offer-form.component.scss']
 })
 export class OfferFormComponent extends ComponentBrowserAbstractClass implements OnInit {
+
+  @ViewChild(FormGroupDirective) formGroupDirective: FormGroupDirective;
 
   private currentType: number = 1;
 
@@ -144,7 +146,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
   }
 
   public clearForm(): void {
-    this.newOfferForm.reset();
+    setTimeout(() => this.formGroupDirective.resetForm(), 0);
   }
 
   public async getOfferData(): Promise<any> {

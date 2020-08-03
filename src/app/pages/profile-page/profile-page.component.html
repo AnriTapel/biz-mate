@@ -53,10 +53,10 @@
       <h2>Мои офферы</h2>
       <button class="button-primary button-circle button-primary-large" [routerLink]="['/new-offer']">+</button>
     </div>
-    <div class="offers-list" *ngIf="userOffers$">
+    <div class="offers-list" *ngIf="hasOffers">
       <app-offer-card *ngFor="let offer of userOffers$ | async" [offer]="offer" [editable]="true"></app-offer-card>
     </div>
-    <ng-container *ngIf="!userOffers$">
+    <ng-container *ngIf="!hasOffers">
       <div class="no-offers-block">
         <p>Размещенных офферов нет</p>
         <button class="button-primary button-primary-large" [routerLink]="'/new-offer'">Разместить оффер</button>
