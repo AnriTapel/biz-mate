@@ -203,6 +203,10 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
       this.auth.deleteUserImage(img);
     }
 
+    for (let key of Object.keys(offerData)) {
+      offerData[key] = offerData[key] === "" ? null : offerData[key];
+    }
+
     offerData.type = this.currentType;
     offerData.displayName = this.auth.user.displayName;
     offerData.userId = this.auth.user.uid;
@@ -213,7 +217,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     offerData.email = this.auth.user.email;
     offerData.photoURL = this.auth.user.photoURL || AppService.getDefaultAvatar();
     offerData.imagesURL = this.offerImages;
-    offerData.contactMethods = this.contactMethods;
+    offerData.contactMethods = offerData.phone ? this.contactMethods : null;
 
     let ref = this.db.collection('/offers');
 

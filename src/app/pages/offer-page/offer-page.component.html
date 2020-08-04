@@ -42,12 +42,12 @@
         <p>{{offer.desc}}</p>
       </div>
 
-      <div class="full-width-block">
+      <div *ngIf="offer.conditions" class="full-width-block">
         <h3>{{getConditionsLabel()}}</h3>
         <p>{{offer.conditions}}</p>
       </div>
 
-      <div class="full-width-block">
+      <div *ngIf="offer.experience" class="full-width-block">
         <h3>{{getExperienceLabel()}}</h3>
         <p>{{offer.experience}}</p>
       </div>
