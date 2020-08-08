@@ -61,9 +61,7 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
   }
 
   public openImage(url: string): void {
-    if (AppService.isPlatformBrowser()) {
-      window.open(url, '_blank');
-    }
+    window.open(url, '_blank');
   }
 
 
@@ -71,7 +69,7 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
     if (!this.offer.contactMethods)
       return false;
 
-    for (let key of Object.keys(this.offer.contactMethods)){
+    for (let key of Object.keys(this.offer.contactMethods)) {
       if (this.offer.contactMethods[key])
         return true;
     }

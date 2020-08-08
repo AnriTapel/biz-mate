@@ -1,10 +1,9 @@
-import {Inject, Injectable, PLATFORM_ID} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {City} from "../../models/City";
 import {BusinessArea} from "../../models/BusinessArea";
 import {Offer} from "../../models/Offer";
 import {OfferTypes} from "../../models/OfferTypes";
 import {AbstractControl, ValidatorFn} from "@angular/forms";
-import {isPlatformBrowser} from "@angular/common";
 
 @Injectable({
   providedIn: 'root'
@@ -45,8 +44,7 @@ export class AppService {
     'https://firebasestorage.googleapis.com/v0/b/bizmate-5f9a4.appspot.com/o/default_avatar_red.svg?alt=media&token=af29412e-544d-4ea7-aaa0-2259d0833d35'
   ];
 
-  constructor(@Inject(PLATFORM_ID) private _id: Object) {
-    AppService.platformId = _id;
+  constructor() {
   }
 
   public static getDefaultAvatar(): string {
@@ -127,20 +125,7 @@ export class AppService {
     this._isOverlayVisible = false;
   }
 
-  public static isPlatformBrowser(): boolean {
-    return isPlatformBrowser(AppService.platformId);
-  }
-
   static get isOverlayVisible(): boolean {
     return this._isOverlayVisible;
-  }
-
-
-  static get platformId(): Object {
-    return this._platformId;
-  }
-
-  static set platformId(value: Object) {
-    this._platformId = value;
   }
 }

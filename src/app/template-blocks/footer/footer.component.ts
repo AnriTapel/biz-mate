@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {AppService} from "../../services/app/app.service";
 
 @Component({
@@ -8,16 +8,15 @@ import {AppService} from "../../services/app/app.service";
 })
 export class FooterComponent implements OnInit {
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
   }
 
   public scrollToHeader(): void {
-    if (AppService.isPlatformBrowser()) {
-      document.querySelector('#header').scrollIntoView({
-        behavior: "smooth"
-      });
-    }
+    document.querySelector('#header').scrollIntoView({
+      behavior: "smooth"
+    });
   }
 }

@@ -7,11 +7,9 @@ export abstract class ComponentBrowserAbstractClass implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (AppService.isPlatformBrowser()) {
-      document.querySelector('#header').scrollIntoView({
-        behavior: "smooth"
-      });
-    }
+    document.querySelector('#header').scrollIntoView({
+      behavior: "smooth"
+    });
   }
 
 }

@@ -125,9 +125,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
   }
 
   public openImage(url: string): void {
-    if (AppService.isPlatformBrowser()) {
-      window.open(url, '_blank');
-    }
+    window.open(url, '_blank');
   }
 
   public deleteImage(image: string): void {
@@ -182,7 +180,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     return (control: AbstractControl): { [key: string]: any } | null => {
       let valid: boolean = true;
       if (this.getOfferType() == this.offerType.NEED_INVESTMENTS || this.getOfferType() ==
-          this.offerType.HAVE_INVESTMENTS)
+        this.offerType.HAVE_INVESTMENTS)
         valid = control.value && control.value != "";
 
       return !valid ? {'validArea': {value: control.value}} : null;
