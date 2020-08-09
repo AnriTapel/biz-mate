@@ -2,7 +2,7 @@
 
 <p class="error-message" *ngIf="errorMessage">{{errorMessage}}</p>
 
-<a class="link" (click)="loginGoogle()">Вход через&nbsp;&nbsp;
+<a class="non-border-link-button google-login" (click)="loginGoogle()">Вход через&nbsp;&nbsp;
   <img src="/assets/img/google_logo.svg" alt="Google"></a>
 
 <div mat-dialog-content [formGroup]="loginFormGroup">
@@ -23,7 +23,7 @@
 </div>
 
 <div mat-dialog-actions class="full-width-action-buttons">
-  <a class="link" [mat-dialog-close] (click)="forgotPassword()">Забыл пароль</a>
+  <a class="non-border-link-button" [mat-dialog-close] (click)="forgotPassword()">Забыл пароль</a>
+  <a class="non-border-link-button" [mat-dialog-close] (click)="signUp()">Еще нет профиля? Создать</a>
   <button class="button-primary" (click)="logIn()">Войти</button>
-  <button class="button-primary button-white" [mat-dialog-close] (click)="signUp()">Зарегистрироваться</button>
 </div>

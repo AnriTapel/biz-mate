@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {APP_INITIALIZER, NgModule} from '@angular/core';
+import {NgModule} from '@angular/core';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
@@ -24,8 +24,6 @@ import {OffersPageComponent} from './pages/offers-page/offers-page.component';
 import {FeedbackComponent} from './pages/feedback/feedback.component';
 import {RulesComponent} from './pages/rules/rules.component';
 import {DeleteOfferComponent} from './dialogs/delete-offer/delete-offer.component';
-import {AngularFireAnalyticsModule} from "@angular/fire/analytics";
-import {AuthService} from "./services/auth/auth.service";
 import {HomePageComponent} from "./pages/home-page/home-page.component";
 import {OfferFormComponent} from "./pages/offer-form/offer-form.component";
 import {HeaderComponent} from "./template-blocks/header/header.component";
@@ -40,12 +38,6 @@ import {NotificationComponent} from "./dialogs/notification/notification.compone
 import {NotificationBarComponent} from "./template-blocks/notification-bar/notification-bar.component";
 import {PhoneMaskDirective} from "./directives/phone-mask/phone-mask.directive";
 import {OverlayComponent} from "./template-blocks/overlay/overlay.component";
-
-export function appInitFactory(auth: AuthService) {
-  return (): Promise<any> => {
-    return auth.appInitAuth();
-  }
-}
 
 @NgModule({
   declarations: [
@@ -77,7 +69,6 @@ export function appInitFactory(auth: AuthService) {
     AngularFireDatabaseModule,
     AngularFirestoreModule,
     AngularFireAuthModule,
-    AngularFireAnalyticsModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
@@ -91,8 +82,6 @@ export function appInitFactory(auth: AuthService) {
     MatDialogModule,
     MatIconModule,
     MatCheckboxModule
-  ], providers: [
-    {provide: APP_INITIALIZER, useFactory: appInitFactory, deps: [AuthService], multi: true}
   ],
   bootstrap: [AppComponent]
 })

@@ -29,6 +29,6 @@
 </div>
 
 <div mat-dialog-actions class="full-width-action-buttons">
-  <button class="button-primary" (click)="signUp()" [disabled]="!acceptRules">Зарегистрироваться</button>
-  <button class="button-primary button-white" (click)="logIn()">Войти</button>
+  <a class="non-border-link-button" (click)="logIn()">Уже есть профиль? Войти</a>
+  <button class="button-primary" (click)="signUp()" [disabled]="!acceptRules">Создать профиль</button>
 </div>

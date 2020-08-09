@@ -36,34 +36,6 @@ export class AuthService {
       }));
   }
 
-  public appInitAuth(): Promise<any> {
-    return new Promise<void>((resolve, reject) => {
-      this.afAuth.useDeviceLanguage();
-      let handler = this.afAuth.authState.subscribe((userData) => {
-        if (userData && !userData.isAnonymous) {
-          this.user = {
-            displayName: userData.displayName, uid: userData.uid,
-            email: userData.email, photoURL: userData.photoURL,
-            emailVerified: userData.emailVerified
-          };
-
-          resolve();
-        } else if (!userData) {
-          this.afAuth.signInAnonymously().then(() => {
-            this.user = null;
-            resolve();
-          }).catch((err) => reject(err));
-        } else {
-          resolve();
-        }
-        handler.unsubscribe();
-      }, (error) => {
-        handler.unsubscribe();
-        reject(error);
-      });
-    });
-  }
-
   public emailAndPasswordLogin(credentials: any): Promise<void> {
     return new Promise<void>(async (resolve, reject) => {
       try {
