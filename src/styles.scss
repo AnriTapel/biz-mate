@@ -119,6 +119,10 @@ textarea.mat-input-element{
     background: #D0D0D0;
     box-shadow: unset;
   }
+
+  @media screen and (max-width: 770px) {
+    padding: 5px 10px;
+  }
 }
 
 .button-white {

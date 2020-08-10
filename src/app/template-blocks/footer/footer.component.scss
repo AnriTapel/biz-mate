@@ -80,12 +80,14 @@ footer {
           justify-content: space-between;
           align-items: center;
           color: white;
+          white-space: nowrap;
         }
 
         img {
           max-height: 20px;
           max-width: 20px;
           float: left;
+          margin-right: 5px;
         }
       }
     }

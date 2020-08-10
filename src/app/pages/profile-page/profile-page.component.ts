@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {User} from "../../models/User";
-import {ActivatedRoute, Router} from "@angular/router";
+import {Router} from "@angular/router";
 import {AppService} from "../../services/app/app.service";
 import {AuthService} from "../../services/auth/auth.service";
 import {Offer} from "../../models/Offer";
@@ -9,10 +9,9 @@ import {Observable, of} from "rxjs";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {MatDialog} from "@angular/material/dialog";
 import {CustomImageCropperComponent} from "../../template-blocks/image-cropper/custom-image-cropper.component";
-import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
+import {MatDialogConfig} from "../../dialogs/mat-dialog-config";
 import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
 import {Messages} from "../../models/Messages";
-import {NotificationComponent} from "../../dialogs/notification/notification.component";
 import {SeoService} from "../../services/seo/seo.service";
 import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
 
@@ -22,11 +21,6 @@ import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstra
   styleUrls: ['./profile-page.component.scss']
 })
 export class ProfilePageComponent extends ComponentBrowserAbstractClass implements OnInit {
-
-  private readonly emailVerifyEvent = {
-    title: 'Электронная почта подтверждена',
-    text: 'Вы успешно подтвердили свой адрес электронной почты! Теперь Вы можете отредактировать информацию о себе и перейти к созданию своего первого оффера.'
-  };
 
   public user: User = null;
   public userOffers$: Observable<Offer[]> = null;
@@ -40,14 +34,9 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
   };
 
   constructor(private appService: AppService, private authService: AuthService, private router: Router,
-              private db: AngularFirestore, private dialog: MatDialog, private route: ActivatedRoute,
+              private db: AngularFirestore, private dialog: MatDialog,
               private notificationBarService: NotificationBarService, private seoService: SeoService) {
     super();
-    this.route.queryParams.subscribe(params => {
-      if (params['email_verify']) {
-        this.dialog.open(NotificationComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, this.emailVerifyEvent))
-      }
-    });
     this.user = this.authService.user;
     this.userDataForm = new FormGroup({
       email: new FormControl(this.user.email || '', [Validators.required]),

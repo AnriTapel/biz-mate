@@ -6,21 +6,14 @@
 
     <div class="nav-buttons">
       <a [routerLink]="['/']">Главная</a>
+      <a *ngIf="loggedIn" [routerLink]="['/profile']">Мой кабинет</a>
       <a [routerLink]="['/offers-page']">Офферы</a>
     </div>
 
     <div class="login-button">
-      <button *ngIf="!loggedIn" class="button-primary login-button" (click)="openLoginDialog()">Вход
-        <img src="/assets/img/login_thumb.svg" alt="Войти" />
+      <button class="button-primary login-button" (click)="onAuthButtonClick()">{{loggedIn ? 'Выйти' : 'Войти'}}
+        <img *ngIf="!loggedIn" src="/assets/img/login_thumb.svg" alt="Аутентификация" />
       </button>
-      <div *ngIf="loggedIn" (blur)="visibleMenu = false">
-        <button class="button-primary button-circle" (click)="visibleMenu = !visibleMenu">{{authControlText}}</button>
-        <ul class="header-menu" (mouseleave)="visibleMenu = false" [style.display]="visibleMenu ? 'flex' : 'none'">
-          <li (click)="openProfile()">Личный кабинет</li>
-          <li (click)="openFeedback()">Помощь</li>
-          <li (click)="logOut()">Выход</li>
-        </ul>
-      </div>
     </div>
   </nav>
 </header>

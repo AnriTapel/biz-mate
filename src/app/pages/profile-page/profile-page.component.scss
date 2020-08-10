@@ -57,7 +57,7 @@ h2 {
   @media screen and (max-width: 770px) {
     grid-template: auto / 1fr;
     grid-gap: 1em;
-    margin: 2em auto;
+    margin: 3em auto 2em;
 
     h2 {
       grid-column: unset;

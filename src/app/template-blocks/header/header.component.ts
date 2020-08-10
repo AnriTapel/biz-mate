@@ -14,8 +14,6 @@ import {AppService} from "../../services/app/app.service";
 export class HeaderComponent implements OnInit {
 
   loggedIn: boolean;
-  authControlText: string;
-  visibleMenu: boolean = false;
 
   constructor(private dialog: MatDialog, private auth: AuthService, private router: Router) { }
 
@@ -23,14 +21,18 @@ export class HeaderComponent implements OnInit {
     this.auth.user$.subscribe((res) => {
       if (res && !res.isAnonymous) {
         this.loggedIn = true;
-        this.authControlText = this.auth.user.displayName ?
-            this.auth.user.displayName.substr(0, 1).toUpperCase() :
-            this.auth.user.email.substr(0, 1).toUpperCase();
       } else {
         this.loggedIn = false;
-        this.authControlText = 'Вход/Регистрация'
       }
     })
+  }
+
+  onAuthButtonClick(): void {
+    if (this.loggedIn) {
+      this.logOut();
+    } else {
+      this.openLoginDialog();
+    }
   }
 
   openLoginDialog(): void {
@@ -41,19 +43,8 @@ export class HeaderComponent implements OnInit {
     });
   }
 
-  openFeedback(): void {
-    this.visibleMenu = false;
-    this.router.navigateByUrl('/feedback');
-  }
-
-  openProfile(): void {
-    this.visibleMenu = false;
-    this.router.navigateByUrl('/profile');
-  }
-
   logOut(): void {
     AppService.showOverlay();
-    this.visibleMenu = false;
     this.auth.signOut().then(() => {
       this.auth.user = null;
       this.router.navigateByUrl("/");

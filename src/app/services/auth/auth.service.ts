@@ -189,7 +189,7 @@ export class AuthService {
   public sendEmailVerification(): void {
     this.afAuth.currentUser.then((user) => {
       user.sendEmailVerification({
-        url: 'https://biz-mate.ru/profile?email_verify=true'
+        url: 'https://biz-mate.ru/?email_verify=true'
       });
     });
   }
