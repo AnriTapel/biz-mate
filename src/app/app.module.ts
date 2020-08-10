@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import {APP_INITIALIZER, NgModule} from '@angular/core';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
@@ -38,6 +38,13 @@ import {NotificationComponent} from "./dialogs/notification/notification.compone
 import {NotificationBarComponent} from "./template-blocks/notification-bar/notification-bar.component";
 import {PhoneMaskDirective} from "./directives/phone-mask/phone-mask.directive";
 import {OverlayComponent} from "./template-blocks/overlay/overlay.component";
+import {AuthService} from "./services/auth/auth.service";
+
+export function appInitFactory(auth: AuthService) {
+  return (): Promise<any> => {
+    return auth.appInitAuth();
+  }
+}
 
 @NgModule({
   declarations: [
@@ -82,6 +89,8 @@ import {OverlayComponent} from "./template-blocks/overlay/overlay.component";
     MatDialogModule,
     MatIconModule,
     MatCheckboxModule
+  ], providers: [
+    {provide: APP_INITIALIZER, useFactory: appInitFactory, deps: [AuthService], multi: true}
   ],
   bootstrap: [AppComponent]
 })

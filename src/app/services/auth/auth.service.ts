@@ -3,7 +3,7 @@ import {auth} from 'firebase/app';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {User} from "../../models/User";
 import {Observable, of} from "rxjs";
-import {switchMap} from "rxjs/operators";
+import {first, switchMap} from "rxjs/operators";
 import {AppService} from "../app/app.service";
 import {MatDialog} from "@angular/material/dialog";
 import {EmailVerifyComponent} from "../../dialogs/email-verify-message/email-verify.component";
@@ -34,6 +34,36 @@ export class AuthService {
           this.user = null;
         return of(user);
       }));
+  }
+
+  public appInitAuth(): Promise<any> {
+    return new Promise<void>(async (resolve, reject) => {
+      AppService.showOverlay();
+      try {
+        this.afAuth.useDeviceLanguage();
+        let userData = await this.afAuth.authState.pipe(first()).toPromise();
+        if (userData && !userData.isAnonymous) {
+          this.user = {
+            displayName: userData.displayName, uid: userData.uid,
+            email: userData.email, photoURL: userData.photoURL,
+            emailVerified: userData.emailVerified
+          };
+        } else if (!userData) {
+          this.afAuth.signInAnonymously()
+            .then(() => this.user = null)
+            .catch((err) => console.error(err))
+            .finally(() => {
+              AppService.hideOverlay();
+              resolve();
+            });
+        }
+        AppService.hideOverlay();
+        resolve();
+      } catch (e) {
+        AppService.hideOverlay();
+        reject(e);
+      }
+    });
   }
 
   public emailAndPasswordLogin(credentials: any): Promise<void> {
