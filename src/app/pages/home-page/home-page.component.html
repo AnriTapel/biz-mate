@@ -4,7 +4,7 @@
     <div class="text">
       <p>Деловые предложения о сотрудничестве</p>
       <h1>Поможем найти партнёра по бизнесу</h1>
-      <p>Разместите Ваше бизнес-предложение на BizMate сегодня — и уже завтра Вы сможете найти надежного партнера по бизнесу в любом регионе.</p>
+      <p>Разместите Ваше предложение на BizMate сегодня — и уже завтра Вы сможете найти надежного партнера по бизнесу в любом регионе.</p>
       <button class="button-primary button-primary-large" [routerLink]="['/new-offer']">Создать оффер</button>
     </div>
 
@@ -21,6 +21,19 @@
     </div>
 
     <a class="more-offers link-underline" [routerLink]="['/offers-page']">Больше офферов</a>
+  </section>
+
+  <section class="offer-types-section">
+    <h2>Для кого полезен сервис BizMate?</h2>
+
+    <p class="offer-types-desc">Все офферы в нашем сервисе разбиты на 5 типов, четко разграниченных между собой. При создании оффера выберите подходящий тип, чтобы Ваше предложение было максимально релевантным.</p>
+
+    <div class="offer-types-list">
+      <div *ngFor="let offerTypeData of offerTypesBlockData">
+        <p class="title">{{offerTypeData.title}}</p>
+        <p class="desc">{{offerTypeData.desc}}</p>
+      </div>
+    </div>
   </section>
 
   <section class="about-platform-block">

@@ -11,7 +11,6 @@ import {AbstractControl, ValidatorFn} from "@angular/forms";
 export class AppService {
 
   private static _isOverlayVisible: boolean = false;
-  private static _platformId: Object = undefined;
 
   static readonly offerTypes: Array<any> = [
     { id: OfferTypes.NEED_INVESTMENTS, title: 'Ищу инвестиции' },
