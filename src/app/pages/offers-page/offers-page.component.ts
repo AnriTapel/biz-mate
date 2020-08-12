@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Observable, of, zip} from "rxjs";
 import {Offer} from "../../models/Offer";
 import {FormControl, FormGroup} from "@angular/forms";
@@ -9,7 +9,6 @@ import {map, startWith} from "rxjs/operators";
 import {AngularFirestore} from "@angular/fire/firestore";
 import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
 import {Messages} from "../../models/Messages";
-import {Meta, Title} from "@angular/platform-browser";
 import {SeoService} from "../../services/seo/seo.service";
 import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
 
