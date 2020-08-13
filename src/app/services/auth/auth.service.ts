@@ -3,7 +3,7 @@ import {auth} from 'firebase/app';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {User} from "../../models/User";
 import {Observable, of} from "rxjs";
-import {first, switchMap} from "rxjs/operators";
+import {switchMap} from "rxjs/operators";
 import {AppService} from "../app/app.service";
 import {MatDialog} from "@angular/material/dialog";
 import {EmailVerifyComponent} from "../../dialogs/email-verify-message/email-verify.component";
@@ -37,32 +37,30 @@ export class AuthService {
   }
 
   public appInitAuth(): Promise<any> {
-    return new Promise<void>(async (resolve, reject) => {
-      AppService.showOverlay();
-      try {
-        this.afAuth.useDeviceLanguage();
-        let userData = await this.afAuth.authState.pipe(first()).toPromise();
+    return new Promise<void>((resolve, reject) => {
+      this.afAuth.useDeviceLanguage();
+      this.afAuth.currentUser.then((userData) => {
         if (userData && !userData.isAnonymous) {
           this.user = {
             displayName: userData.displayName, uid: userData.uid,
             email: userData.email, photoURL: userData.photoURL,
             emailVerified: userData.emailVerified
           };
+          resolve();
         } else if (!userData) {
           this.afAuth.signInAnonymously()
             .then(() => this.user = null)
             .catch((err) => console.error(err))
             .finally(() => {
-              AppService.hideOverlay();
               resolve();
             });
+        } else {
+          this.user = null;
+          resolve();
         }
-        AppService.hideOverlay();
-        resolve();
-      } catch (e) {
-        AppService.hideOverlay();
+      }).catch((e) => {
         reject(e);
-      }
+      });
     });
   }
 
@@ -130,11 +128,11 @@ export class AuthService {
   }
 
   public deleteUserImage(url: string): void {
-   try {
-     this.afStorage.storage.refFromURL(url).delete();
-   } catch (e) {
-     console.error(`Couldn't remeve image by url ${url}`);
-   }
+    try {
+      this.afStorage.storage.refFromURL(url).delete();
+    } catch (e) {
+      console.error(`Couldn't remeve image by url ${url}`);
+    }
   }
 
   public async uploadUserImage(file: File): Promise<string> {
