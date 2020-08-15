@@ -34,6 +34,16 @@ export class OfferCardComponent implements OnInit {
     this.router.navigateByUrl(`/edit-offer/${this.offer.offerId}`);
   }
 
+  public getOfferDescription(): string {
+    if (this.offer.desc.length < 240) {
+      return this.offer.desc;
+    }
+
+    let cutDesc = this.offer.desc.substr(0, 245);
+    let lastSpaceIndex = cutDesc.lastIndexOf(' ');
+    return cutDesc.substring(0, lastSpaceIndex) + '...';
+  }
+
   public deleteOffer(): void {
     let dialog = this.dialog.open(DeleteOfferComponent, MatDialogConfig.narrowDialogWindow);
     dialog.afterClosed().subscribe((res) => {

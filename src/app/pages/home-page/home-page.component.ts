@@ -18,6 +18,7 @@ import {AppService} from "../../services/app/app.service";
 })
 export class HomePageComponent extends ComponentBrowserAbstractClass implements OnInit {
 
+  static readonly LATEST_OFFERS_LIMIT = 4;
   public latestOffers$: Observable<Offer[]>;
 
   private readonly metaTags = {
@@ -66,7 +67,7 @@ export class HomePageComponent extends ComponentBrowserAbstractClass implements 
 
   private async getLatestOffers(): Promise<void> {
     let initialQuery = await this.db.collection<Offer>('/offers').ref
-        .orderBy('date', 'desc').limit(5).get();
+        .orderBy('date', 'desc').limit(HomePageComponent.LATEST_OFFERS_LIMIT).get();
 
     let offers = [];
 
