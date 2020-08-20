@@ -4,7 +4,6 @@ import {AppService} from "../services/app/app.service";
 export abstract class ComponentBrowserAbstractClass implements OnDestroy {
 
   protected constructor() {
-    console.log('Route change');
     //@ts-ignore
     ym(65053642, 'hit', location.href);
   }

@@ -39,27 +39,32 @@ export class AuthService {
   public appInitAuth(): Promise<any> {
     return new Promise<void>((resolve, reject) => {
       this.afAuth.useDeviceLanguage();
-      this.afAuth.currentUser.then((userData) => {
+      let handler = this.afAuth.authState.subscribe((userData) => {
         if (userData && !userData.isAnonymous) {
           this.user = {
             displayName: userData.displayName, uid: userData.uid,
             email: userData.email, photoURL: userData.photoURL,
             emailVerified: userData.emailVerified
           };
+          handler.unsubscribe();
           resolve();
-        } else if (!userData) {
-          this.afAuth.signInAnonymously()
-            .then(() => this.user = null)
-            .catch((err) => console.error(err))
-            .finally(() => {
-              resolve();
-            });
-        } else {
+        } else if (userData && userData.isAnonymous) {
           this.user = null;
+          handler.unsubscribe();
           resolve();
+        } else {
+          this.afAuth.signInAnonymously().then(() => {
+            this.user = null;
+            handler.unsubscribe();
+            resolve();
+          }).catch((err) => {
+            handler.unsubscribe();
+            reject(err);
+          });
         }
-      }).catch((e) => {
-        reject(e);
+      }, (error) => {
+        handler.unsubscribe();
+        reject(error);
       });
     });
   }
@@ -134,7 +139,7 @@ export class AuthService {
       }
       this.afStorage.storage.refFromURL(url).delete();
     } catch (e) {
-      console.error(`Couldn't remeve image by url ${url}`);
+      console.error(`Couldn't remove image by url ${url}`);
     }
   }
 
