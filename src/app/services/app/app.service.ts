@@ -39,7 +39,6 @@ export class AppService {
     'https://firebasestorage.googleapis.com/v0/b/bizmate-5f9a4.appspot.com/o/default_avatar_black.svg?alt=media&token=bb7300c4-0a2f-479f-ac74-a4c540482ff6',
     'https://firebasestorage.googleapis.com/v0/b/bizmate-5f9a4.appspot.com/o/default_avatar_blue.svg?alt=media&token=6ce9fc0a-86d2-4e0a-a549-d9098d4802da',
     'https://firebasestorage.googleapis.com/v0/b/bizmate-5f9a4.appspot.com/o/default_avatar_grey.svg?alt=media&token=02dc73d8-8bab-4329-a3d9-7a5b5f8ad318',
-    'https://firebasestorage.googleapis.com/v0/b/bizmate-5f9a4.appspot.com/o/default_avatar_purple.svg?alt=media&token=23fc0f91-fc72-4a14-b2c7-18c0b33695f4',
     'https://firebasestorage.googleapis.com/v0/b/bizmate-5f9a4.appspot.com/o/default_avatar_red.svg?alt=media&token=af29412e-544d-4ea7-aaa0-2259d0833d35'
   ];
 
@@ -47,7 +46,7 @@ export class AppService {
   }
 
   public static getDefaultAvatar(): string {
-    const index: number = Math.floor(Math.random() * 5);
+    const index: number = Math.floor(Math.random() * 4);
     return this.defaultAvatars[index];
   }
 

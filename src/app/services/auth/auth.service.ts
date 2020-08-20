@@ -129,6 +129,9 @@ export class AuthService {
 
   public deleteUserImage(url: string): void {
     try {
+      if (AppService.defaultAvatars.includes(url)) {
+        return;
+      }
       this.afStorage.storage.refFromURL(url).delete();
     } catch (e) {
       console.error(`Couldn't remeve image by url ${url}`);
