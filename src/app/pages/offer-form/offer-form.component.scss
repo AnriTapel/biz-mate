@@ -70,6 +70,11 @@ $main-theme-color: #2E7990;
     overflow: hidden !important;
   }
 
+  .invalid-field-length {
+    color: #FF0000;
+    font-weight: bold;
+  }
+
   .images-container {
     .image-block > img:nth-of-type(2) {
       position: absolute;

@@ -37,7 +37,8 @@
 
       <mat-form-field>
         <mat-label>Заголовок *</mat-label>
-        <input matInput formControlName="title">
+        <input matInput #title formControlName="title">
+        <mat-hint [ngClass]="{'invalid-field-length': title.value?.length > fieldMaxLength.title}" align="end">{{title.value?.length || 0}}/{{fieldMaxLength.title}}</mat-hint>
       </mat-form-field>
 
       <mat-form-field *ngIf="isCapitalFieldVisible()">
@@ -47,17 +48,20 @@
 
       <mat-form-field class="full-width-field">
         <mat-label>Описание оффера *</mat-label>
-        <textarea matInput formControlName="desc"></textarea>
+        <textarea matInput #desc formControlName="desc"></textarea>
+        <mat-hint [ngClass]="{'invalid-field-length': desc.value?.length > fieldMaxLength.desc}" align="end">{{desc.value?.length || 0}}/{{fieldMaxLength.desc}}</mat-hint>
       </mat-form-field>
 
       <mat-form-field class="full-width-field">
         <mat-label>{{fieldsLabels.experience}}</mat-label>
-        <textarea matInput formControlName="experience"></textarea>
+        <textarea matInput #experience formControlName="experience"></textarea>
+        <mat-hint [ngClass]="{'invalid-field-length': experience.value?.length > fieldMaxLength.experience}" align="end">{{experience.value?.length || 0}}/{{fieldMaxLength.experience}}</mat-hint>
       </mat-form-field>
 
       <mat-form-field class="full-width-field">
         <mat-label>{{fieldsLabels.conditions}}</mat-label>
-        <textarea matInput formControlName="conditions"></textarea>
+        <textarea matInput #conditions formControlName="conditions"></textarea>
+        <mat-hint [ngClass]="{'invalid-field-length': conditions.value?.length > fieldMaxLength.conditions}" align="end">{{conditions.value?.length || 0}}/{{fieldMaxLength.conditions}}</mat-hint>
       </mat-form-field>
 
       <h4 class="full-width-field">Фотографии и изображения</h4>
@@ -100,7 +104,7 @@
         </div>
       </div>
 
-      <span class="email-info full-width-field">Ваш E-mail будет автоматически добавлен в качестве контактный информации</span>
+      <span class="email-info full-width-field">Ваш E-mail будет автоматически добавлен в качестве контактной информации</span>
 
       <div class="bottom-block">
         <p *ngIf="!isFormValid" class="error-message">Корректно заполните обязательные поля</p>

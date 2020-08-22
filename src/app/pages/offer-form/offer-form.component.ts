@@ -34,6 +34,12 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
   public filteredBusinessArea$: Observable<BusinessArea[]>;
   public filteredCities$: Observable<City[]>;
   public fieldsLabels: any = null;
+  public readonly fieldMaxLength = {
+    title: 64,
+    desc: 512,
+    experience: 1024,
+    conditions: 1024
+  };
   public offerImages: string[] = [];
   private removedImages: string[] = [];
   public contactMethods: any = {
@@ -65,11 +71,11 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     this.newOfferForm = new FormGroup({
       city: new FormControl(offerData.city, [Validators.required, AppService.cityFieldValidator()]),
       businessArea: new FormControl(offerData.businessArea, [Validators.required, AppService.businessAreaFieldValidator()]),
-      title: new FormControl(offerData.title, [Validators.required]),
+      title: new FormControl(offerData.title, [Validators.required, Validators.maxLength(this.fieldMaxLength.title)]),
       capital: new FormControl(offerData.capital, [this.capitalFieldValidator()]),
-      desc: new FormControl(offerData.desc, [Validators.required]),
-      experience: new FormControl(offerData.experience),
-      conditions: new FormControl(offerData.conditions),
+      desc: new FormControl(offerData.desc, [Validators.required, Validators.maxLength(this.fieldMaxLength.desc)]),
+      experience: new FormControl(offerData.experience, [Validators.maxLength(this.fieldMaxLength.experience)]),
+      conditions: new FormControl(offerData.conditions, [Validators.maxLength(this.fieldMaxLength.conditions)]),
       phone: new FormControl(offerData.phone, [Validators.pattern(/^\+7 \(\d{3}\)\s\d{3}-\d{4}$/)])
     });
 
