@@ -12,12 +12,18 @@
       font-family: 'Raleway-SemiBold';
     }
 
-    img {
-      width: 20px;
+    button {
       display: none;
+
+      img {
+        vertical-align: middle;
+        width: 20px;
+      }
     }
 
+
     .transform-arrow {
+      vertical-align: unset !important;
       transform: rotateX(180deg);
     }
   }
@@ -56,7 +62,7 @@
         text-align: left;
       }
 
-      img {
+      button {
         display: initial;
       }
     }

@@ -31,7 +31,13 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  logIn() {
+  public onKeyPress(event): void {
+    if (event.which == 13 || event.keyCode == 13) {
+      this.logIn();
+    }
+  }
+
+  public logIn() {
     if (this.loginFormGroup.status === 'INVALID')
       return;
 

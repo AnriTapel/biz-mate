@@ -10,6 +10,7 @@ import {SeoService} from "../../services/seo/seo.service";
 import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
 import {OfferTypes} from "../../models/OfferTypes";
 import {AppService} from "../../services/app/app.service";
+import NotificationEvent from "../../models/NotificationEvent";
 
 @Component({
   selector: 'app-home-page',
@@ -28,22 +29,52 @@ export class HomePageComponent extends ComponentBrowserAbstractClass implements 
     site: '',
   };
 
-  private readonly resetPasswordEvent = {
+  private readonly resetPasswordEvent: NotificationEvent = {
     title: 'Пароль изменен',
-    text: 'Вы успешно сменили пароль к своей учетной записи!'
+    mainText: 'Вы успешно сменили пароль к своей учетной записи!',
+    extraButton: [{
+        route: '/profile',
+        buttonText: 'Войти',
+        buttonClass: 'button-primary'
+      }
+    ]
   };
 
-  private readonly emailVerifyEvent = {
+  private readonly emailVerifyEvent: NotificationEvent = {
     title: 'Электронная почта подтверждена',
-    text: 'Вы успешно подтвердили свой адрес электронной почты! Теперь Вы можете отредактировать информацию о себе и перейти к созданию своего первого оффера.'
+    mainText: 'Вы успешно подтвердили свой адрес электронной почты! Теперь Вы можете отредактировать информацию о себе и перейти к созданию своего первого оффера.',
+    extraButton: [{
+      route: '/new-offer',
+      buttonText: 'Создать оффер',
+      buttonClass: 'button-primary'
+    }, {
+      route: '/profile',
+      buttonText: 'Личный кабинет',
+      buttonClass: 'button-primary'
+    }]
   };
 
-  public readonly  offerTypesBlockData = [
-    {title: AppService.getOfferTypeByFiledValue('id', OfferTypes.NEED_INVESTMENTS).title, desc: 'Подойдет для стартапов и перспективных проектов на начальном этапе, а также для тех, кто хочет масштабировать действующие бизнес'},
-    {title: AppService.getOfferTypeByFiledValue('id', OfferTypes.HAVE_INVESTMENTS).title, desc: 'Для тех, кто обладает свободным капиталом и хочет вложиться в потенциально прибыльное дело или выкупить долю в активном проекте'},
-    {title: AppService.getOfferTypeByFiledValue('id', OfferTypes.NEED_PARTNER).title, desc: 'Думаете о запуске нового проекта или являетесь частью уже активного бизнеса и желаете найти единомышленников для его развития'},
-    {title: AppService.getOfferTypeByFiledValue('id', OfferTypes.SEARCH_BUSINESS).title, desc: 'Обладаете определенными навыками, богатым опытом в какой-либо сфере или другими материальными и нематериальными ценностями и хотите поделиться ими на взаимовыгодных условиях'},
-    {title: AppService.getOfferTypeByFiledValue('id', OfferTypes.SELL_BUSINESS).title, desc: 'Решили отойти от дел и желаете зафиксировать прибыль или нашли более перспективный проект, в который хотите полностью погрузиться и вложить вырученные средства'}
+  public readonly offerTypesBlockData = [
+    {
+      title: AppService.getOfferTypeByFiledValue('id', OfferTypes.NEED_INVESTMENTS).title,
+      desc: 'Подойдет для стартапов и перспективных проектов на начальном этапе, а также для тех, кто хочет масштабировать действующие бизнес'
+    },
+    {
+      title: AppService.getOfferTypeByFiledValue('id', OfferTypes.HAVE_INVESTMENTS).title,
+      desc: 'Для тех, кто обладает свободным капиталом и хочет вложиться в потенциально прибыльное дело или выкупить долю в активном проекте'
+    },
+    {
+      title: AppService.getOfferTypeByFiledValue('id', OfferTypes.NEED_PARTNER).title,
+      desc: 'Думаете о запуске нового проекта или являетесь частью уже активного бизнеса и желаете найти единомышленников для его развития'
+    },
+    {
+      title: AppService.getOfferTypeByFiledValue('id', OfferTypes.SEARCH_BUSINESS).title,
+      desc: 'Обладаете определенными навыками, богатым опытом в какой-либо сфере или другими материальными и нематериальными ценностями и хотите поделиться ими на взаимовыгодных условиях'
+    },
+    {
+      title: AppService.getOfferTypeByFiledValue('id', OfferTypes.SELL_BUSINESS).title,
+      desc: 'Решили отойти от дел и желаете зафиксировать прибыль или нашли более перспективный проект, в который хотите полностью погрузиться и вложить вырученные средства'
+    }
   ];
 
   constructor(private db: AngularFirestore, private route: ActivatedRoute, private dialog: MatDialog,
@@ -52,11 +83,9 @@ export class HomePageComponent extends ComponentBrowserAbstractClass implements 
     this.route.queryParams.subscribe(params => {
       if (params['password_reset']) {
         this.dialog.open(NotificationComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, this.resetPasswordEvent))
-      } else this.route.queryParams.subscribe(params => {
-        if (params['email_verify']) {
-          this.dialog.open(NotificationComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, this.emailVerifyEvent))
-        }
-      });
+      } else if (params['email_verify']) {
+        this.dialog.open(NotificationComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, this.emailVerifyEvent))
+      }
     });
   }
 
@@ -67,7 +96,7 @@ export class HomePageComponent extends ComponentBrowserAbstractClass implements 
 
   private async getLatestOffers(): Promise<void> {
     let initialQuery = await this.db.collection<Offer>('/offers').ref
-        .orderBy('date', 'desc').limit(HomePageComponent.LATEST_OFFERS_LIMIT).get();
+      .orderBy('date', 'desc').limit(HomePageComponent.LATEST_OFFERS_LIMIT).get();
 
     let offers = [];
 

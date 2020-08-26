@@ -17,16 +17,6 @@
 }
 
 @font-face {
-  font-family: "Raleway-Bold";
-  src: url("/assets/fonts/Raleway-Bold.ttf");
-}
-
-@font-face {
-  font-family: "Raleway-Italic";
-  src: url("/assets/fonts/Raleway-Italic.ttf");
-}
-
-@font-face {
   font-family: "Raleway-Light";
   src: url("/assets/fonts/Raleway-Light.ttf");
 }
@@ -121,7 +111,7 @@ textarea.mat-input-element{
   }
 
   @media screen and (max-width: 770px) {
-    padding: 5px 10px;
+    padding: 7px 10px;
   }
 }
 

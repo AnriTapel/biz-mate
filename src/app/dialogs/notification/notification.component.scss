@@ -5,3 +5,7 @@ $main-theme-color: #2E7990;
   color: $main-theme-color;
   opacity: .8;
 }
+
+button:not(:last-child) {
+  margin-bottom: .75em;
+}
