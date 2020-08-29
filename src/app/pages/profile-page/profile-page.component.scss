@@ -102,20 +102,6 @@ h2 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-
-    button {
-      width: 35px;
-      height: 35px;
-      font-size: 45px;
-      line-height: 0;
-      font-family: Raleway-Thin;
-
-      @media screen and (max-width: 770px) {
-        width: 28px;
-        height: 28px;
-        font-size: 35px;
-      }
-    }
   }
 
   @media screen and (max-width: 770px) {

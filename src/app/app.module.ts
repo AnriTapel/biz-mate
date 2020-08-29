@@ -14,7 +14,6 @@ import {AngularFireDatabaseModule} from '@angular/fire/database';
 import {AngularFireAuthModule} from '@angular/fire/auth';
 import {environment} from "../environments/environment";
 import {MatDialogModule} from '@angular/material/dialog';
-import {MatIconModule} from "@angular/material/icon";
 import {OfferPageComponent} from './pages/offer-page/offer-page.component';
 import {ProfilePageComponent} from './pages/profile-page/profile-page.component';
 import {MatCheckboxModule} from "@angular/material/checkbox";
@@ -39,6 +38,7 @@ import {NotificationBarComponent} from "./template-blocks/notification-bar/notif
 import {PhoneMaskDirective} from "./directives/phone-mask/phone-mask.directive";
 import {OverlayComponent} from "./template-blocks/overlay/overlay.component";
 import {AuthService} from "./services/auth/auth.service";
+import {MatSidenavModule} from "@angular/material/sidenav";
 
 export function appInitFactory(auth: AuthService) {
   return (): Promise<any> => {
@@ -87,7 +87,6 @@ export function appInitFactory(auth: AuthService) {
     MatInputModule,
     MatAutocompleteModule,
     MatDialogModule,
-    MatIconModule,
     MatCheckboxModule
   ], providers: [
     {provide: APP_INITIALIZER, useFactory: appInitFactory, deps: [AuthService], multi: true}

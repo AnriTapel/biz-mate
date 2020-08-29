@@ -13,18 +13,18 @@ import {AppService} from "../../services/app/app.service";
 })
 export class HeaderComponent implements OnInit {
 
-  loggedIn: boolean;
+  public loggedIn: boolean;
+  public isMobileMenuOpened: boolean;
+  public userName: string;
 
   constructor(private dialog: MatDialog, private auth: AuthService, private router: Router) { }
 
   ngOnInit(): void {
+    this.isMobileMenuOpened = false;
     this.auth.user$.subscribe((res) => {
-      if (res && !res.isAnonymous) {
-        this.loggedIn = true;
-      } else {
-        this.loggedIn = false;
-      }
-    })
+      this.loggedIn = res && !res.isAnonymous;
+      this.userName = this.loggedIn ? res.displayName : undefined;
+    });
   }
 
   onAuthButtonClick(): void {
@@ -36,11 +36,8 @@ export class HeaderComponent implements OnInit {
   }
 
   openLoginDialog(): void {
-    const dialogRef = this.dialog.open(LoginComponent, MatDialogConfig.narrowDialogWindow);
-
-    dialogRef.afterClosed().subscribe(() => {
-      console.log('Login dialog was closed');
-    });
+    this.dialog.open(LoginComponent, MatDialogConfig.narrowDialogWindow);
+    this.isMobileMenuOpened = false;
   }
 
   logOut(): void {
@@ -48,6 +45,7 @@ export class HeaderComponent implements OnInit {
     this.auth.signOut().then(() => {
       this.auth.user = null;
       this.router.navigateByUrl("/");
+      this.isMobileMenuOpened = false;
     }).finally(() => AppService.hideOverlay());
   }
 }

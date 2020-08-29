@@ -1,5 +1,4 @@
-import {OnDestroy, OnInit} from "@angular/core";
-import {AppService} from "../services/app/app.service";
+import {OnDestroy} from "@angular/core";
 
 export abstract class ComponentBrowserAbstractClass implements OnDestroy {
 

@@ -10,7 +10,7 @@ export interface Offer {
   date: number;
   title: string;
   desc: string;
-  capital?: Array<number>;
+  capital?: number;
   conditions?: string;
   experience?: string;
   phone?: string;

@@ -157,6 +157,11 @@
     }
   }
 
+  button {
+    display: block;
+    margin: 5em auto 0;
+  }
+
   @media screen and (max-width: 770px) {
     width: 100%;
     padding: 0 0;
@@ -181,6 +186,10 @@
           line-height: 18px;
         }
       }
+    }
+
+    button {
+      margin: 3em auto 0;
     }
   }
 }

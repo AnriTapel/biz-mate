@@ -52,6 +52,10 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
     return AppService.offerFieldsLabels[this.offer.type - 1].capital;
   }
 
+  public getCapitalValueAsString(): string {
+    return this.offer.capital.toLocaleString('ru');
+  }
+
   public getConditionsLabel(): string {
     return AppService.offerFieldsLabels[this.offer.type - 1].conditions;
   }

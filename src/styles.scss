@@ -363,5 +363,9 @@ mat-checkbox {
     background-size: contain;
     background-position: top center;
   }
+
+  app-offer-card {
+    z-index: 0;
+  }
 }
 
