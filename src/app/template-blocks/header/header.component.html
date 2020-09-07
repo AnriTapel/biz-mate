@@ -23,10 +23,10 @@
     <img src="/assets/img/logo_header.svg" alt="BizMate логотип" [routerLink]="'/'"/>
 
     <div class="mobile-menu-button">
-      <img src="/assets/img/hamburger_menu.svg" alt="Меню" (click)="isMobileMenuOpened = !isMobileMenuOpened"/>
+      <img src="/assets/img/hamburger_menu.svg" alt="Меню" (click)="showMobileMenu()"/>
     </div>
 
-    <div *ngIf="isMobileMenuOpened" class="mobile-menu-wrapper" (click)="isMobileMenuOpened = false" (scroll)="$event.stopImmediatePropagation()">
+    <div class="mobile-menu-wrapper" id="mobileMenuWrapper" (click)="hideMobileMenu()" (scroll)="$event.stopImmediatePropagation()">
       <div class="mobile-menu-container" (click)="$event.stopImmediatePropagation()">
         <div class="user-info">
           <span *ngIf="loggedIn">{{userName}}</span>
@@ -35,10 +35,10 @@
           </button>
         </div>
         <div class="mobile-menu-nav">
-          <a [routerLink]="'/'" (click)="isMobileMenuOpened = false">Главная</a>
-          <a *ngIf="loggedIn" [routerLink]="'/profile'" (click)="isMobileMenuOpened = false">Мой кабинет</a>
-          <a [routerLink]="'/offers-page'" (click)="isMobileMenuOpened = false">Офферы</a>
-          <a [routerLink]="'/feedback'" (click)="isMobileMenuOpened = false">Помощь</a>
+          <a [routerLink]="'/'" (click)="hideMobileMenu()">Главная</a>
+          <a *ngIf="loggedIn" [routerLink]="'/profile'" (click)="hideMobileMenu()">Мой кабинет</a>
+          <a [routerLink]="'/offers-page'" (click)="hideMobileMenu()">Офферы</a>
+          <a [routerLink]="'/feedback'" (click)="hideMobileMenu()">Помощь</a>
         </div>
       </div>
     </div>
