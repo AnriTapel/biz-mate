@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {Offer} from "../../models/Offer";
 import {AppService} from "../../services/app/app.service";
 import {AuthService} from "../../services/auth/auth.service";
@@ -13,7 +13,8 @@ import {Messages} from "../../models/Messages";
 @Component({
   selector: 'app-offer-card',
   templateUrl: './offer-card.component.html',
-  styleUrls: ['./offer-card.component.scss']
+  styleUrls: ['./offer-card.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OfferCardComponent implements OnInit {
 

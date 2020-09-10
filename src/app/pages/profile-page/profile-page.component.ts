@@ -14,6 +14,7 @@ import {NotificationBarService} from "../../services/notification-bar/notificati
 import {Messages} from "../../models/Messages";
 import {SeoService} from "../../services/seo/seo.service";
 import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
+import {OverlayService} from "../../services/overlay/overlay.service";
 
 @Component({
   selector: 'app-profile-page',
@@ -79,11 +80,11 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
             this.authService.updateCurrentUserData().then((user) => {
               this.user = user;
             });
-            AppService.hideOverlay();
+            OverlayService.hideOverlay();
             this.notificationBarService.showNotificationBar(Messages.SAVE_SUCCESS, true);
           })
           .catch(() => {
-            AppService.hideOverlay();
+            OverlayService.hideOverlay();
             this.notificationBarService.showNotificationBar(Messages.SAVE_ERROR, false);
           });
       }
@@ -94,7 +95,7 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
     if (this.userDataForm.get(field).status == "INVALID")
       return;
 
-    AppService.showOverlay();
+    OverlayService.showOverlay();
     let newValue = this.userDataForm.get(field).value;
 
     let result: Promise<void>;
@@ -105,7 +106,7 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
 
     result
       .then(() => {
-        AppService.hideOverlay();
+        OverlayService.hideOverlay();
         this.editableFields[field] = false;
         this.updateUserDataInOffers(field, newValue);
         this.authService.updateCurrentUserData().then((user) => {
@@ -114,9 +115,9 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
         this.user = this.authService.user;
         this.notificationBarService.showNotificationBar(Messages.SAVE_SUCCESS, true);
       }).catch(() => {
-        AppService.hideOverlay();
-        this.notificationBarService.showNotificationBar(Messages.SAVE_ERROR, false)
-      });
+      OverlayService.hideOverlay();
+      this.notificationBarService.showNotificationBar(Messages.SAVE_ERROR, false)
+    });
   }
 
   private updateUserDataInOffers(field: string, newValue: string) {

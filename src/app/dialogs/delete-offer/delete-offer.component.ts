@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {MatDialogRef} from "@angular/material/dialog";
 
 @Component({
   selector: 'app-delete-offer',
   templateUrl: './delete-offer.component.html',
-  styleUrls: ['./delete-offer.component.scss']
+  styleUrls: ['./delete-offer.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DeleteOfferComponent implements OnInit {
 

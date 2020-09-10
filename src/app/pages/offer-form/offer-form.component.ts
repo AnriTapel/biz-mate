@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, ViewChild} from '@angular/core';
 import {OfferTypes} from "../../models/OfferTypes";
 import {AppService} from "../../services/app/app.service";
 import {AuthService} from "../../services/auth/auth.service";
@@ -14,17 +14,19 @@ import {NotificationBarService} from "../../services/notification-bar/notificati
 import {Messages} from "../../models/Messages";
 import {SeoService} from "../../services/seo/seo.service";
 import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
+import {OverlayService} from "../../services/overlay/overlay.service";
 
 @Component({
   selector: 'app-offer-form',
   templateUrl: './offer-form.component.html',
-  styleUrls: ['./offer-form.component.scss']
+  styleUrls: ['./offer-form.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OfferFormComponent extends ComponentBrowserAbstractClass implements OnInit {
 
   @ViewChild(FormGroupDirective) formGroupDirective: FormGroupDirective;
 
-  private currentType: number = 1;
+  private currentType: number = undefined;
 
   private editOfferId: string = null;
   public editOffer: boolean = false;
@@ -118,7 +120,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
   public async fileChangeEvent(event): Promise<void> {
     let files = event.target.files;
     let imgCount = files.length > 5 ? 5 : files.length;
-    AppService.showOverlay();
+    OverlayService.showOverlay();
     for (let i = 0; i < imgCount; i++) {
       let res = await this.auth.uploadUserImage(files[i]);
       if (res)
@@ -127,7 +129,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
         this.notificationBarService.showNotificationBar(Messages["image/could_not_load"], false);
       }
     }
-    AppService.hideOverlay();
+    OverlayService.hideOverlay();
   }
 
   public openImage(url: string): void {
@@ -156,7 +158,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
   public async getOfferData(): Promise<any> {
     let offerData = {};
     if (this.activeRoute.snapshot.url[0] && this.activeRoute.snapshot.url[0].path == 'edit-offer') {
-      AppService.showOverlay();
+      OverlayService.showOverlay();
       this.editOffer = true;
       this.editOfferId = this.activeRoute.snapshot.url[1].path;
       let offerRef = await this.db.doc(`/offers/${this.editOfferId}`).ref.get();
@@ -175,7 +177,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
       offerData['city'] = AppService.getCityByFiledValue('id', offer.city).name || '';
       this.contactMethods = offer.contactMethods || this.contactMethods;
       this.offerImages = offer.imagesURL || [];
-      AppService.hideOverlay();
+      OverlayService.hideOverlay();
     }
 
     return offerData;
@@ -201,7 +203,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
       return;
     }
 
-    AppService.showOverlay();
+    OverlayService.showOverlay();
 
     for (let img of this.removedImages) {
       this.auth.deleteUserImage(img);
@@ -228,11 +230,11 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     let request = this.editOffer ? ref.doc(offerData.offerId).update(offerData) : ref.doc(offerData.offerId).set(offerData);
     return request
       .then(() => {
-        AppService.hideOverlay();
+        OverlayService.hideOverlay();
         this.notificationBarService.showNotificationBar(this.editOffer ? Messages.SAVE_SUCCESS : Messages.OFFER_CREATED, true);
       })
       .catch(() => {
-        AppService.hideOverlay();
+        OverlayService.hideOverlay();
         this.notificationBarService.showNotificationBar(this.editOffer ? Messages.SAVE_ERROR : Messages.OFFER_ERROR, false);
       })
   }

@@ -10,16 +10,12 @@ export class NotificationBarComponent {
 
   constructor(private notificationBarService: NotificationBarService) { }
 
-  public hideNotificationBar(): void {
-    this.notificationBarService.hideNotificationBar();
-  }
-
   public getNotificationText(): string {
     return this.notificationBarService.message;
   }
 
   public isBarVisible(): boolean {
-    return this.notificationBarService.isVisible;
+    return NotificationBarService.isVisible;
   }
 
   public getMessageStatus(): boolean {

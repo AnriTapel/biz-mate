@@ -16,7 +16,11 @@ $main-theme-color: #2E7990;
     cursor: pointer;
 
     &:not(:last-child) {
-      margin-bottom: 2em;
+      margin-bottom: 1em;
+    }
+
+    &:hover {
+      color: #35A6CA;
     }
   }
 
@@ -177,5 +181,11 @@ $main-theme-color: #2E7990;
 
   @media screen and (max-width: 770px) {
     grid-column: unset;
+  }
+}
+
+@media screen and (max-width: 770px) {
+  section {
+    margin-top: 1.5em;
   }
 }

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../services/auth/auth.service";
 import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
@@ -11,7 +11,8 @@ import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstra
 @Component({
   selector: 'app-feedback',
   templateUrl: './feedback.component.html',
-  styleUrls: ['./feedback.component.scss']
+  styleUrls: ['./feedback.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FeedbackComponent extends ComponentBrowserAbstractClass implements OnInit{
 

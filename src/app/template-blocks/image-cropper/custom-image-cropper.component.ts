@@ -4,6 +4,7 @@ import {Messages} from "../../models/Messages";
 import {MatDialogRef} from "@angular/material/dialog";
 import {AppService} from "../../services/app/app.service";
 import {AngularFireStorage} from "@angular/fire/storage";
+import {OverlayService} from "../../services/overlay/overlay.service";
 
 @Component({
   selector: 'app-image-cropper',
@@ -39,7 +40,7 @@ export class CustomImageCropperComponent {
 
   async imageCropped(event: ImageCroppedEvent) {
     //Find out if file with such fileName already exists
-    AppService.showOverlay();
+    OverlayService.showOverlay();
     try {
       await this.db.ref('/user-images/').child(this.fileName).getDownloadURL();
       this.fileName = `${Date.now()}_${this.fileName}`;

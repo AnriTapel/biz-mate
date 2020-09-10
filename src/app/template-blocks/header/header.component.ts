@@ -4,7 +4,7 @@ import {LoginComponent} from "../../dialogs/login/login.component";
 import {MatDialogConfig} from "../../dialogs/mat-dialog-config";
 import {AuthService} from "../../services/auth/auth.service";
 import {Router} from "@angular/router";
-import {AppService} from "../../services/app/app.service";
+import {OverlayService} from "../../services/overlay/overlay.service";
 
 @Component({
   selector: 'app-header',
@@ -51,11 +51,11 @@ export class HeaderComponent implements OnInit {
   }
 
   logOut(): void {
-    AppService.showOverlay();
+    OverlayService.showOverlay();
     this.auth.signOut().then(() => {
       this.auth.user = null;
       this.router.navigateByUrl("/");
       this.hideMobileMenu();
-    }).finally(() => AppService.hideOverlay());
+    }).finally(() => OverlayService.hideOverlay());
   }
 }

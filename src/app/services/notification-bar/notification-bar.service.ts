@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 export class NotificationBarService {
 
   private static NOTIFICATION_BAR_TIMEOUT_MSEC: number = 3000;
-  private _isVisible: boolean = false;
+  private static _isVisible: boolean = false;
   private _message: string = null;
   private _isSuccess: boolean = true;
 
@@ -17,7 +17,7 @@ export class NotificationBarService {
   public showNotificationBar(message: string, isSuccess: boolean): void {
     this.isSuccess = isSuccess;
     this.message = message;
-    this.isVisible = true;
+    NotificationBarService.isVisible = true;
     scroll(0,0);
 
     this.timer = setTimeout(() => {
@@ -27,15 +27,15 @@ export class NotificationBarService {
 
   public hideNotificationBar(): void {
     clearTimeout(this.timer);
-    this.isVisible = false;
+    NotificationBarService.isVisible = false;
     this.message = null;
   }
 
-  get isVisible(): boolean {
+  static get isVisible(): boolean {
     return this._isVisible;
   }
 
-  set isVisible(value: boolean) {
+  static set isVisible(value: boolean) {
     this._isVisible = value;
   }
 

@@ -11,6 +11,7 @@ import {NotificationBarService} from "../../services/notification-bar/notificati
 import {Messages} from "../../models/Messages";
 import {SeoService} from "../../services/seo/seo.service";
 import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
+import {OverlayService} from "../../services/overlay/overlay.service";
 
 @Component({
   selector: 'app-offers-page',
@@ -49,7 +50,7 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
 
   ngOnInit(): void {
     this.seoService.updateRouteMetaTagsByData(this.metaTags);
-    AppService.showOverlay();
+    OverlayService.showOverlay();
     this.searchForm = new FormGroup({
       type: new FormControl(null, [AppService.offerTypeValidator()]),
       businessArea: new FormControl(null, [AppService.businessAreaFieldValidator()]),
@@ -74,7 +75,7 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
         map(value => AppService._filterCategories(value))
       );
     this.offersRef = this.db.collection('offers').ref;
-    this.getInitialOffers().finally(() => AppService.hideOverlay());
+    this.getInitialOffers().finally(() => OverlayService.hideOverlay());
   }
 
   private async getInitialOffers(): Promise<void> {

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {AppService} from "../../services/app/app.service";
+import {OverlayService} from "../../services/overlay/overlay.service";
 
 @Component({
   selector: 'app-overlay',
@@ -14,7 +15,7 @@ export class OverlayComponent implements OnInit {
   }
 
   public isOverlayVisible(): boolean {
-    return AppService.isOverlayVisible;
+    return OverlayService.isOverlayVisible;
   }
 
 }

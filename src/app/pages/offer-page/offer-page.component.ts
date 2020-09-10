@@ -1,10 +1,11 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {AngularFirestore} from "@angular/fire/firestore";
 import {ActivatedRoute} from "@angular/router";
 import {Offer} from "../../models/Offer";
 import {AppService} from "../../services/app/app.service";
 import {SeoService} from "../../services/seo/seo.service";
 import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
+import {OverlayService} from "../../services/overlay/overlay.service";
 
 @Component({
   selector: 'app-offer-page',
@@ -17,7 +18,7 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
 
   constructor(private db: AngularFirestore, private route: ActivatedRoute, private seoService: SeoService) {
     super();
-    AppService.showOverlay();
+    OverlayService.showOverlay();
     db.collection('/offers').doc(route.snapshot.paramMap.get("id").toString()).get().subscribe((doc) => {
       if (!doc.exists) {
         console.error('No such document!');
@@ -28,7 +29,7 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
     }, (err) => {
       console.error(err);
     }, () => {
-      AppService.hideOverlay();
+      OverlayService.hideOverlay();
     });
   }
 

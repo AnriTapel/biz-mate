@@ -51,7 +51,7 @@ app-root {
 }
 
 router-outlet {
-  flex: 1 0 auto;
+  //flex: 1 0 auto;
 }
 
 main, header, .footer-container {
@@ -70,6 +70,10 @@ main {
 
 app-header, app-footer, app-offer-card {
   z-index: 1;
+}
+
+app-footer {
+  margin-top: auto;
 }
 
 h1, h2, h3, h4, p, span, a, label, mat-label, div {
@@ -270,10 +274,11 @@ textarea.mat-input-element{
 .offers-list{
   margin-top: 3em;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   grid-gap: 2em;
 
   @media screen and (max-width: 770px) {
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
     margin-top: 2em;
   }
 }

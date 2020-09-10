@@ -10,8 +10,6 @@ import {AbstractControl, ValidatorFn} from "@angular/forms";
 })
 export class AppService {
 
-  private static _isOverlayVisible: boolean = false;
-
   static readonly offerTypes: Array<any> = [
     { id: OfferTypes.NEED_INVESTMENTS, title: 'Ищу инвестиции' },
     { id: OfferTypes.HAVE_INVESTMENTS, title: 'Предлагаю инвестиции' },
@@ -113,17 +111,5 @@ export class AppService {
       const valid = AppService.offerTypes.filter(it => it.title === control.value).length == 1;
       return !control.value ? null : !valid ? {'validArea': {value: control.value}} : null;
     };
-  }
-
-  public static showOverlay(): void {
-    this._isOverlayVisible = true;
-  }
-
-  public static hideOverlay(): void {
-    this._isOverlayVisible = false;
-  }
-
-  static get isOverlayVisible(): boolean {
-    return this._isOverlayVisible;
   }
 }

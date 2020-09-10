@@ -11,14 +11,14 @@ import {RulesComponent} from "./pages/rules/rules.component";
 import {HomePageComponent} from "./pages/home-page/home-page.component";
 
 const routes: Routes = [
-  {path: '', component: HomePageComponent, pathMatch: "full"},
-  {path: 'offers-page', component: OffersPageComponent, pathMatch: "full"},
-  {path: 'new-offer', component: OfferFormComponent, pathMatch: "full", canActivate: [AuthGuardService]},
+  {path: '', component: HomePageComponent, pathMatch: 'full'},
+  {path: 'offers-page', component: OffersPageComponent, pathMatch: 'full'},
+  {path: 'new-offer', component: OfferFormComponent, pathMatch: 'full', canActivate: [AuthGuardService]},
   {path: 'edit-offer/:offerId', component: OfferFormComponent, canActivate: [AuthGuardService]},
-  {path: 'profile', component: ProfilePageComponent, pathMatch: "full", canActivate: [AuthGuardService]},
-  {path: 'offer/:id', component: OfferPageComponent},
-  {path: 'feedback', component: FeedbackComponent},
-  {path: 'rules', component: RulesComponent},
+  {path: 'profile', component: ProfilePageComponent, pathMatch: 'full', canActivate: [AuthGuardService]},
+  {path: 'offer/:id', component: OfferPageComponent, pathMatch: 'full'},
+  {path: 'feedback', component: FeedbackComponent, pathMatch: 'full'},
+  {path: 'rules', component: RulesComponent, pathMatch: 'full'},
   {path: '**', component: NotFoundComponent}
 ];
 
