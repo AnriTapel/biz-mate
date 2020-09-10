@@ -5,11 +5,12 @@ import { Injectable } from '@angular/core';
 })
 export class NotificationBarService {
 
+  private static NOTIFICATION_BAR_TIMEOUT_MSEC: number = 3000;
   private _isVisible: boolean = false;
   private _message: string = null;
   private _isSuccess: boolean = true;
 
-  timer;
+  private timer: number;
 
   constructor() { }
 
@@ -21,7 +22,7 @@ export class NotificationBarService {
 
     this.timer = setTimeout(() => {
       this.hideNotificationBar();
-    }, 3000);
+    }, NotificationBarService.NOTIFICATION_BAR_TIMEOUT_MSEC);
   }
 
   public hideNotificationBar(): void {
