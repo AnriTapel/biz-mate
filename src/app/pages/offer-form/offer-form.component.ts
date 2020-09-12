@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {OfferTypes} from "../../models/OfferTypes";
 import {AppService} from "../../services/app/app.service";
 import {AuthService} from "../../services/auth/auth.service";
@@ -19,8 +19,7 @@ import {OverlayService} from "../../services/overlay/overlay.service";
 @Component({
   selector: 'app-offer-form',
   templateUrl: './offer-form.component.html',
-  styleUrls: ['./offer-form.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrls: ['./offer-form.component.scss']
 })
 export class OfferFormComponent extends ComponentBrowserAbstractClass implements OnInit {
 
@@ -81,8 +80,12 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
       phone: new FormControl(offerData.phone, [Validators.pattern(/^\+7 \(\d{3}\)\s\d{3}-\d{4}$/)])
     });
 
+    if (offerData.type) {
+      this.setOfferType(offerData.type);
+      this.fieldsLabels = OfferFormComponent.getFieldsLabels(offerData.type);
+    }
+
     this.newOfferForm.valueChanges.subscribe(() => this.isFormValid = true);
-    this.fieldsLabels = OfferFormComponent.getFieldsLabels(this.currentType);
     this.isOfferLoaded = true;
 
     this.filteredCities$ = this.newOfferForm.controls.city.valueChanges
@@ -164,8 +167,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
       let offerRef = await this.db.doc(`/offers/${this.editOfferId}`).ref.get();
       let offer = offerRef.data() as Offer;
 
-      this.currentType = offer.type;
-
+      offerData['type'] = offer.type;
       offerData['offerId'] = offer.offerId || '';
       offerData['title'] = offer.title || '';
       offerData['desc'] = offer.desc || '';
