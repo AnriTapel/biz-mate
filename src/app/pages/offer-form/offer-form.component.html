@@ -6,7 +6,7 @@
                        (click)="setOfferType(type.id)">{{type.title}}</div>
   </aside>
 
-  <section *ngIf="isOfferLoaded">
+  <section *ngIf="isOfferLoaded && getOfferType()">
     <form class="new-offer-form" [formGroup]="newOfferForm">
       <div class="header-and-clear full-width-field">
         <h4>Общая информация</h4>
