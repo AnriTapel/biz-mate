@@ -60,8 +60,8 @@
 
       <div class="contacts">
         <h3>Контакты</h3>
-        <p *ngIf="offer.phone">Номер телефона: <strong>{{offer.phone}}</strong></p>
-        <p *ngIf="offer.email">E-mail: <strong>{{offer.email}}</strong></p>
+        <p *ngIf="offer.phone">Номер телефона: <a [href]="'tel:' + offer.phone" target="_blank"><strong>{{offer.phone}}</strong></a></p>
+        <p *ngIf="offer.email">E-mail: <a [href]="'mailto:' + offer.email" target="_blank"><strong>{{offer.email}}</strong></a></p>
         <div *ngIf="isContactMethodSelected()" class="prefered-contact-methods">
           <span>Предпочетаемые способы свзяи:</span>
           <div>
@@ -73,8 +73,6 @@
           </div>
         </div>
       </div>
-
-      <!--<button class="button-primary button-primary-large">Откликнуться</button>-->
     </section>
   </ng-container>
 </main>

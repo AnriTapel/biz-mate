@@ -10,7 +10,7 @@ export class MatDialogConfig {
     maxWidth: '400px',
     minWidth: '200px',
     maxHeight: '90vh',
-    autoFocus: true,
+    autoFocus: false,
     backdropClass: 'dialog-backdrop',
     panelClass: 'dialog-content',
     closeOnNavigation: true
@@ -21,7 +21,7 @@ export class MatDialogConfig {
     maxWidth: '1020px',
     minWidth: '400px',
     maxHeight: '90vh',
-    autoFocus: true,
+    autoFocus: false,
     backdropClass: 'dialog-backdrop',
     panelClass: 'dialog-content',
     closeOnNavigation: true
