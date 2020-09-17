@@ -69,24 +69,27 @@ export class AppService {
   }
 
   public static _filterCities(value: string): any[] {
-    if (value === null)
-      value = '';
+    if (value == null || value == '') {
+      return;
+    }
 
     const filterValue = value.toLowerCase();
     return AppService.cities.filter(option => option.name.toLowerCase().includes(filterValue));
   }
 
   public static _filterCategories(value: string): any[] {
-    if (value === null)
-      value = '';
+    if (value == null || value == '') {
+      return;
+    }
 
     const filterValue = value.toLowerCase();
     return AppService.businessArea.filter(option => option.name.toLowerCase().includes(filterValue));
   }
 
   public static _filterOfferTypes(value: string): any[] {
-    if (value === null)
-      value = '';
+    if (value == null || value == '') {
+      return;
+    }
 
     const filterValue = value.toLowerCase();
     return AppService.offerTypes.filter(option => option.title.toLowerCase().includes(filterValue));
