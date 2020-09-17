@@ -23,7 +23,7 @@
     <a class="link-underline" [routerLink]="['/offer/'+offer.offerId]">Подробнее</a>
     <div *ngIf="editable">
       <img class="edit-btn" src="/assets/img/edit.svg" title="Редактировать" (click)="editOffer()"/>
-      <img class="edit-btn" src="/assets/img/delete.svg" title="Удалить" (click)="deleteOffer()"/>
+      <img class="edit-btn" src="/assets/img/delete.svg" title="Удалить" (click)="onDeleteOfferButtonClick()"/>
     </div>
   </div>
 

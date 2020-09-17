@@ -15,6 +15,7 @@ import {Messages} from "../../models/Messages";
 import {SeoService} from "../../services/seo/seo.service";
 import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
 import {OverlayService} from "../../services/overlay/overlay.service";
+import {StorageService} from "../../services/storage/storage.service";
 
 @Component({
   selector: 'app-profile-page',
@@ -35,7 +36,7 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
   };
 
   constructor(private appService: AppService, private authService: AuthService, private router: Router,
-              private db: AngularFirestore, private dialog: MatDialog,
+              private db: AngularFirestore, private dialog: MatDialog, private storageService: StorageService,
               private notificationBarService: NotificationBarService, private seoService: SeoService) {
     super();
     this.user = this.authService.user;
@@ -75,7 +76,7 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
       if (res && typeof res === "string") {
         this.authService.updateUserDisplayNameOrPhotoURL('photoURL', res)
           .then(() => {
-            this.authService.deleteUserImage(this.user.photoURL);
+            this.storageService.deleteUserImage(this.user.photoURL);
             this.updateUserDataInOffers('photoURL', res);
             this.authService.updateCurrentUserData().then((user) => {
               this.user = user;

@@ -9,6 +9,8 @@ import {MatDialogConfig} from "../../dialogs/mat-dialog-config";
 import {AngularFirestore} from "@angular/fire/firestore";
 import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
 import {Messages} from "../../models/Messages";
+import {OverlayService} from "../../services/overlay/overlay.service";
+import {StorageService} from "../../services/storage/storage.service";
 
 @Component({
   selector: 'app-offer-card',
@@ -22,7 +24,7 @@ export class OfferCardComponent implements OnInit {
   @Input() editable: boolean;
 
   constructor(private auth: AuthService, private router: Router, private dialog: MatDialog, private route: ActivatedRoute,
-              private db: AngularFirestore, private notificationService: NotificationBarService) { }
+              private db: AngularFirestore, private notificationService: NotificationBarService, private storageService: StorageService) { }
 
   ngOnInit(): void {
   }
@@ -45,15 +47,29 @@ export class OfferCardComponent implements OnInit {
     return cutDesc.substring(0, lastSpaceIndex) + '...';
   }
 
-  public deleteOffer(): void {
+  public onDeleteOfferButtonClick(): void {
     let dialog = this.dialog.open(DeleteOfferComponent, MatDialogConfig.narrowDialogWindow);
     dialog.afterClosed().subscribe((res) => {
       if (res === true) {
-        this.db.collection('/offers').doc(this.offer.offerId).delete()
-          .then(() => this.notificationService.showNotificationBar(Messages.DELETE_OFFER_SUCCESS, true))
-          .catch(() => this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false))
+        this.deleteOffer();
       }
     })
   }
 
+  private async deleteOffer(): Promise<void> {
+    OverlayService.showOverlay();
+    let offerRef = await this.db.collection('/offers').doc(this.offer.offerId).ref.get();
+    let offer = offerRef.data() as Offer;
+
+    if (offer.imagesURL && offer.imagesURL.length) {
+      for (let img of offer.imagesURL) {
+        this.storageService.deleteUserImage(img);
+      }
+    }
+
+    this.db.collection('/offers').doc(this.offer.offerId).delete()
+      .then(() => this.notificationService.showNotificationBar(Messages.DELETE_OFFER_SUCCESS, true))
+      .catch(() => this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false))
+      .finally(() => OverlayService.hideOverlay());
+  }
 }

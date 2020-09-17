@@ -38,7 +38,6 @@ import {NotificationBarComponent} from "./template-blocks/notification-bar/notif
 import {PhoneMaskDirective} from "./directives/phone-mask/phone-mask.directive";
 import {OverlayComponent} from "./template-blocks/overlay/overlay.component";
 import {AuthService} from "./services/auth/auth.service";
-import {MatSidenavModule} from "@angular/material/sidenav";
 
 export function appInitFactory(auth: AuthService) {
   return (): Promise<any> => {

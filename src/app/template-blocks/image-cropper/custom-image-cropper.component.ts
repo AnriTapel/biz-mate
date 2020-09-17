@@ -2,9 +2,8 @@ import {Component, ViewChild} from '@angular/core';
 import {ImageCroppedEvent, ImageCropperComponent} from "ngx-image-cropper";
 import {Messages} from "../../models/Messages";
 import {MatDialogRef} from "@angular/material/dialog";
-import {AppService} from "../../services/app/app.service";
-import {AngularFireStorage} from "@angular/fire/storage";
 import {OverlayService} from "../../services/overlay/overlay.service";
+import {StorageService} from "../../services/storage/storage.service";
 
 @Component({
   selector: 'app-image-cropper',
@@ -17,10 +16,9 @@ export class CustomImageCropperComponent {
   errorMessage: string = '';
   isLoaded: boolean = false;
   imageChangedEvent: any = '';
-  croppedImageFile: File = null;
   fileName: string = null;
 
-  constructor(private dialogRef: MatDialogRef<CustomImageCropperComponent>, private db: AngularFireStorage) {
+  constructor(private dialogRef: MatDialogRef<CustomImageCropperComponent>, private storageService: StorageService) {
   }
 
   fileChangeEvent(event: any): void {
@@ -41,22 +39,13 @@ export class CustomImageCropperComponent {
   async imageCropped(event: ImageCroppedEvent) {
     //Find out if file with such fileName already exists
     OverlayService.showOverlay();
-    try {
-      await this.db.ref('/user-images/').child(this.fileName).getDownloadURL();
-      this.fileName = `${Date.now()}_${this.fileName}`;
-    } catch (err) {
-      console.log(`File with name ${this.fileName} doesn't exist.`);
-    }
-
-    this.croppedImageFile = this.base64toFile(event.base64);
-    let imageRef = this.db.ref('/user-images/').child(this.fileName);
-
-    let uploadRef = await imageRef.put(this.croppedImageFile);
-    if (uploadRef.state === 'success') {
-      let photoURL = await uploadRef.ref.getDownloadURL();
-      this.dialogRef.close(photoURL);
-    } else
+    let uploadRes = await this.storageService.uploadUserImage(this.base64toFile(event.base64), this.fileName);
+    if (uploadRes) {
+      this.dialogRef.close(uploadRes);
+    } else {
       this.errorMessage = Messages["image/could_not_load"] || Messages.DEFAULT_MESSAGE;
+      OverlayService.hideOverlay();
+    }
   }
 
   getFileName(file: File): void {

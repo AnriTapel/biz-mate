@@ -15,6 +15,7 @@ import {Messages} from "../../models/Messages";
 import {SeoService} from "../../services/seo/seo.service";
 import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
 import {OverlayService} from "../../services/overlay/overlay.service";
+import {StorageService} from "../../services/storage/storage.service";
 
 @Component({
   selector: 'app-offer-form',
@@ -61,7 +62,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     site: '/new-offer'
   };
 
-  constructor(private db: AngularFirestore, private auth: AuthService, private activeRoute: ActivatedRoute,
+  constructor(private db: AngularFirestore, private auth: AuthService, private activeRoute: ActivatedRoute, private storageService: StorageService,
               private notificationBarService: NotificationBarService, private seoService: SeoService) {
     super();
   }
@@ -125,7 +126,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     let imgCount = files.length > 5 ? 5 : files.length;
     OverlayService.showOverlay();
     for (let i = 0; i < imgCount; i++) {
-      let res = await this.auth.uploadUserImage(files[i]);
+      let res = await this.storageService.uploadUserImage(files[i], files[i].fileName);
       if (res)
         this.offerImages.push(res);
       else {
@@ -208,7 +209,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     OverlayService.showOverlay();
 
     for (let img of this.removedImages) {
-      this.auth.deleteUserImage(img);
+      this.storageService.deleteUserImage(img);
     }
 
     for (let key of Object.keys(offerData)) {

@@ -8,7 +8,6 @@ import {AppService} from "../app/app.service";
 import {MatDialog} from "@angular/material/dialog";
 import {EmailVerifyComponent} from "../../dialogs/email-verify-message/email-verify.component";
 import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
-import {AngularFireStorage} from "@angular/fire/storage";
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +17,7 @@ export class AuthService {
   public user: User;
   private firstUserSession: boolean = undefined;
 
-  constructor(private afAuth: AngularFireAuth, private afStorage: AngularFireStorage, private dialog: MatDialog) {
+  constructor(private afAuth: AngularFireAuth, private dialog: MatDialog) {
     this.user$ = this.afAuth.authState.pipe(
       switchMap(user => {
         if (user && !user.isAnonymous) {
@@ -130,36 +129,6 @@ export class AuthService {
           .catch(() => reject());
       });
     });
-  }
-
-  public deleteUserImage(url: string): void {
-    try {
-      if (AppService.defaultAvatars.includes(url)) {
-        return;
-      }
-      this.afStorage.storage.refFromURL(url).delete();
-    } catch (e) {
-      console.error(`Couldn't remove image by url ${url}`);
-    }
-  }
-
-  public async uploadUserImage(file: File): Promise<string> {
-    let fileName = file.name;
-    try {
-      await this.afStorage.ref('/user-images/').child(fileName).getDownloadURL();
-      fileName = `${Date.now()}_${fileName}`;
-    } catch (err) {
-      console.warn(`File with name ${fileName} doesn't exist.`);
-    }
-
-    let imageRef = this.afStorage.ref('/user-images/').child(fileName);
-
-    let uploadRef = await imageRef.put(file);
-    if (uploadRef.state === 'success') {
-      return await uploadRef.ref.getDownloadURL();
-    } else {
-      return null;
-    }
   }
 
   // Update this.user when firebaseUser data is changed
