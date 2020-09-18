@@ -72,7 +72,7 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
     this.filteredBusinessArea$ = this.searchForm.controls.businessArea.valueChanges
       .pipe(
         startWith(''),
-        map(value => AppService._filterCategories(value))
+        map(value => AppService._filterBusinessAreas(value))
       );
     this.offersRef = this.db.collection('offers').ref;
     this.getInitialOffers().finally(() => OverlayService.hideOverlay());

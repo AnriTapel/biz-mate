@@ -98,7 +98,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     this.filteredBusinessArea$ = this.newOfferForm.controls.businessArea.valueChanges
       .pipe(
         startWith(''),
-        map(value => AppService._filterCategories(value))
+        map(value => AppService._filterBusinessAreas(value))
       );
   }
 

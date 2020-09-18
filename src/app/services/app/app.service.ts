@@ -77,9 +77,9 @@ export class AppService {
     return AppService.cities.filter(option => option.name.toLowerCase().includes(filterValue));
   }
 
-  public static _filterCategories(value: string): any[] {
-    if (value == null || value == '') {
-      return;
+  public static _filterBusinessAreas(value: string): any[] {
+    if (value === null) {
+      value = '';
     }
 
     const filterValue = value.toLowerCase();
@@ -87,8 +87,8 @@ export class AppService {
   }
 
   public static _filterOfferTypes(value: string): any[] {
-    if (value == null || value == '') {
-      return;
+    if (value === null){
+      value = '';
     }
 
     const filterValue = value.toLowerCase();
