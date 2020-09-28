@@ -126,7 +126,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     let imgCount = files.length > 5 ? 5 : files.length;
     OverlayService.showOverlay();
     for (let i = 0; i < imgCount; i++) {
-      let res = await this.storageService.uploadUserImage(files[i], files[i].fileName);
+      let res = await this.storageService.uploadUserImage(files[i], files[i].name);
       if (res)
         this.offerImages.push(res);
       else {

@@ -12,6 +12,9 @@ export class StorageService {
   }
 
   public async uploadUserImage(file: File, fileName: string): Promise<any>{
+    if (!fileName) {
+      fileName = Date.now().toString();
+    }
     try {
       await this.storage.ref('/user-images/').child(fileName).getDownloadURL();
       fileName = `${Date.now()}_${fileName}`;
