@@ -100,7 +100,7 @@ header {
         top: 0;
         right: 0;
         width: 70%;
-        max-width: 450px;
+        max-width: 300px;
         height: 100vh;
         background-color: #FFFFFF;
         display: flex;
@@ -131,7 +131,7 @@ header {
           }
 
           a:not(:last-child) {
-            margin-bottom: 1.5em;
+            margin-bottom: 2em;
           }
         }
       }
