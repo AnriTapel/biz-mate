@@ -43,7 +43,7 @@
 
       <div>
         <button class="button-primary button-white" (click)="clearFilterForm()">Сбросить</button>
-        <button class="button-primary" (click)="applyFilter()">Искать</button>
+        <button class="button-primary" (click)="applyFilter(false)">Искать</button>
       </div>
     </form>
 
@@ -98,8 +98,8 @@
     <p>Не удалось найти ни одного объявления. Измените параметры поиска и попробуйте еще раз.</p>
   </div>
 
-  <a *ngIf="!allOffersLoaded && !filteredOffers$ && !emptyFilterResult" class="more-offers link-underline"
-     (click)="loadNextOffersChunk()">Больше офферов</a>
-  <img *ngIf="(allOffersLoaded || filteredOffers$) && !emptyFilterResult" class="all-offers-loaded"
+  <a *ngIf="getNextOffersChunkButtonStatus()" class="more-offers link-underline"
+     (click)="getNextOffersChunk()">Больше офферов</a>
+  <img *ngIf="!getNextOffersChunkButtonStatus()" class="all-offers-loaded"
        src="/assets/img/all_offers_loaded.svg" title="На этом все..." alt="На этом все..."/>
 </main>

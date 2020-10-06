@@ -10,7 +10,7 @@
 
       <div class="item">
         <span>Город</span>
-        <span>{{getOfferCity()}}</span>
+        <span class="clickable" (click)="openOffersPageByFilter('city')">{{getOfferCity()}}</span>
       </div>
 
       <div *ngIf="offer.capital" class="item">
@@ -20,12 +20,12 @@
 
       <div class="item">
         <span>Тип объявления</span>
-        <span>{{getOfferTypeTitle()}}</span>
+        <span class="clickable" (click)="openOffersPageByFilter('type')">{{getOfferTypeTitle()}}</span>
       </div>
 
       <div class="item">
         <span>Сфера бизнеса</span>
-        <span>{{getOfferBusinessArea()}}</span>
+        <span class="clickable" (click)="openOffersPageByFilter('businessArea')">{{getOfferBusinessArea()}}</span>
       </div>
 
       <div class="item">

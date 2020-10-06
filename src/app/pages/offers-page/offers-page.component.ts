@@ -12,6 +12,7 @@ import {Messages} from "../../models/Messages";
 import {SeoService} from "../../services/seo/seo.service";
 import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
 import {OverlayService} from "../../services/overlay/overlay.service";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-offers-page',
@@ -28,13 +29,15 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
     site: '/offers-page'
   };
 
-  private lastVisibleOffer: any = null;
-  public allOffersLoaded: boolean = false;
+  private lastSortedOffer: any = null;
+  private lastFilteredOffer: any = null;
+  public allSortedOffersLoaded: boolean = false;
+  public allFilteredOffersLoaded: boolean = false;
   public emptyFilterResult: boolean = false;
 
   private offersRef: any;
-  public sortedOffers$: Observable<any[]>;
-  public filteredOffers$: Observable<Offer[]>;
+  public sortedOffers$: Observable<any[]> = null;
+  public filteredOffers$: Observable<Offer[]> = null;
 
   // Панель поиска
   public searchForm: FormGroup;
@@ -44,13 +47,12 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
   public isSearchFormVisible: boolean = false;
 
   constructor(private appService: AppService, private db: AngularFirestore, private notificationService: NotificationBarService,
-              private seoService: SeoService) {
+              private seoService: SeoService, private route: ActivatedRoute) {
     super();
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.seoService.updateRouteMetaTagsByData(this.metaTags);
-    OverlayService.showOverlay();
     this.searchForm = new FormGroup({
       type: new FormControl(null, [AppService.offerTypeValidator()]),
       businessArea: new FormControl(null, [AppService.businessAreaFieldValidator()]),
@@ -75,90 +77,156 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
         map(value => AppService._filterBusinessAreas(value))
       );
     this.offersRef = this.db.collection('offers').ref;
-    this.getInitialOffers().finally(() => OverlayService.hideOverlay());
+
+    this.route.queryParams.subscribe(res => {
+      if (!res || Object.keys(res).length > 0) {
+        let offerType = res.offerType ? AppService.getOfferTypeByFiledValue('id', res.offerType).title : null;
+        let city = res.city ? AppService.getCityByFiledValue('id', res.city).name : null;
+        let businessArea = res.businessArea ? AppService.getBusinessAreaByFiledValue('id', res.businessArea).name : null;
+        this.searchForm.controls.type.setValue(offerType);
+        this.searchForm.controls.city.setValue(city);
+        this.searchForm.controls.businessArea.setValue(businessArea);
+        this.applyFilter(false);
+      } else {
+        this.getSortedOffers(false);
+      }
+    });
   }
 
-  private async getInitialOffers(): Promise<void> {
-    let initialQuery = await this.offersRef.orderBy('date', 'desc').limit(this.OFFER_QUERY_LIMIT).get();
+  private async getSortedOffers(loadNextChunk: boolean = false): Promise<void> {
+    OverlayService.showOverlay();
+    try {
+      let query;
+      if (loadNextChunk) {
+        query = await this.offersRef.orderBy('date', 'desc')
+          .limit(this.OFFER_QUERY_LIMIT).startAfter(this.lastSortedOffer).get();
+      } else {
+        query = await this.offersRef.orderBy('date', 'desc').limit(this.OFFER_QUERY_LIMIT).get();
+      }
 
-    let offers = [];
+      let offers = [];
+      if (!query.empty) {
+        query.forEach(it => offers.push(it.data()));
+        this.lastSortedOffer = query.docs[query.docs.length - 1];
+        if (offers.length < this.OFFER_QUERY_LIMIT) {
+          this.allSortedOffersLoaded = true;
+        }
 
-    if (!initialQuery.empty) {
-      initialQuery.forEach(it => offers.push(it.data()));
-      this.lastVisibleOffer = initialQuery.docs[initialQuery.docs.length - 1];
-
-      this.sortedOffers$ = of(offers);
+        if (loadNextChunk) {
+          this.sortedOffers$ = zip(this.sortedOffers$, of(offers))
+            .pipe(map(x => x[0].concat(x[1])));
+        } else {
+          this.sortedOffers$ = of(offers);
+        }
+      } else if (loadNextChunk){
+        this.allSortedOffersLoaded = true;
+      }
+      OverlayService.hideOverlay();
+    } catch (e){
+      this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false);
+      OverlayService.hideOverlay();
     }
   }
 
-  public async applyFilter(): Promise<void> {
+  public async applyFilter(loadNextChunk: boolean = false): Promise<void> {
     if (this.searchForm.status === 'INVALID')
       return;
 
+    OverlayService.showOverlay();
     this.emptyFilterResult = false;
+    if (!loadNextChunk) {
+      this.allFilteredOffersLoaded = false;
+      this.filteredOffers$ = null;
+      this.lastFilteredOffer = null;
+    }
 
-    let formValue = this.searchForm.getRawValue();
-    let queryParams = [];
-
-    if (formValue.type && formValue.type.length)
-      queryParams.push('type', AppService.getOfferTypeByFiledValue('title', formValue.type).id);
-
-    if (formValue.city && formValue.city.length)
-      queryParams.push('city', AppService.getCityByFiledValue('name', formValue.city).id);
-
-    if (formValue.businessArea && formValue.businessArea.length)
-      queryParams.push('city', AppService.getBusinessAreaByFiledValue('name', formValue.businessArea).id);
+    let queryParams = this.getSearchFormParams();
+    let paramsKeys = Object.keys(queryParams);
+    if (!paramsKeys.length) {
+      OverlayService.hideOverlay();
+      return;
+    }
 
     try {
-      switch (queryParams.length) {
-        case 2:
-          await this.applyOneParamFilter(queryParams[0], queryParams[1]);
-          break;
-        case 4:
-          await this.applyTwoParamFilter(queryParams[0], queryParams[1], queryParams[2], queryParams[3]);
-          break;
-        default:
-          await this.applyThreeParamFilter(queryParams[0], queryParams[1], queryParams[2], queryParams[3], queryParams[4], queryParams[5]);
-          break;
+      let resp;
+      if (paramsKeys.length === 1) {
+        if (loadNextChunk) {
+          resp = await this.offersRef.orderBy('date', 'desc').where(paramsKeys[0], '==', queryParams[paramsKeys[0]])
+            .limit(this.OFFER_QUERY_LIMIT).startAfter(this.lastFilteredOffer).get();
+        } else {
+          resp = await this.offersRef.orderBy('date', 'desc').where(paramsKeys[0], '==', queryParams[paramsKeys[0]])
+            .limit(this.OFFER_QUERY_LIMIT).get();
+        }
+      } else if (paramsKeys.length === 2) {
+        if (loadNextChunk) {
+          resp = await this.offersRef.orderBy('date', 'desc').where(paramsKeys[0], '==', queryParams[paramsKeys[0]])
+            .where(paramsKeys[1], '==', queryParams[paramsKeys[1]])
+            .limit(this.OFFER_QUERY_LIMIT)
+            .startAfter(this.lastFilteredOffer).get();
+        } else {
+          resp = await this.offersRef.orderBy('date', 'desc').where(paramsKeys[0], '==', queryParams[paramsKeys[0]])
+            .where(paramsKeys[1], '==', queryParams[paramsKeys[1]])
+            .limit(this.OFFER_QUERY_LIMIT).get();
+        }
+      } else if (paramsKeys.length === 3) {
+        if (loadNextChunk) {
+          resp = await this.offersRef.orderBy('date', 'desc').where(paramsKeys[0], '==', queryParams[paramsKeys[0]])
+            .where(paramsKeys[1], '==', queryParams[paramsKeys[1]])
+            .where(paramsKeys[2], '==', queryParams[paramsKeys[2]])
+            .limit(this.OFFER_QUERY_LIMIT)
+            .startAfter(this.lastFilteredOffer).get();
+        } else {
+          resp = await this.offersRef.orderBy('date', 'desc').where(paramsKeys[0], '==', queryParams[paramsKeys[0]])
+            .where(paramsKeys[1], '==', queryParams[paramsKeys[1]])
+            .where(paramsKeys[2], '==', queryParams[paramsKeys[2]])
+            .limit(this.OFFER_QUERY_LIMIT).get();
+        }
       }
+
+      this.resolveFilterQuery(resp, loadNextChunk);
+      OverlayService.hideOverlay();
     } catch (e) {
       this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false);
       this.filteredOffers$ = null;
+      this.lastFilteredOffer = null;
+      this.allFilteredOffersLoaded = false;
+      OverlayService.hideOverlay();
     }
   }
 
-  private async applyOneParamFilter(param: string, value: number): Promise<void> {
-    let resp = await this.offersRef.where(param, '==', value).get();
-    let filterRes = [];
-    if (!resp.empty) {
-      resp.forEach(it => filterRes.push(it.data()));
-      this.filteredOffers$ = of<Offer[]>(filterRes.sort((a,b) => b.date - a.date));
-    } else {
-      this.emptyFilterResult = true;
-      this.filteredOffers$ = null;
-    }
+  private getSearchFormParams(): any {
+    let formValue = this.searchForm.getRawValue();
+    let queryParams = {};
+
+    if (formValue.type && formValue.type.length)
+      queryParams['type'] = AppService.getOfferTypeByFiledValue('title', formValue.type).id;
+
+    if (formValue.city && formValue.city.length)
+      queryParams['city'] = AppService.getCityByFiledValue('name', formValue.city).id;
+
+    if (formValue.businessArea && formValue.businessArea.length)
+      queryParams['businessArea'] = AppService.getBusinessAreaByFiledValue('name', formValue.businessArea).id;
+
+    return queryParams;
   }
 
-  private async applyTwoParamFilter(param_1, value_1, param_2, value_2): Promise<void> {
-    let resp = await this.offersRef.where(param_1, '==', value_1).where(param_2, '==', value_2).get();
+  private resolveFilterQuery(resp: any, loadNextChunk: boolean): void {
     let filterRes = [];
     if (!resp.empty) {
       resp.forEach(it => filterRes.push(it.data()));
-      this.filteredOffers$ = of<Offer[]>(filterRes.sort((a,b) => b.date - a.date));
-    } else {
-      this.emptyFilterResult = true;
-      this.filteredOffers$ = null;
-    }
-  }
 
-  private async applyThreeParamFilter(param_1, value_1, param_2, value_2, param_3, value_3): Promise<void> {
-    let resp = await this.offersRef.where(param_1, '==', value_1).where(param_2, '==', value_2)
-      .where(param_3, '==', value_3).get();
-    let filterRes = [];
-    if (!resp.empty) {
-      resp.forEach(it => filterRes.push(it.data()));
-      this.filteredOffers$ = of<Offer[]>(filterRes.sort((a,b) => b.date - a.date));
-    } else {
+      if (loadNextChunk) {
+        this.filteredOffers$ = zip(this.filteredOffers$, of(filterRes))
+          .pipe(map(x => x[0].concat(x[1])));
+      } else {
+        this.filteredOffers$ = of<Offer[]>(filterRes);
+      }
+
+      this.lastFilteredOffer = filterRes[filterRes.length - 1];
+      if (filterRes.length < this.OFFER_QUERY_LIMIT) {
+        this.allFilteredOffersLoaded = true;
+      }
+    } else if (!loadNextChunk) {
       this.emptyFilterResult = true;
       this.filteredOffers$ = null;
     }
@@ -173,22 +241,29 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
     });
 
     this.filteredOffers$ = null;
+    this.lastFilteredOffer = null;
+    this.allFilteredOffersLoaded = false;
+
+    if (!this.sortedOffers$) {
+      OverlayService.showOverlay();
+      this.getSortedOffers().finally(() => OverlayService.hideOverlay());
+    }
   }
 
-  public async loadNextOffersChunk(): Promise<void> {
-    let query = await this.db.collection<Offer>('/offers').ref
-      .orderBy('date', 'desc').limit(this.OFFER_QUERY_LIMIT).startAfter(this.lastVisibleOffer).get();
-
-    let offers = [];
-
-    if (!query.empty) {
-      query.forEach(it => offers.push(it.data()));
-      this.lastVisibleOffer = query.docs[query.docs.length - 1];
-
-      this.sortedOffers$ = zip(this.sortedOffers$, of(offers))
-        .pipe(map(x => x[0].concat(x[1])))
+  public async getNextOffersChunk(): Promise<void> {
+    if (this.filteredOffers$) {
+      this.applyFilter(true);
     } else {
-      this.allOffersLoaded = true
+      await this.getSortedOffers(true);
     }
+  }
+
+  public getNextOffersChunkButtonStatus(): boolean {
+    if ((this.filteredOffers$ && this.allFilteredOffersLoaded) || (!this.filteredOffers$ && this.allSortedOffersLoaded)) {
+      return false;
+    }
+    return !this.emptyFilterResult;
+
+
   }
 }

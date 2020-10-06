@@ -44,6 +44,16 @@ $main-theme-color: #2E7990;
     &:not(:last-child) {
       margin-bottom: 1.5em;
     }
+
+    & > span.clickable {
+      cursor: pointer;
+      text-decoration: #2E7990 underline;
+
+      &:hover {
+        color: #2EA6CC !important;
+        text-decoration: #2EA6CC underline;
+      }
+    }
   }
 
   @media screen and (max-width: 770px) {
