@@ -68,7 +68,11 @@ export class OfferCardComponent implements OnInit {
     }
 
     this.db.collection('/offers').doc(this.offer.offerId).delete()
-      .then(() => this.notificationService.showNotificationBar(Messages.DELETE_OFFER_SUCCESS, true))
+      .then(() => {
+        this.notificationService.showNotificationBar(Messages.DELETE_OFFER_SUCCESS, true);
+        //@ts-ignore
+        ym(65053642,'reachGoal','offerDeleted');
+      })
       .catch(() => this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false))
       .finally(() => OverlayService.hideOverlay());
   }

@@ -83,8 +83,12 @@ export class HomePageComponent extends ComponentBrowserAbstractClass implements 
     this.route.queryParams.subscribe(params => {
       if (params['password_reset']) {
         this.dialog.open(NotificationComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, this.resetPasswordEvent))
+        //@ts-ignore
+        ym(65053642,'reachGoal','resetPassword')
       } else if (params['email_verify']) {
         this.dialog.open(NotificationComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, this.emailVerifyEvent))
+        //@ts-ignore
+        ym(65053642,'reachGoal','completeSignUp');
       }
     });
   }

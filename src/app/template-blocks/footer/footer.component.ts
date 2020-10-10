@@ -19,4 +19,14 @@ export class FooterComponent implements OnInit {
       behavior: "smooth"
     });
   }
+
+  public sendVkGroupYmGoal(): void {
+    //@ts-ignore
+    ym(65053642,'reachGoal','vkGroup');
+  }
+
+  public sendEmailYmGoal(): void {
+    //@ts-ignore
+    ym(65053642,'reachGoal','emailLink')
+  }
 }

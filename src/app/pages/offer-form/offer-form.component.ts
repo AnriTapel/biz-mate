@@ -235,6 +235,13 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
       .then(() => {
         OverlayService.hideOverlay();
         this.notificationBarService.showNotificationBar(this.editOffer ? Messages.SAVE_SUCCESS : Messages.OFFER_CREATED, true);
+        if (this.editOffer) {
+          //@ts-ignore
+          ym(65053642,'reachGoal','offerEdited')
+        } else {
+          //@ts-ignore
+          ym(65053642,'reachGoal','offerCreated');
+        }
       })
       .catch(() => {
         OverlayService.hideOverlay();

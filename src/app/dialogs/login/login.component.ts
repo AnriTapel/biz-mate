@@ -57,7 +57,11 @@ export class LoginComponent implements OnInit {
     this.auth.googleAuth()
       .then(() => {
         this.dialogRef.close();
-        setTimeout(() => this.router.navigateByUrl('/profile'), 0);
+        setTimeout(() => {
+          this.router.navigateByUrl('/profile');
+          //@ts-ignore
+          ym(65053642,'reachGoal','completeSignUp');
+        }, 0);
       })
       .catch((err) => this.errorMessage = Messages[err.code] || Messages.DEFAULT_MESSAGE);
   }

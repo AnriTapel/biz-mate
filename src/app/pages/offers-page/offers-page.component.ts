@@ -218,6 +218,8 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
       if (loadNextChunk) {
         this.filteredOffers$ = zip(this.filteredOffers$, of(filterRes))
           .pipe(map(x => x[0].concat(x[1])));
+        //@ts-ignore
+        ym(65053642,'reachGoal','searchByFilter');
       } else {
         this.filteredOffers$ = of<Offer[]>(filterRes);
       }
