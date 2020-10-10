@@ -44,7 +44,11 @@ export class FeedbackComponent extends ComponentBrowserAbstractClass implements 
     let messagesRef = await this.db.collection('/messages');
 
     messagesRef.add(message)
-      .then(() => this.notificationService.showNotificationBar(Messages.FEEDBACK_SUCCESS, true))
+      .then(() => {
+        this.notificationService.showNotificationBar(Messages.FEEDBACK_SUCCESS, true);
+        //@ts-ignore
+        ym(65053642,'reachGoal','feedbackSent');
+      })
       .catch(() => this.notificationService.showNotificationBar(Messages.FEEDBACK_ERROR, false))
   }
 
