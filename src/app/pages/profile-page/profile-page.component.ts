@@ -16,6 +16,7 @@ import {SeoService} from "../../services/seo/seo.service";
 import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
 import {OverlayService} from "../../services/overlay/overlay.service";
 import {StorageService} from "../../services/storage/storage.service";
+import {OfferComment} from "../../models/OfferComment";
 
 @Component({
   selector: 'app-profile-page',
@@ -27,6 +28,7 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
   public user: User = null;
   public userOffers$: Observable<Offer[]> = null;
   public hasOffers: boolean = true;
+  private offersRefHandler: any = undefined;
 
   public userDataForm: FormGroup;
 
@@ -52,13 +54,19 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
     this.getUserOffers();
   }
 
-  private async getUserOffers(): Promise<void> {
-    await this.db.collection<Offer[]>('/offers').ref
-      .where('userId', '==', this.user.uid).onSnapshot((res) => {
+  ngOnDestroy(): void {
+    super.ngOnDestroy();
+    if (this.offersRefHandler) {
+      this.offersRefHandler();
+    }
+  }
+
+  private getUserOffers(): void {
+    this.offersRefHandler = this.db.collection<Offer[]>('/offers').ref
+      .where('userId', '==', this.user.uid).orderBy('date', 'desc').onSnapshot((res) => {
         this.hasOffers = !res.empty;
         let offers = [];
         res.forEach(it => offers.push(it.data() as Offer));
-        offers.sort((a, b) => b.date - a.date);
         this.userOffers$ = of(offers);
       });
   }
@@ -131,6 +139,21 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
         });
 
         batch.commit().then(() => this.getUserOffers()).catch(err => console.error(err));
+      }).catch(error => console.error(error));
+
+    if (field !== 'displayName') {
+      return;
+    }
+
+    this.db.collection<OfferComment[]>('/offers-comments').ref.where('userId', '==', this.user.uid).get()
+      .then((resp) => {
+        let batch = this.db.firestore.batch();
+
+        resp.docs.forEach(userCommentsRef => {
+          batch.update(userCommentsRef.ref, {[field]: newValue});
+        });
+
+        batch.commit().catch(err => console.error(err));
       }).catch(error => console.error(error));
   }
 

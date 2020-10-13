@@ -73,6 +73,34 @@
           </div>
         </div>
       </div>
+
+      <div class="comments-block">
+        <h3>Комментарии ({{commentsCount}})</h3>
+
+        <article class="comment highlight-box" *ngFor="let comment of offerComments$ | async">
+          <div class="name-date">
+            <span>{{comment.displayName}}</span>
+            <span>{{getCommentDate(comment.date)}}</span>
+          </div>
+
+          <p>{{comment.commentText}}</p>
+          <img *ngIf="isCommentDeleteAllowed(comment)" src="/assets/img/delete.svg" title="Удалить"
+               (click)="onDeleteCommentButtonClick(comment.commentId)"/>
+        </article>
+
+        <div *ngIf="isUserAuth" class="add-comment-block">
+          <h4>Добавить комментарий</h4>
+          <mat-form-field class="full-width-field">
+            <mat-label>Текст комментария</mat-label>
+            <textarea [rows]="5" matInput [formControl]="commentInput"></textarea>
+            <mat-hint [ngClass]="{'invalid-field-length': commentInput.value?.length > 1024}" align="end">{{commentInput.value?.length || 0}}/{{1024}}</mat-hint>
+          </mat-form-field>
+
+          <button class="button-primary" (click)="sendOfferComment()">Отправить</button>
+        </div>
+
+        <p *ngIf="!isUserAuth">Оставлять комментарии к объявлениям могут только авторизованные пользователи.</p>
+      </div>
     </section>
   </ng-container>
 </main>

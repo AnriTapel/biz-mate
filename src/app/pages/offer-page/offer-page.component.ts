@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {Component} from '@angular/core';
 import {AngularFirestore} from "@angular/fire/firestore";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Offer} from "../../models/Offer";
@@ -6,6 +6,12 @@ import {AppService} from "../../services/app/app.service";
 import {SeoService} from "../../services/seo/seo.service";
 import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
 import {OverlayService} from "../../services/overlay/overlay.service";
+import {FormControl, Validators} from "@angular/forms";
+import {Observable, of} from "rxjs";
+import {OfferComment} from "../../models/OfferComment";
+import {AuthService} from "../../services/auth/auth.service";
+import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
+import {Messages} from "../../models/Messages";
 
 @Component({
   selector: 'app-offer-page',
@@ -14,27 +20,67 @@ import {OverlayService} from "../../services/overlay/overlay.service";
 })
 export class OfferPageComponent extends ComponentBrowserAbstractClass {
 
+  public readonly COMMENT_TEXT_MAX_LENGTH: number = 1024;
   public offer: Offer = null;
 
-  constructor(private db: AngularFirestore, private route: ActivatedRoute, private seoService: SeoService, private router: Router) {
+  public offerComments$: Observable<OfferComment[]> = null;
+  public commentsCount: number = 0;
+  private commentsRef: any;
+  private commentsRefHandler: any = undefined;
+
+  public commentInput: FormControl;
+  public isUserAuth: boolean = undefined;
+
+  constructor(private db: AngularFirestore, private route: ActivatedRoute, private seoService: SeoService,
+              private router: Router, private authService: AuthService, private notificationService: NotificationBarService) {
     super();
     OverlayService.showOverlay();
     db.collection('/offers').doc(route.snapshot.paramMap.get("id").toString()).get().subscribe((doc) => {
       if (!doc.exists) {
-        console.error('No such document!');
+        this.router.navigateByUrl('/not-found');
       } else {
         this.offer = doc.data() as Offer;
+        this.getOfferComments();
         this.seoService.updateRouteMetaTagsByOffer(this.offer);
       }
-    }, (err) => {
-      console.error(err);
+    }, () => {
+      this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false);
     }, () => {
       OverlayService.hideOverlay();
+    });
+
+    this.commentInput = new FormControl('', [Validators.required, Validators.maxLength(this.COMMENT_TEXT_MAX_LENGTH)]);
+    this.isUserAuth = !!this.authService.user;
+    this.commentsRef = this.db.collection<Offer[]>('offers-comments').ref;
+  }
+
+  ngOnDestroy(): void {
+    super.ngOnDestroy();
+    if (this.commentsRefHandler) {
+      this.commentsRefHandler();
+    }
+  }
+
+  private getOfferComments(): void {
+    this.commentsRefHandler = this.commentsRef.where('offerId', '==', this.offer.offerId).orderBy('date').onSnapshot((res) => {
+      if (res.empty) {
+        this.commentsCount = 0;
+        this.offerComments$ = of([]);
+        return;
+      }
+      let comments = [];
+      res.forEach(it => comments.push(it.data() as OfferComment));
+      this.offerComments$ = of(comments);
+      this.commentsCount = comments.length;
     });
   }
 
   public getOfferDate(): string {
-    return AppService.getOfferDate(this.offer);
+    return AppService.getDateAsString(this.offer.date);
+  }
+
+  public getCommentDate(date: number): string {
+    return AppService.getDateAsString(date);
   }
 
   public getOfferCity(): string {
@@ -94,5 +140,41 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
         return true;
     }
     return false;
+  }
+
+  public sendOfferComment(): void {
+    if (!this.commentInput.valid) {
+      return;
+    }
+
+    OverlayService.showOverlay();
+    let comment: OfferComment = {
+      commentId: this.db.createId(),
+      offerId: this.offer.offerId,
+      userId: this.authService.user.uid,
+      displayName: this.authService.user.displayName,
+      commentText: this.commentInput.value,
+      date: Date.now()
+    };
+
+    this.commentsRef.doc(comment.commentId).set(comment)
+      .then(() => setTimeout(() => this.commentInput.reset(), 0))
+      .catch(() => this.notificationService.showNotificationBar(Messages.COMMENT_ERROR, false))
+      .finally(() => OverlayService.hideOverlay());
+  }
+
+  public isCommentDeleteAllowed(comment: OfferComment): boolean {
+    if (this.authService.user) {
+      return this.authService.user.uid === comment.userId;
+    } else {
+      return false;
+    }
+  }
+
+  public onDeleteCommentButtonClick(commentId: string): void {
+    OverlayService.showOverlay();
+    this.commentsRef.doc(commentId).delete()
+      .catch(() => this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false))
+      .finally(() => OverlayService.hideOverlay());
   }
 }

@@ -175,7 +175,6 @@ export class AuthService {
   }
 
   async signOut(): Promise<void> {
-    this.user = null;
     await this.afAuth.signOut();
     await this.afAuth.signInAnonymously();
   }

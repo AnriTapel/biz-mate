@@ -11,6 +11,8 @@ export enum Messages{
   'image/could_not_load' = 'Не удалось загрузить изображение, попробуйте еще раз',
   'FEEDBACK_SUCCESS' = 'Письмо успешно отправлено',
   'FEEDBACK_ERROR' = 'Не удалось отправить письмо, попробуйте еще раз',
-  'DELETE_OFFER_SUCCESS' = 'Объявление успешно удалено'
+  'DELETE_OFFER_SUCCESS' = 'Объявление успешно удалено',
+  'COMMENT_SUCCESS' = 'Комментарий успешно размещен',
+  'COMMENT_ERROR' = 'Не удалось разместить комментарий'
 
 }

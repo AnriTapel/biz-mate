@@ -53,7 +53,6 @@ export class HeaderComponent implements OnInit {
   logOut(): void {
     OverlayService.showOverlay();
     this.auth.signOut().then(() => {
-      this.auth.user = null;
       this.router.navigateByUrl("/");
       this.hideMobileMenu();
     }).finally(() => OverlayService.hideOverlay());

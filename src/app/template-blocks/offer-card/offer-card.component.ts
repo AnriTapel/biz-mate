@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {Offer} from "../../models/Offer";
 import {AppService} from "../../services/app/app.service";
 import {AuthService} from "../../services/auth/auth.service";
@@ -18,19 +18,17 @@ import {StorageService} from "../../services/storage/storage.service";
   styleUrls: ['./offer-card.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class OfferCardComponent implements OnInit {
+export class OfferCardComponent {
 
   @Input() offer: Offer;
   @Input() editable: boolean;
 
   constructor(private auth: AuthService, private router: Router, private dialog: MatDialog, private route: ActivatedRoute,
-              private db: AngularFirestore, private notificationService: NotificationBarService, private storageService: StorageService) { }
-
-  ngOnInit(): void {
+              private db: AngularFirestore, private notificationService: NotificationBarService, private storageService: StorageService) {
   }
 
   public getOfferDate(offer: Offer): string {
-    return AppService.getOfferDate(offer);
+    return AppService.getDateAsString(offer.date);
   }
 
   public editOffer(): void {
@@ -67,11 +65,22 @@ export class OfferCardComponent implements OnInit {
       }
     }
 
+    this.db.collection('/offers-comments').ref.where('offerId', '==', this.offer.offerId).get()
+      .then((resp) => {
+        let batch = this.db.firestore.batch();
+
+        resp.docs.forEach(userDocRef => {
+          batch.delete(userDocRef.ref);
+        });
+
+        batch.commit().catch(err => console.error(err));
+      });
+
     this.db.collection('/offers').doc(this.offer.offerId).delete()
       .then(() => {
         this.notificationService.showNotificationBar(Messages.DELETE_OFFER_SUCCESS, true);
         //@ts-ignore
-        ym(65053642,'reachGoal','offerDeleted');
+        ym(65053642, 'reachGoal', 'offerDeleted');
       })
       .catch(() => this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false))
       .finally(() => OverlayService.hideOverlay());

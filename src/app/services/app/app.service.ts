@@ -48,8 +48,8 @@ export class AppService {
     return this.defaultAvatars[index];
   }
 
-  public static getOfferDate(offer: Offer): string {
-    const date = new Date(offer.date);
+  public static getDateAsString(numberDate: number): string {
+    const date = new Date(numberDate);
 
     const day = date.getDate() >= 10 ? date.getDate().toString() : `0${date.getDate()}`;
     const month = date.getMonth() + 1 >= 10 ? (date.getMonth() + 1).toString() : `0${date.getMonth() + 1}`;

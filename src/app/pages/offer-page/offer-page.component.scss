@@ -57,8 +57,7 @@ $main-theme-color: #2E7990;
   }
 
   @media screen and (max-width: 770px) {
-    order: 1;
-    margin-top: 1em;
+    margin-bottom: 2em;
     padding: 1.5em 2em;
   }
 }
@@ -100,8 +99,74 @@ $main-theme-color: #2E7990;
     }
   }
 
-
   button {
     float: right;
+  }
+
+  @media screen and (max-width: 770px) {
+    h2 {
+      margin-top: 0;
+    }
+  }
+}
+
+.comments-block {
+  margin-top: 7em;
+
+  .comment {
+    margin-top: 1.5em;
+    padding: 1em;
+    width: calc(100% - 2em);
+
+    .name-date {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      & > span:nth-of-type(1) {
+        font-weight: bold;
+      }
+
+      & > span:nth-of-type(2) {
+        font-size: 12px;
+        color: rgba(46, 121, 144, 0.6);
+        font-family: "Raleway-Light";
+        flex-wrap: nowrap;
+      }
+    }
+
+    & > p {
+      margin-top: 2em;
+    }
+
+    & > img {
+      width: 17px;
+      cursor: pointer;
+      margin-left: calc(100% - 17px);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    &:last-of-type{
+      margin-bottom: 3em;
+    }
+  }
+
+  .add-comment-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+    & > mat-form-field {
+      flex-basis: 100%;
+    }
+
+    & > button {
+      align-self: flex-start;
+      margin-top: 1.5em;
+    }
+  }
+
+  @media screen and (max-width: 770px) {
+    margin-top: 5em;
   }
 }

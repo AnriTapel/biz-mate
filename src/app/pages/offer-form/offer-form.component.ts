@@ -8,7 +8,7 @@ import {map, startWith} from "rxjs/operators";
 import {Observable} from "rxjs";
 import {BusinessArea} from "../../models/BusinessArea";
 import {City} from "../../models/City";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {Offer} from "../../models/Offer";
 import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
 import {Messages} from "../../models/Messages";
@@ -63,7 +63,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
   };
 
   constructor(private db: AngularFirestore, private auth: AuthService, private activeRoute: ActivatedRoute, private storageService: StorageService,
-              private notificationBarService: NotificationBarService, private seoService: SeoService) {
+              private notificationBarService: NotificationBarService, private seoService: SeoService, private router: Router) {
     super();
   }
 
@@ -168,6 +168,12 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
       let offerRef = await this.db.doc(`/offers/${this.editOfferId}`).ref.get();
       let offer = offerRef.data() as Offer;
 
+      if (!offer) {
+        this.router.navigateByUrl('/not-found');
+        OverlayService.hideOverlay();
+        return;
+      }
+
       offerData['type'] = offer.type;
       offerData['offerId'] = offer.offerId || '';
       offerData['title'] = offer.title || '';
@@ -185,7 +191,6 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
 
     return offerData;
   }
-
 
   private capitalFieldValidator(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } | null => {

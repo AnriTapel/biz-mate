@@ -19,6 +19,7 @@ const routes: Routes = [
   {path: 'offer/:id', component: OfferPageComponent, pathMatch: 'full'},
   {path: 'feedback', component: FeedbackComponent, pathMatch: 'full'},
   {path: 'rules', component: RulesComponent, pathMatch: 'full'},
+  {path: 'not-found', component: NotFoundComponent, pathMatch: 'full'},
   {path: '**', component: NotFoundComponent}
 ];
 
