@@ -136,7 +136,6 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
     this.emptyFilterResult = false;
     if (!loadNextChunk) {
       this.allFilteredOffersLoaded = false;
-      this.filteredOffers$ = null;
       this.lastFilteredOffer = null;
     }
 
@@ -204,8 +203,11 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
     if (formValue.city && formValue.city.length)
       queryParams['city'] = AppService.getCityByFiledValue('name', formValue.city).id;
 
-    if (formValue.businessArea && formValue.businessArea.length)
-      queryParams['businessArea'] = AppService.getBusinessAreaByFiledValue('name', formValue.businessArea).id;
+    if (formValue.businessArea && formValue.businessArea.length) {
+      if (AppService.getBusinessAreaByFiledValue('name', formValue.businessArea).id > 0) {
+        queryParams['businessArea'] = AppService.getBusinessAreaByFiledValue('name', formValue.businessArea).id;
+      }
+    }
 
     return queryParams;
   }
