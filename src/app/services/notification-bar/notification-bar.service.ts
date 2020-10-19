@@ -18,7 +18,9 @@ export class NotificationBarService {
     this.isSuccess = isSuccess;
     this.message = message;
     NotificationBarService.isVisible = true;
-    scroll(0,0);
+    if (isSuccess) {
+      scroll(0,0);
+    }
 
     this.timer = setTimeout(() => {
       this.hideNotificationBar();
