@@ -2,11 +2,12 @@ import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../services/auth/auth.service";
 import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
-import {AngularFirestore} from "@angular/fire/firestore";
 import {FeedbackMessage} from "../../models/FeedbackMessage";
-import {Messages} from "../../models/Messages";
 import {SeoService} from "../../services/seo/seo.service";
 import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
+import {DatabaseService} from "../../services/database/database.service";
+import {Messages} from "../../models/Messages";
+import {OverlayService} from "../../services/overlay/overlay.service";
 
 @Component({
   selector: 'app-feedback',
@@ -23,7 +24,7 @@ export class FeedbackComponent extends ComponentBrowserAbstractClass implements 
   };
 
   constructor(private authService: AuthService, private notificationService: NotificationBarService,
-              private db: AngularFirestore, private seoService: SeoService) {
+              private databaseService: DatabaseService, private seoService: SeoService) {
     super();
   }
 
@@ -37,19 +38,20 @@ export class FeedbackComponent extends ComponentBrowserAbstractClass implements 
   }
 
   public async sendForm(): Promise<void> {
-    if (this.feedbackForm.status === 'INVALID')
+    if (this.feedbackForm.status === 'INVALID') {
       return;
+    }
 
-    let message: FeedbackMessage = this.feedbackForm.getRawValue() as FeedbackMessage;
-    let messagesRef = await this.db.collection('/messages');
-
-    messagesRef.add(message)
-      .then(() => {
-        this.notificationService.showNotificationBar(Messages.FEEDBACK_SUCCESS, true);
-        //@ts-ignore
-        ym(65053642,'reachGoal','feedbackSent');
-      })
-      .catch(() => this.notificationService.showNotificationBar(Messages.FEEDBACK_ERROR, false))
+    OverlayService.showOverlay();
+    try {
+      await this.databaseService.sendFeedback(this.feedbackForm.getRawValue() as FeedbackMessage);
+      //@ts-ignore
+      ym(65053642,'reachGoal','feedbackSent');
+      this.notificationService.showNotificationBar(Messages.FEEDBACK_SUCCESS, true);
+    } catch(e) {
+      this.notificationService.showNotificationBar(Messages.FEEDBACK_ERROR, false);
+    }
+    OverlayService.hideOverlay();
   }
 
 }

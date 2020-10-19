@@ -1,5 +1,4 @@
 import {Component} from '@angular/core';
-import {AngularFirestore} from "@angular/fire/firestore";
 import {ActivatedRoute, Router} from "@angular/router";
 import {Offer} from "../../models/Offer";
 import {AppService} from "../../services/app/app.service";
@@ -12,6 +11,7 @@ import {OfferComment} from "../../models/OfferComment";
 import {AuthService} from "../../services/auth/auth.service";
 import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
 import {Messages} from "../../models/Messages";
+import {DatabaseService} from "../../services/database/database.service";
 
 @Component({
   selector: 'app-offer-page',
@@ -25,54 +25,32 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
 
   public offerComments$: Observable<OfferComment[]> = null;
   public commentsCount: number = 0;
-  private commentsRef: any;
-  private commentsRefHandler: any = undefined;
 
   public commentInput: FormControl;
   public isUserAuth: boolean = undefined;
 
-  constructor(private db: AngularFirestore, private route: ActivatedRoute, private seoService: SeoService,
+  constructor(private route: ActivatedRoute, private seoService: SeoService, private databaseService: DatabaseService,
               private router: Router, private authService: AuthService, private notificationService: NotificationBarService) {
     super();
     OverlayService.showOverlay();
-    db.collection('/offers').doc(route.snapshot.paramMap.get("id").toString()).get().subscribe((doc) => {
-      if (!doc.exists) {
-        this.router.navigateByUrl('/not-found');
-      } else {
-        this.offer = doc.data() as Offer;
-        this.getOfferComments();
-        this.seoService.updateRouteMetaTagsByOffer(this.offer);
-      }
-    }, () => {
-      this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false);
-    }, () => {
-      OverlayService.hideOverlay();
-    });
-
     this.commentInput = new FormControl('', [Validators.required, Validators.maxLength(this.COMMENT_TEXT_MAX_LENGTH)]);
     this.isUserAuth = !!this.authService.user;
-    this.commentsRef = this.db.collection<Offer[]>('offers-comments').ref;
-  }
-
-  ngOnDestroy(): void {
-    super.ngOnDestroy();
-    if (this.commentsRefHandler) {
-      this.commentsRefHandler();
-    }
+    this.databaseService.getOfferByOfferId(route.snapshot.paramMap.get("id").toString())
+      .then((res) => {
+        this.offer = res;
+        this.getOfferComments();
+        this.seoService.updateRouteMetaTagsByOffer(this.offer);
+      })
+      .catch(() => this.router.navigateByUrl('/not-found'))
+      .finally(() => OverlayService.hideOverlay());
   }
 
   private getOfferComments(): void {
-    this.commentsRefHandler = this.commentsRef.where('offerId', '==', this.offer.offerId).orderBy('date').onSnapshot((res) => {
-      if (res.empty) {
-        this.commentsCount = 0;
-        this.offerComments$ = of([]);
-        return;
-      }
-      let comments = [];
-      res.forEach(it => comments.push(it.data() as OfferComment));
-      this.offerComments$ = of(comments);
-      this.commentsCount = comments.length;
-    });
+    this.databaseService.getOfferCommentsByOfferId(this.offer.offerId)
+      .then((res) => {
+        this.offerComments$ = of(res);
+        this.commentsCount = res.length;
+      })
   }
 
   public getOfferDate(): string {
@@ -149,7 +127,7 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
 
     OverlayService.showOverlay();
     let comment: OfferComment = {
-      commentId: this.db.createId(),
+      commentId: this.databaseService.createId(),
       offerId: this.offer.offerId,
       userId: this.authService.user.uid,
       displayName: this.authService.user.displayName,
@@ -157,8 +135,11 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
       date: Date.now()
     };
 
-    this.commentsRef.doc(comment.commentId).set(comment)
-      .then(() => setTimeout(() => this.commentInput.reset(), 0))
+    this.databaseService.sendOfferComment(comment)
+      .then(() => {
+        this.getOfferComments();
+        setTimeout(() => this.commentInput.reset(), 0);
+      })
       .catch(() => this.notificationService.showNotificationBar(Messages.COMMENT_ERROR, false))
       .finally(() => OverlayService.hideOverlay());
   }
@@ -173,7 +154,8 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
 
   public onDeleteCommentButtonClick(commentId: string): void {
     OverlayService.showOverlay();
-    this.commentsRef.doc(commentId).delete()
+    this.databaseService.deleteOfferComment(commentId)
+      .then(() => this.getOfferComments())
       .catch(() => this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false))
       .finally(() => OverlayService.hideOverlay());
   }

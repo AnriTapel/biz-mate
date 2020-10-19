@@ -4,8 +4,7 @@ import {Router} from "@angular/router";
 import {AppService} from "../../services/app/app.service";
 import {AuthService} from "../../services/auth/auth.service";
 import {Offer} from "../../models/Offer";
-import {AngularFirestore} from '@angular/fire/firestore';
-import {Observable, of} from "rxjs";
+import {Observable} from "rxjs";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {MatDialog} from "@angular/material/dialog";
 import {CustomImageCropperComponent} from "../../template-blocks/image-cropper/custom-image-cropper.component";
@@ -16,7 +15,7 @@ import {SeoService} from "../../services/seo/seo.service";
 import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
 import {OverlayService} from "../../services/overlay/overlay.service";
 import {StorageService} from "../../services/storage/storage.service";
-import {OfferComment} from "../../models/OfferComment";
+import {DatabaseService} from "../../services/database/database.service";
 
 @Component({
   selector: 'app-profile-page',
@@ -28,7 +27,6 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
   public user: User = null;
   public userOffers$: Observable<Offer[]> = null;
   public hasOffers: boolean = true;
-  private offersRefHandler: any = undefined;
 
   public userDataForm: FormGroup;
 
@@ -38,7 +36,7 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
   };
 
   constructor(private appService: AppService, private authService: AuthService, private router: Router,
-              private db: AngularFirestore, private dialog: MatDialog, private storageService: StorageService,
+              private dialog: MatDialog, private storageService: StorageService, private databaseService: DatabaseService,
               private notificationBarService: NotificationBarService, private seoService: SeoService) {
     super();
     this.user = this.authService.user;
@@ -54,21 +52,12 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
     this.getUserOffers();
   }
 
-  ngOnDestroy(): void {
-    super.ngOnDestroy();
-    if (this.offersRefHandler) {
-      this.offersRefHandler();
-    }
-  }
-
   private getUserOffers(): void {
-    this.offersRefHandler = this.db.collection<Offer[]>('/offers').ref
-      .where('userId', '==', this.user.uid).orderBy('date', 'desc').onSnapshot((res) => {
-        this.hasOffers = !res.empty;
-        let offers = [];
-        res.forEach(it => offers.push(it.data() as Offer));
-        this.userOffers$ = of(offers);
-      });
+    this.databaseService.getUserOffersByUserId(this.user.uid)
+      .then((res) => {
+        this.hasOffers = !!res;
+        this.userOffers$ = res;
+      }).catch(() => this.notificationBarService.showNotificationBar(Messages.COULD_NOT_LOAD_USER_OFFERS, false))
   }
 
   public switchEditableField(field: string): void {
@@ -85,17 +74,10 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
         this.authService.updateUserDisplayNameOrPhotoURL('photoURL', res)
           .then(() => {
             this.storageService.deleteUserImage(this.user.photoURL);
-            this.updateUserDataInOffers('photoURL', res);
-            this.authService.updateCurrentUserData().then((user) => {
-              this.user = user;
-            });
-            OverlayService.hideOverlay();
-            this.notificationBarService.showNotificationBar(Messages.SAVE_SUCCESS, true);
+            this.updateUserData('photoURL', res);
           })
-          .catch(() => {
-            OverlayService.hideOverlay();
-            this.notificationBarService.showNotificationBar(Messages.SAVE_ERROR, false);
-          });
+          .catch(() => this.notificationBarService.showNotificationBar(Messages.SAVE_ERROR, false))
+          .finally(() => OverlayService.hideOverlay());
       }
     });
   }
@@ -115,46 +97,19 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
 
     result
       .then(() => {
-        OverlayService.hideOverlay();
         this.editableFields[field] = false;
-        this.updateUserDataInOffers(field, newValue);
-        this.authService.updateCurrentUserData().then((user) => {
-          this.user = user;
-        });
-        this.user = this.authService.user;
-        this.notificationBarService.showNotificationBar(Messages.SAVE_SUCCESS, true);
-      }).catch(() => {
-      OverlayService.hideOverlay();
-      this.notificationBarService.showNotificationBar(Messages.SAVE_ERROR, false)
+        this.updateUserData(field, newValue);
+      })
+      .catch(() => this.notificationBarService.showNotificationBar(Messages.SAVE_ERROR, false))
+      .finally(() => OverlayService.hideOverlay());
+  }
+
+  private async updateUserData(field, newValue): Promise<void> {
+    await this.databaseService.updateUserDataInOffers(this.user.uid, field, newValue);
+    this.getUserOffers();
+    this.authService.updateCurrentUserData().then((user) => {
+      this.user = user;
     });
+    this.notificationBarService.showNotificationBar(Messages.SAVE_SUCCESS, true);
   }
-
-  private updateUserDataInOffers(field: string, newValue: string) {
-    this.db.collection<Offer[]>('/offers').ref.where('userId', '==', this.user.uid).get()
-      .then((resp) => {
-        let batch = this.db.firestore.batch();
-
-        resp.docs.forEach(userDocRef => {
-          batch.update(userDocRef.ref, {[field]: newValue});
-        });
-
-        batch.commit().then(() => this.getUserOffers()).catch(err => console.error(err));
-      }).catch(error => console.error(error));
-
-    if (field !== 'displayName') {
-      return;
-    }
-
-    this.db.collection<OfferComment[]>('/offers-comments').ref.where('userId', '==', this.user.uid).get()
-      .then((resp) => {
-        let batch = this.db.firestore.batch();
-
-        resp.docs.forEach(userCommentsRef => {
-          batch.update(userCommentsRef.ref, {[field]: newValue});
-        });
-
-        batch.commit().catch(err => console.error(err));
-      }).catch(error => console.error(error));
-  }
-
 }

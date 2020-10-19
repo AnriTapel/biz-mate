@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {Observable, of} from "rxjs";
-import {AngularFirestore} from "@angular/fire/firestore";
 import {Offer} from "../../models/Offer";
 import {NotificationComponent} from "../../dialogs/notification/notification.component";
 import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
@@ -11,6 +10,7 @@ import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstra
 import {OfferTypes} from "../../models/OfferTypes";
 import {AppService} from "../../services/app/app.service";
 import NotificationEvent from "../../models/NotificationEvent";
+import {DatabaseService} from "../../services/database/database.service";
 
 @Component({
   selector: 'app-home-page',
@@ -19,7 +19,6 @@ import NotificationEvent from "../../models/NotificationEvent";
 })
 export class HomePageComponent extends ComponentBrowserAbstractClass implements OnInit {
 
-  static readonly LATEST_OFFERS_LIMIT = 4;
   public latestOffers$: Observable<Offer[]>;
 
   private readonly metaTags = {
@@ -77,7 +76,7 @@ export class HomePageComponent extends ComponentBrowserAbstractClass implements 
     }
   ];
 
-  constructor(private db: AngularFirestore, private route: ActivatedRoute, private dialog: MatDialog,
+  constructor(private databaseService: DatabaseService, private route: ActivatedRoute, private dialog: MatDialog,
               private seoService: SeoService) {
     super();
     this.route.queryParams.subscribe(params => {
@@ -95,18 +94,9 @@ export class HomePageComponent extends ComponentBrowserAbstractClass implements 
 
   ngOnInit(): void {
     this.seoService.updateRouteMetaTagsByData(this.metaTags);
-    this.getLatestOffers();
-  }
-
-  private async getLatestOffers(): Promise<void> {
-    let initialQuery = await this.db.collection<Offer>('/offers').ref
-      .orderBy('date', 'desc').limit(HomePageComponent.LATEST_OFFERS_LIMIT).get();
-
-    let offers = [];
-
-    if (!initialQuery.empty) {
-      initialQuery.forEach(it => offers.push(it.data()));
-      this.latestOffers$ = of(offers);
+    if (!this.latestOffers$) {
+      this.databaseService.getLatestOffers()
+        .then((res) => this.latestOffers$ = res);
     }
   }
 }

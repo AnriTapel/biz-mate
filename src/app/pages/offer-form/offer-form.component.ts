@@ -2,7 +2,6 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {OfferTypes} from "../../models/OfferTypes";
 import {AppService} from "../../services/app/app.service";
 import {AuthService} from "../../services/auth/auth.service";
-import {AngularFirestore} from "@angular/fire/firestore";
 import {AbstractControl, FormControl, FormGroup, FormGroupDirective, ValidatorFn, Validators} from "@angular/forms";
 import {map, startWith} from "rxjs/operators";
 import {Observable} from "rxjs";
@@ -16,6 +15,7 @@ import {SeoService} from "../../services/seo/seo.service";
 import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
 import {OverlayService} from "../../services/overlay/overlay.service";
 import {StorageService} from "../../services/storage/storage.service";
+import {DatabaseService} from "../../services/database/database.service";
 
 @Component({
   selector: 'app-offer-form',
@@ -62,8 +62,9 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     site: '/new-offer'
   };
 
-  constructor(private db: AngularFirestore, private auth: AuthService, private activeRoute: ActivatedRoute, private storageService: StorageService,
-              private notificationBarService: NotificationBarService, private seoService: SeoService, private router: Router) {
+  constructor(private auth: AuthService, private activeRoute: ActivatedRoute, private storageService: StorageService,
+              private notificationBarService: NotificationBarService, private seoService: SeoService, private router: Router,
+              private databaseService: DatabaseService) {
     super();
   }
 
@@ -165,10 +166,10 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
       OverlayService.showOverlay();
       this.editOffer = true;
       this.editOfferId = this.activeRoute.snapshot.url[1].path;
-      let offerRef = await this.db.doc(`/offers/${this.editOfferId}`).ref.get();
-      let offer = offerRef.data() as Offer;
-
-      if (!offer) {
+      let offer: Offer;
+      try {
+        offer = await this.databaseService.getOfferByOfferId(this.editOfferId);
+      } catch (e) {
         this.router.navigateByUrl('/not-found');
         OverlayService.hideOverlay();
         return;
@@ -204,18 +205,13 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
   }
 
   public sendOffer(): Promise<void> {
-    let offerData: Offer = this.newOfferForm.getRawValue();
-
     if (this.newOfferForm.status == "INVALID") {
       this.isFormValid = false;
       return;
     }
 
     OverlayService.showOverlay();
-
-    for (let img of this.removedImages) {
-      this.storageService.deleteUserImage(img);
-    }
+    let offerData: Offer = this.newOfferForm.getRawValue();
 
     for (let key of Object.keys(offerData)) {
       offerData[key] = offerData[key] === "" ? null : offerData[key];
@@ -227,18 +223,15 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     offerData.city = AppService.getCityByFiledValue('name', offerData.city).id;
     offerData.businessArea = AppService.getBusinessAreaByFiledValue('name', offerData.businessArea).id;
     offerData.date = Date.now();
-    offerData.offerId = this.editOfferId || this.db.createId();
+    offerData.offerId = this.editOfferId || this.databaseService.createId();
     offerData.email = this.auth.user.email;
     offerData.photoURL = this.auth.user.photoURL || AppService.getDefaultAvatar();
     offerData.imagesURL = this.offerImages;
     offerData.contactMethods = offerData.phone ? this.contactMethods : null;
 
-    let ref = this.db.collection('/offers');
-
-    let request = this.editOffer ? ref.doc(offerData.offerId).update(offerData) : ref.doc(offerData.offerId).set(offerData);
-    return request
+    this.databaseService.sendOffer(offerData, this.removedImages, this.editOffer)
       .then(() => {
-        OverlayService.hideOverlay();
+        this.removedImages = [];
         this.notificationBarService.showNotificationBar(this.editOffer ? Messages.SAVE_SUCCESS : Messages.OFFER_CREATED, true);
         if (this.editOffer) {
           //@ts-ignore
@@ -247,11 +240,10 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
           //@ts-ignore
           ym(65053642,'reachGoal','offerCreated');
         }
+        this.databaseService.updateSortedOffers();
       })
-      .catch(() => {
-        OverlayService.hideOverlay();
-        this.notificationBarService.showNotificationBar(this.editOffer ? Messages.SAVE_ERROR : Messages.OFFER_ERROR, false);
-      })
+      .catch(() => this.notificationBarService.showNotificationBar(this.editOffer ? Messages.SAVE_ERROR : Messages.OFFER_ERROR, false))
+      .finally(() => OverlayService.hideOverlay());
   }
 
   private static getFieldsLabels(offerType: OfferTypes): object {

@@ -6,11 +6,10 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {MatDialog} from "@angular/material/dialog";
 import {DeleteOfferComponent} from "../../dialogs/delete-offer/delete-offer.component";
 import {MatDialogConfig} from "../../dialogs/mat-dialog-config";
-import {AngularFirestore} from "@angular/fire/firestore";
 import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
 import {Messages} from "../../models/Messages";
 import {OverlayService} from "../../services/overlay/overlay.service";
-import {StorageService} from "../../services/storage/storage.service";
+import {DatabaseService} from "../../services/database/database.service";
 
 @Component({
   selector: 'app-offer-card',
@@ -24,7 +23,7 @@ export class OfferCardComponent {
   @Input() editable: boolean;
 
   constructor(private auth: AuthService, private router: Router, private dialog: MatDialog, private route: ActivatedRoute,
-              private db: AngularFirestore, private notificationService: NotificationBarService, private storageService: StorageService) {
+              private notificationService: NotificationBarService, private databaseService: DatabaseService) {
   }
 
   public getOfferDate(offer: Offer): string {
@@ -54,29 +53,9 @@ export class OfferCardComponent {
     })
   }
 
-  private async deleteOffer(): Promise<void> {
+  private deleteOffer(): void {
     OverlayService.showOverlay();
-    let offerRef = await this.db.collection('/offers').doc(this.offer.offerId).ref.get();
-    let offer = offerRef.data() as Offer;
-
-    if (offer.imagesURL && offer.imagesURL.length) {
-      for (let img of offer.imagesURL) {
-        this.storageService.deleteUserImage(img);
-      }
-    }
-
-    this.db.collection('/offers-comments').ref.where('offerId', '==', this.offer.offerId).get()
-      .then((resp) => {
-        let batch = this.db.firestore.batch();
-
-        resp.docs.forEach(userDocRef => {
-          batch.delete(userDocRef.ref);
-        });
-
-        batch.commit().catch(err => console.error(err));
-      });
-
-    this.db.collection('/offers').doc(this.offer.offerId).delete()
+    this.databaseService.deleteOffer(this.offer)
       .then(() => {
         this.notificationService.showNotificationBar(Messages.DELETE_OFFER_SUCCESS, true);
         //@ts-ignore
