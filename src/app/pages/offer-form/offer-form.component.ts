@@ -249,6 +249,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
           //@ts-ignore
           ym(65053642,'reachGoal','offerCreated');
         }
+        this.router.navigateByUrl(`/offer/${offerData.offerId}`);
       })
       .catch(() => {
         OverlayService.hideOverlay();
