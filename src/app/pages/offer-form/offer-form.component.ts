@@ -38,7 +38,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
   public fieldsLabels: any = null;
   public readonly fieldMaxLength = {
     title: 64,
-    desc: 512,
+    desc: 1024,
     experience: 1024,
     conditions: 1024
   };
@@ -82,7 +82,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     });
 
     if (offerData.type) {
-      this.setOfferType(offerData.type);
+      this.setOfferType(offerData.type, false);
       this.fieldsLabels = OfferFormComponent.getFieldsLabels(offerData.type);
     }
 
@@ -102,15 +102,17 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
       );
   }
 
-  public setOfferType(type: OfferTypes): void {
+  public setOfferType(type: OfferTypes, resetControls: boolean = true): void {
     if (this.currentType == type)
       return;
 
     this.currentType = type;
-    this.newOfferForm.controls.experience.reset();
-    this.newOfferForm.controls.conditions.reset();
-    this.newOfferForm.controls.capital.reset();
     this.fieldsLabels = OfferFormComponent.getFieldsLabels(this.currentType);
+    if (resetControls) {
+      this.newOfferForm.controls.experience.reset();
+      this.newOfferForm.controls.conditions.reset();
+      this.newOfferForm.controls.capital.reset();
+    }
   }
 
   public getOfferType(): OfferTypes {
