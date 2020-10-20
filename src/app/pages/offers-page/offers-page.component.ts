@@ -85,6 +85,11 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
     });
   }
 
+  ngOnDestroy(): void {
+    super.ngOnDestroy();
+    this.databaseService.clearSortedOffers();
+  }
+
   private async getSortedOffers(loadNextChunk: boolean = false): Promise<void> {
     OverlayService.showOverlay();
     this.databaseService.getSortedOffersChunk(loadNextChunk)

@@ -16,6 +16,8 @@ export class DatabaseService {
   static readonly SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE: number = 20;
 
   private latestSortedOffers$: Observable<Offer[]> = undefined;
+  private latestSortedOffersHandler: any = undefined;
+
   private sortedOffers$: Observable<Offer[]> = undefined;
   private filteredOffers$: Observable<Offer[]> = undefined;
   private lastLoadedSortedOffer: any = undefined;
@@ -26,20 +28,9 @@ export class DatabaseService {
   private offersCollectionRef: any = undefined;
   private commentsCollectionRef: any = undefined;
 
-  private latestHomePageOffersHandler: any = undefined;
-
   constructor(private db: AngularFirestore, private storageService: StorageService) {
     this.offersCollectionRef = this.db.collection('offers').ref;
     this.commentsCollectionRef = this.db.collection('offers-comments').ref;
-    /*this.offersCollectionChangesHandler = this.offersCollectionRef.orderBy('date', 'desc').onSnapshot((res) => {
-      let offers = [];
-      res.forEach(it => offers.push(it.data() as Offer));
-      console.log(offers);
-      this.updateSortedOffers();
-      if (this.latestSortedOffers$) {
-        this.getLatestOffersForHomePage();
-      }
-    });*/
   }
 
   public createId(): string {
@@ -70,26 +61,23 @@ export class DatabaseService {
     });
   }
 
-  public async getLatestOffers(): Promise<Observable<Offer[]>> {
-    if (this.latestSortedOffers$) {
+  public getLatestOffers(): Observable<Offer[]> {
+    if (this.latestSortedOffers$ && this.latestSortedOffersHandler) {
       return this.latestSortedOffers$;
     }
 
-    await this.getLatestOffersForHomePage();
-    return this.latestSortedOffers$;
-  }
+    this.latestSortedOffersHandler = this.offersCollectionRef.orderBy('date', 'desc')
+      .limit(DatabaseService.LATEST_OFFERS_CHUNK_SIZE).onSnapshot((res) => {
+        if (!res || res.empty) {
+          this.latestSortedOffers$ = of([]);
+          return;
+        }
 
-  private async getLatestOffersForHomePage(): Promise<void> {
-    let res = await this.offersCollectionRef.orderBy('date', 'desc')
-      .limit(DatabaseService.LATEST_OFFERS_CHUNK_SIZE).get();
-    if (!res || res.empty) {
-      this.latestSortedOffers$ = of([]);
-      return;
-    }
-
-    let offers = [];
-    res.forEach(it => offers.push(it.data() as Offer));
-    this.latestSortedOffers$ = of(offers);
+        let offers = [];
+        res.forEach(it => offers.push(it.data() as Offer));
+        this.latestSortedOffers$ = of(offers);
+        return this.latestSortedOffers$;
+      }, (error) => console.log(error));
   }
 
   public async getSortedOffersChunk(nextChunk: boolean = false): Promise<Observable<Offer[]>> {
@@ -136,6 +124,12 @@ export class DatabaseService {
         reject();
       }
     });
+  }
+
+  public clearSortedOffers(): void {
+    this.sortedOffers$ = undefined;
+    this.lastLoadedSortedOffer = undefined;
+    this.allSortedOffersLoaded = false;
   }
 
   public async getFilteredOffersChunk(queryParams: any, nextChunk: boolean = false): Promise<Observable<Offer[]>> {
@@ -219,37 +213,6 @@ export class DatabaseService {
       this.offersCollectionRef.doc(offer.offerId).set(offer);
   }
 
-  public async updateSortedOffers(): Promise<void> {
-    if (!this.sortedOffers$ || !this.lastLoadedSortedOffer) {
-      return;
-    }
-
-    try {
-      let resp = await this.offersCollectionRef.orderBy('date', 'desc').endAt(this.lastLoadedSortedOffer).get();
-      if (resp.empty) {
-        this.sortedOffers$ = of([]);
-        this.lastLoadedSortedOffer = undefined;
-        return;
-      }
-
-      let offers = [];
-      resp.forEach(it => offers.push(it.data() as Offer));
-      this.sortedOffers$ = of(offers);
-    } catch (e) {
-      console.error(e);
-      this.sortedOffers$ = undefined;
-      this.lastLoadedSortedOffer = undefined;
-      this.allSortedOffersLoaded = false;
-    }
-
-    try {
-      this.getLatestOffersForHomePage();
-    } catch (e) {
-      console.error(e);
-      this.getLatestOffersForHomePage();
-    }
-  }
-
   public deleteOffer(offer: Offer): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       if (offer.imagesURL && offer.imagesURL.length) {
@@ -305,7 +268,7 @@ export class DatabaseService {
 
   public getOfferCommentsByOfferId(offerId: string): Promise<OfferComment[]> {
     return new Promise<OfferComment[]>((resolve, reject) => {
-      this.commentsCollectionRef.where('offerId', '==', offerId).get()
+      this.commentsCollectionRef.orderBy('date').where('offerId', '==', offerId).get()
         .then((res) => {
           if (res.empty) {
             resolve([]);
@@ -319,8 +282,8 @@ export class DatabaseService {
     });
   }
 
-  public sendOfferComment(offer: OfferComment): Promise<void> {
-    return this.commentsCollectionRef.doc(offer.offerId).set(offer);
+  public sendOfferComment(comment: OfferComment): Promise<void> {
+    return this.commentsCollectionRef.doc(comment.commentId).set(comment);
   }
 
   public deleteOfferComment(commentId: string): Promise<void> {

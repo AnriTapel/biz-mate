@@ -24,6 +24,8 @@ import {DatabaseService} from "../../services/database/database.service";
 })
 export class ProfilePageComponent extends ComponentBrowserAbstractClass implements OnInit {
 
+  private deleteOfferHandler = null;
+
   public user: User = null;
   public userOffers$: Observable<Offer[]> = null;
   public hasOffers: boolean = true;
@@ -50,6 +52,13 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
   ngOnInit(): void {
     this.seoService.updateRouteMetaTagsByData({title: 'Мой профиль | BizMate'});
     this.getUserOffers();
+    this.deleteOfferHandler = this.getUserOffers.bind(this);
+    document.addEventListener('offerdeleted', this.deleteOfferHandler);
+  }
+
+  ngOnDestroy(): void {
+    super.ngOnDestroy();
+    document.removeEventListener('offerdeleted', this.deleteOfferHandler);
   }
 
   private getUserOffers(): void {

@@ -60,6 +60,7 @@ export class OfferCardComponent {
         this.notificationService.showNotificationBar(Messages.DELETE_OFFER_SUCCESS, true);
         //@ts-ignore
         ym(65053642, 'reachGoal', 'offerDeleted');
+        document.dispatchEvent(new Event('offerdeleted'));
       })
       .catch(() => this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false))
       .finally(() => OverlayService.hideOverlay());

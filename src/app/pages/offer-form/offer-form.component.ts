@@ -242,7 +242,6 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
           //@ts-ignore
           ym(65053642,'reachGoal','offerCreated');
         }
-        this.databaseService.updateSortedOffers();
         this.router.navigateByUrl(`/offer/${offerData.offerId}`);
       })
       .catch(() => this.notificationBarService.showNotificationBar(this.editOffer ? Messages.SAVE_ERROR : Messages.OFFER_ERROR, false))

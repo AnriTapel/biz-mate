@@ -19,6 +19,7 @@ import {DatabaseService} from "../../services/database/database.service";
 })
 export class HomePageComponent extends ComponentBrowserAbstractClass implements OnInit {
 
+  private readonly LATEST_OFFERS_REQUEST_TIMEOUT_MSEC = 100;
   public latestOffers$: Observable<Offer[]>;
 
   private readonly metaTags = {
@@ -94,9 +95,13 @@ export class HomePageComponent extends ComponentBrowserAbstractClass implements 
 
   ngOnInit(): void {
     this.seoService.updateRouteMetaTagsByData(this.metaTags);
+    this.getLatestOffers();
+  }
+
+  private getLatestOffers(): void {
+    this.latestOffers$ = this.databaseService.getLatestOffers();
     if (!this.latestOffers$) {
-      this.databaseService.getLatestOffers()
-        .then((res) => this.latestOffers$ = res);
+      setTimeout(() => this.getLatestOffers(), this.LATEST_OFFERS_REQUEST_TIMEOUT_MSEC);
     }
   }
 }
