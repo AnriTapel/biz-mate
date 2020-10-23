@@ -25,7 +25,12 @@
 
       <div class="item">
         <span>Сфера бизнеса</span>
-        <span class="clickable" (click)="openOffersPageByFilter('businessArea')">{{getOfferBusinessArea()}}</span>
+        <div class="business-areas-block">
+          <span class="clickable" (click)="openOffersPageByFilter('mainBusinessArea')">{{getOfferMainBusinessArea()}}</span>
+          <span *ngIf="getOfferSecondaryBusinessArea()">, </span>
+          <span *ngIf="getOfferSecondaryBusinessArea()" class="clickable"
+                (click)="openOffersPageByFilter('secondaryBusinessArea')">{{getOfferSecondaryBusinessArea()}}</span>
+        </div>
       </div>
 
       <div class="item">

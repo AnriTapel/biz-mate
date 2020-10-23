@@ -23,15 +23,29 @@
         </mat-autocomplete>
       </mat-form-field>
 
-      <mat-form-field>
-        <input type="text" placeholder="Сфера бизнеса *" aria-label="Сфера бизнеса" matInput
-               formControlName="businessArea" [matAutocomplete]="businessArea">
-        <mat-autocomplete #businessArea="matAutocomplete">
-          <mat-option *ngFor="let category of filteredBusinessArea$ | async" [value]="category.name">
-            {{category.name}}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
+      <div class="business-areas-block">
+        <mat-form-field>
+          <input type="text" placeholder="Сфера бизнеса *" aria-label="Сфера бизнеса" matInput
+                 formControlName="businessArea" [matAutocomplete]="businessArea">
+          <mat-autocomplete #businessArea="matAutocomplete">
+            <mat-option *ngFor="let category of filteredBusinessArea$ | async" [value]="category.name">
+              {{category.name}}
+            </mat-option>
+          </mat-autocomplete>
+          <mat-hint *ngIf="!isExtraBusinessAreaFiledAvail" class="business-area-hint"
+                    (click)="isExtraBusinessAreaFiledAvail = true">Выбрать второстепенную сферу бизнеса</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field class="extra-business-area-field" *ngIf="isExtraBusinessAreaFiledAvail">
+          <input type="text" placeholder="Доп. сфера бизнеса" aria-label="Доп. сфера бизнеса" matInput
+                 formControlName="extraBusinessArea" [matAutocomplete]="extraBusinessArea">
+          <mat-autocomplete #extraBusinessArea="matAutocomplete">
+            <mat-option *ngFor="let category of filteredExtraBusinessArea$ | async" [value]="category.name">
+              {{category.name}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
 
       <h4 class="full-width-field">Детали оффера</h4>
 

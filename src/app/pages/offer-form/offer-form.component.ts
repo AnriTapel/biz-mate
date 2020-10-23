@@ -34,6 +34,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
 
   public newOfferForm: FormGroup;
   public filteredBusinessArea$: Observable<BusinessArea[]>;
+  public filteredExtraBusinessArea$: Observable<BusinessArea[]>;
   public filteredCities$: Observable<City[]>;
   public fieldsLabels: any = null;
   public readonly fieldMaxLength = {
@@ -53,6 +54,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
   };
 
   public isFormValid: boolean = true;
+  public isExtraBusinessAreaFiledAvail: boolean = false;
   private offerType = OfferTypes;
 
   private readonly metaTags = {
@@ -74,6 +76,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     this.newOfferForm = new FormGroup({
       city: new FormControl(offerData.city, [Validators.required, AppService.cityFieldValidator()]),
       businessArea: new FormControl(offerData.businessArea, [Validators.required, AppService.businessAreaFieldValidator()]),
+      extraBusinessArea: new FormControl(offerData.extraBusinessArea, [AppService.businessAreaFieldValidator()]),
       title: new FormControl(offerData.title, [Validators.required, Validators.maxLength(this.fieldMaxLength.title)]),
       capital: new FormControl(offerData.capital, [this.capitalFieldValidator()]),
       desc: new FormControl(offerData.desc, [Validators.required, Validators.maxLength(this.fieldMaxLength.desc)]),
@@ -97,6 +100,12 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
       );
 
     this.filteredBusinessArea$ = this.newOfferForm.controls.businessArea.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => AppService._filterBusinessAreas(value))
+      );
+
+    this.filteredExtraBusinessArea$ = this.newOfferForm.controls.extraBusinessArea.valueChanges
       .pipe(
         startWith(''),
         map(value => AppService._filterBusinessAreas(value))
@@ -183,7 +192,11 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
       offerData['desc'] = offer.desc || '';
       offerData['capital'] = offer.capital || null;
       offerData['experience'] = offer.experience || '';
-      offerData['businessArea'] = AppService.getBusinessAreaByFiledValue('id', offer.businessArea).name || '';
+      offerData['businessArea'] = AppService.getBusinessAreaByFiledValue('id', offer.businessArea[0]).name || '';
+      if (offer.businessArea[1]) {
+        offerData['extraBusinessArea'] = AppService.getBusinessAreaByFiledValue('id', offer.businessArea[1]).name || '';
+        this.isExtraBusinessAreaFiledAvail = true;
+      }
       offerData['conditions'] = offer.conditions || '';
       offerData['phone'] = offer.phone || null;
       offerData['city'] = AppService.getCityByFiledValue('id', offer.city).name || '';
@@ -213,7 +226,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     }
 
     OverlayService.showOverlay();
-    let offerData: Offer = this.newOfferForm.getRawValue();
+    let offerData = this.newOfferForm.getRawValue();
 
     for (let key of Object.keys(offerData)) {
       offerData[key] = offerData[key] === "" ? null : offerData[key];
@@ -223,7 +236,11 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     offerData.displayName = this.auth.user.displayName;
     offerData.userId = this.auth.user.uid;
     offerData.city = AppService.getCityByFiledValue('name', offerData.city).id;
-    offerData.businessArea = AppService.getBusinessAreaByFiledValue('name', offerData.businessArea).id;
+    let areas = [AppService.getBusinessAreaByFiledValue('name', offerData.businessArea).id];
+    if (offerData.extraBusinessArea && offerData.extraBusinessArea.length > 0) {
+      areas.push(AppService.getBusinessAreaByFiledValue('name', offerData.extraBusinessArea).id);
+    }
+    offerData.businessArea = areas;
     offerData.date = Date.now();
     offerData.offerId = this.editOfferId || this.databaseService.createId();
     offerData.email = this.auth.user.email;

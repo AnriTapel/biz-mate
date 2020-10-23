@@ -6,7 +6,7 @@ export interface Offer {
   displayName: string;
   city: number;
   type: OfferTypes;
-  businessArea: number;
+  businessArea: number[];
   date: number;
   title: string;
   desc: string;

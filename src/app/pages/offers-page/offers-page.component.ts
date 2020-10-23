@@ -13,6 +13,7 @@ import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstra
 import {OverlayService} from "../../services/overlay/overlay.service";
 import {ActivatedRoute} from "@angular/router";
 import {DatabaseService} from "../../services/database/database.service";
+import {FilterField, FilterFieldName, FilterFieldOperator} from "../../models/FilterFields";
 
 @Component({
   selector: 'app-offers-page',
@@ -106,8 +107,7 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
     OverlayService.showOverlay();
 
     let queryParams = this.getSearchFormParams();
-    let paramsKeys = Object.keys(queryParams);
-    if (!paramsKeys.length) {
+    if (!queryParams.length) {
       OverlayService.hideOverlay();
       return;
     }
@@ -130,17 +130,31 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
 
   private getSearchFormParams(): any {
     let formValue = this.searchForm.getRawValue();
-    let queryParams = {};
+    let queryParams: FilterField[] = [];
 
     if (formValue.type && formValue.type.length)
-      queryParams['type'] = AppService.getOfferTypeByFiledValue('title', formValue.type).id;
+      queryParams.push({
+        value: AppService.getOfferTypeByFiledValue('title', formValue.type).id,
+        operator: FilterFieldOperator.EQUALS,
+        name: FilterFieldName.OFFER_TYPE
+      });
 
     if (formValue.city && formValue.city.length)
-      queryParams['city'] = AppService.getCityByFiledValue('name', formValue.city).id;
+      queryParams.push({
+        value: AppService.getCityByFiledValue('name', formValue.city).id,
+        operator: FilterFieldOperator.EQUALS,
+        name: FilterFieldName.CITY
+      });
+
 
     if (formValue.businessArea && formValue.businessArea.length) {
       if (AppService.getBusinessAreaByFiledValue('name', formValue.businessArea).id > 0) {
-        queryParams['businessArea'] = AppService.getBusinessAreaByFiledValue('name', formValue.businessArea).id;
+        queryParams.push({
+          value: AppService.getBusinessAreaByFiledValue('name', formValue.businessArea).id,
+          operator: FilterFieldOperator.INCLUDES,
+          name: FilterFieldName.BUSINESS_AREA
+        });
+
       }
     }
 

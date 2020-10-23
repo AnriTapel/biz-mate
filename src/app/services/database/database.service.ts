@@ -6,6 +6,7 @@ import {map} from "rxjs/operators";
 import {FeedbackMessage} from "../../models/FeedbackMessage";
 import {StorageService} from "../storage/storage.service";
 import {OfferComment} from "../../models/OfferComment";
+import {FilterField} from "../../models/FilterFields";
 
 @Injectable({
   providedIn: 'root'
@@ -132,7 +133,7 @@ export class DatabaseService {
     this.allSortedOffersLoaded = false;
   }
 
-  public async getFilteredOffersChunk(queryParams: any, nextChunk: boolean = false): Promise<Observable<Offer[]>> {
+  public async getFilteredOffersChunk(queryParams: FilterField[], nextChunk: boolean = false): Promise<Observable<Offer[]>> {
     return new Promise<Observable<Offer[]>>(async (resolve, reject) => {
       if (!nextChunk) {
         this.allFilteredOffersLoaded = false;
@@ -141,18 +142,17 @@ export class DatabaseService {
 
       try {
         let query;
-        let paramsKeys = Object.keys(queryParams);
-        if (paramsKeys.length === 1) {
-          query = this.offersCollectionRef.orderBy('date', 'desc').where(paramsKeys[0], '==', queryParams[paramsKeys[0]])
+        if (queryParams.length === 1) {
+          query = this.offersCollectionRef.orderBy('date', 'desc').where(queryParams[0].name, queryParams[0].operator, queryParams[0].value)
             .limit(DatabaseService.SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE);
-        } else if (paramsKeys.length === 2) {
-          query = this.offersCollectionRef.orderBy('date', 'desc').where(paramsKeys[0], '==', queryParams[paramsKeys[0]])
-            .where(paramsKeys[1], '==', queryParams[paramsKeys[1]])
+        } else if (queryParams.length === 2) {
+          query = this.offersCollectionRef.orderBy('date', 'desc').where(queryParams[0].name, queryParams[0].operator, queryParams[0].value)
+            .where(queryParams[1].name, queryParams[1].operator, queryParams[1].value)
             .limit(DatabaseService.SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE);
-        } else if (paramsKeys.length === 3) {
-          query = await this.offersCollectionRef.orderBy('date', 'desc').where(paramsKeys[0], '==', queryParams[paramsKeys[0]])
-            .where(paramsKeys[1], '==', queryParams[paramsKeys[1]])
-            .where(paramsKeys[2], '==', queryParams[paramsKeys[2]])
+        } else if (queryParams.length === 3) {
+          query = await this.offersCollectionRef.orderBy('date', 'desc').where(queryParams[0].name, queryParams[0].operator, queryParams[0].value)
+            .where(queryParams[1].name, queryParams[1].operator, queryParams[1].value)
+            .where(queryParams[2].name, queryParams[2].operator, queryParams[2].value)
             .limit(DatabaseService.SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE);
         }
 

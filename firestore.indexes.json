@@ -20,7 +20,7 @@
       "fields": [
         {
           "fieldPath": "businessArea",
-          "order": "ASCENDING"
+          "arrayConfig": "CONTAINS"
         },
         {
           "fieldPath": "date",
@@ -62,7 +62,7 @@
       "fields": [
         {
           "fieldPath": "businessArea",
-          "order": "ASCENDING"
+          "arrayConfig": "CONTAINS"
         },
         {
           "fieldPath": "city",
@@ -80,7 +80,7 @@
       "fields": [
         {
           "fieldPath": "businessArea",
-          "order": "ASCENDING"
+          "arrayConfig": "CONTAINS"
         },
         {
           "fieldPath": "type",
@@ -116,7 +116,7 @@
       "fields": [
         {
           "fieldPath": "businessArea",
-          "order": "ASCENDING"
+          "arrayConfig": "CONTAINS"
         },
         {
           "fieldPath": "city",

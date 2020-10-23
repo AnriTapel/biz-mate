@@ -65,8 +65,15 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
     return AppService.getCityByFiledValue('id', this.offer.city).name;
   }
 
-  public getOfferBusinessArea(): string {
-    return AppService.getBusinessAreaByFiledValue('id', this.offer.businessArea).name;
+  public getOfferMainBusinessArea(): string {
+    return AppService.getBusinessAreaByFiledValue('id', this.offer.businessArea[0]).name;
+  }
+
+  public getOfferSecondaryBusinessArea(): string {
+    if (this.offer.businessArea.length === 1) {
+      return null;
+    }
+    return AppService.getBusinessAreaByFiledValue('id', this.offer.businessArea[1]).name;
   }
 
   public getOfferTypeTitle(): string {
@@ -101,8 +108,11 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
       case 'type':
         this.router.navigate(['/offers-page'], {queryParams: {offerType: this.offer.type}});
         break;
-      case 'businessArea':
-        this.router.navigate(['/offers-page'], {queryParams: {businessArea: this.offer.businessArea}});
+      case 'mainBusinessArea':
+        this.router.navigate(['/offers-page'], {queryParams: {businessArea: this.offer.businessArea[0]}});
+        break;
+      case 'secondaryBusinessArea':
+        this.router.navigate(['/offers-page'], {queryParams: {businessArea: this.offer.businessArea[1]}});
         break;
       default:
         break;

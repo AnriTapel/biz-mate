@@ -118,6 +118,23 @@ $main-theme-color: #2E7990;
     }
   }
 
+  .business-areas-block{
+    mat-form-field {
+      width: 100%;
+    }
+
+    .extra-business-area-field {
+      margin-top: 1.5em;
+    }
+
+    .business-area-hint {
+      color: $main-theme-color;
+      font-size: 10px;
+      margin-top: .5em;
+      cursor: pointer;
+    }
+  }
+
   @media screen and (max-width: 770px) {
     grid-template: auto/1fr;
 
