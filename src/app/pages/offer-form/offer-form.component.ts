@@ -173,10 +173,10 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
 
   public async getOfferData(): Promise<any> {
     let offerData = {};
-    if (this.activeRoute.snapshot.url[0] && this.activeRoute.snapshot.url[0].path == 'edit-offer') {
+    if (this.activeRoute.snapshot.params && this.activeRoute.snapshot.params.offerId) {
       OverlayService.showOverlay();
       this.editOffer = true;
-      this.editOfferId = this.activeRoute.snapshot.url[1].path;
+      this.editOfferId = this.activeRoute.snapshot.params.offerId;
       let offer: Offer;
       try {
         offer = await this.databaseService.getOfferByOfferId(this.editOfferId);

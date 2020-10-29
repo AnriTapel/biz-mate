@@ -6,7 +6,7 @@ export interface FilterField {
 
 export enum FilterFieldName{
   BUSINESS_AREA = 'businessArea',
-  OFFER_TYPE = 'offerType',
+  OFFER_TYPE = 'type',
   CITY = 'city'
 }
 
