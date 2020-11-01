@@ -32,11 +32,11 @@
               {{category.name}}
             </mat-option>
           </mat-autocomplete>
-          <mat-hint *ngIf="!isExtraBusinessAreaFiledAvail" class="business-area-hint"
-                    (click)="isExtraBusinessAreaFiledAvail = true">Выбрать второстепенную сферу бизнеса</mat-hint>
+          <mat-hint *ngIf="!isExtraBusinessAreaFieldAvail" class="business-area-hint"
+                    (click)="isExtraBusinessAreaFieldAvail = true">Выбрать второстепенную сферу бизнеса</mat-hint>
         </mat-form-field>
 
-        <mat-form-field class="extra-business-area-field" *ngIf="isExtraBusinessAreaFiledAvail">
+        <mat-form-field class="extra-business-area-field" *ngIf="isExtraBusinessAreaFieldAvail">
           <input type="text" placeholder="Доп. сфера бизнеса" aria-label="Доп. сфера бизнеса" matInput
                  formControlName="extraBusinessArea" [matAutocomplete]="extraBusinessArea">
           <mat-autocomplete #extraBusinessArea="matAutocomplete">

@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {Offer} from "../../models/Offer";
-import {AppService} from "../../services/app/app.service";
 import {AuthService} from "../../services/auth/auth.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {MatDialog} from "@angular/material/dialog";
@@ -26,9 +25,9 @@ export class OfferCardComponent {
               private notificationService: NotificationBarService, private databaseService: DatabaseService) {
   }
 
-  public getOfferDate(offer: Offer): string {
+  /*public getOfferDate(offer: Offer): string {
     return AppService.getDateAsString(offer.date);
-  }
+  }*/
 
   public editOffer(): void {
     this.router.navigateByUrl(`/edit-offer/${this.offer.offerId}`);

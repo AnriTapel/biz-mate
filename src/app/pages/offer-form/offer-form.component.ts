@@ -29,6 +29,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
   private currentType: number = undefined;
 
   private editOfferId: string = null;
+  private offerDate: number = undefined;
   public editOffer: boolean = false;
   public isOfferLoaded: boolean = false;
 
@@ -54,7 +55,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
   };
 
   public isFormValid: boolean = true;
-  public isExtraBusinessAreaFiledAvail: boolean = false;
+  public isExtraBusinessAreaFieldAvail: boolean = false;
   private offerType = OfferTypes;
 
   private readonly metaTags = {
@@ -187,21 +188,23 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
       }
 
       offerData['type'] = offer.type;
-      offerData['offerId'] = offer.offerId || '';
-      offerData['title'] = offer.title || '';
-      offerData['desc'] = offer.desc || '';
+      offerData['offerId'] = offer.offerId || null;
+      offerData['title'] = offer.title || null;
+      offerData['desc'] = offer.desc || null;
       offerData['capital'] = offer.capital || null;
-      offerData['experience'] = offer.experience || '';
-      offerData['businessArea'] = AppService.getBusinessAreaByFiledValue('id', offer.businessArea[0]).name || '';
+      offerData['experience'] = offer.experience || null;
+      offerData['businessArea'] = AppService.getBusinessAreaByFiledValue('id', offer.businessArea[0]).name || null;
       if (offer.businessArea[1]) {
-        offerData['extraBusinessArea'] = AppService.getBusinessAreaByFiledValue('id', offer.businessArea[1]).name || '';
-        this.isExtraBusinessAreaFiledAvail = true;
+        offerData['extraBusinessArea'] = AppService.getBusinessAreaByFiledValue('id', offer.businessArea[1]).name || null;
+        this.isExtraBusinessAreaFieldAvail = true;
       }
-      offerData['conditions'] = offer.conditions || '';
+      offerData['conditions'] = offer.conditions || null;
       offerData['phone'] = offer.phone || null;
-      offerData['city'] = AppService.getCityByFiledValue('id', offer.city).name || '';
+      offerData['city'] = AppService.getCityByFiledValue('id', offer.city).name || null;
       this.contactMethods = offer.contactMethods || this.contactMethods;
       this.offerImages = offer.imagesURL || [];
+      this.offerDate = offer.date;
+
       OverlayService.hideOverlay();
     }
 
@@ -241,7 +244,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
       areas.push(AppService.getBusinessAreaByFiledValue('name', offerData.extraBusinessArea).id);
     }
     offerData.businessArea = areas;
-    offerData.date = Date.now();
+    offerData.date = this.offerDate || Date.now();
     offerData.offerId = this.editOfferId || this.databaseService.createId();
     offerData.email = this.auth.user.email;
     offerData.photoURL = this.auth.user.photoURL || AppService.getDefaultAvatar();
