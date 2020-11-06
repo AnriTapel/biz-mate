@@ -5,4 +5,5 @@ export interface OfferComment {
   date: number;
   commentText: string;
   displayName: string;
+  userEmail: string;
 }

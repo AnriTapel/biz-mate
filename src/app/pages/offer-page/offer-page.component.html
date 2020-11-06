@@ -84,7 +84,11 @@
 
         <article class="comment highlight-box" *ngFor="let comment of offerComments$ | async">
           <div class="name-date">
-            <span>{{comment.displayName}}</span>
+            <div>
+              <span>{{comment.displayName}}</span>
+              <span><{{comment.userEmail}}></span>
+            </div>
+
             <span>{{getCommentDate(comment.date)}}</span>
           </div>
 

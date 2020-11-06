@@ -221,7 +221,7 @@ export class DatabaseService {
         }
       }
 
-      this.db.collection('/offers-comments').ref.where('offerId', '==', offer.offerId).get()
+      this.commentsCollectionRef.where('offerId', '==', offer.offerId).get()
         .then((resp) => {
           let batch = this.db.firestore.batch();
 

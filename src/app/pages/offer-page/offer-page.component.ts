@@ -142,7 +142,8 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
       userId: this.authService.user.uid,
       displayName: this.authService.user.displayName,
       commentText: this.commentInput.value,
-      date: Date.now()
+      date: Date.now(),
+      userEmail: this.authService.user.email
     };
 
     this.databaseService.sendOfferComment(comment)
