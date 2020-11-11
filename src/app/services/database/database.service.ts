@@ -39,20 +39,20 @@ export class DatabaseService {
   }
 
   public async getOfferByOfferId(id: string): Promise<Offer> {
-    let offer = await this.offersCollectionRef.doc(id).get();
+    const offer = await this.offersCollectionRef.doc(id).get();
     return offer.data() as Offer;
   }
 
   public getUserOffersByUserId(id: string): Promise<Observable<Offer[]>> {
     return new Promise<Observable<Offer[]>>(async (resolve, reject) => {
       try {
-        let res = await this.offersCollectionRef.where('userId', '==', id).orderBy('date', 'desc').get();
+        const res = await this.offersCollectionRef.where('userId', '==', id).orderBy('date', 'desc').get();
         if (res.empty) {
           resolve(null);
           return;
         }
 
-        let offers = [];
+        const offers = [];
         res.forEach(it => offers.push(it.data() as Offer));
         resolve(of(offers));
       } catch (e) {
@@ -74,7 +74,7 @@ export class DatabaseService {
           return;
         }
 
-        let offers = [];
+        const offers = [];
         res.forEach(it => offers.push(it.data() as Offer));
         this.latestSortedOffers$ = of(offers);
         return this.latestSortedOffers$;
@@ -89,7 +89,7 @@ export class DatabaseService {
           query = await this.offersCollectionRef.orderBy('date', 'desc')
             .limit(DatabaseService.SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE).startAfter(this.lastLoadedSortedOffer).get();
         } else {
-          if (this.sortedOffers$ != undefined) {
+          if (this.sortedOffers$ !== undefined) {
             resolve(this.sortedOffers$);
             return;
           }
@@ -97,7 +97,7 @@ export class DatabaseService {
             .limit(DatabaseService.SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE).get();
         }
 
-        let offers = [];
+        const offers = [];
         if (!query.empty) {
           query.forEach(it => offers.push(it.data()));
           this.lastLoadedSortedOffer = query.docs[query.docs.length - 1];
@@ -175,7 +175,7 @@ export class DatabaseService {
 
   // Return true if first filter query isn't empty, otherwise return false
   private resolveFilterQuery(resp: any, loadNextChunk: boolean): boolean {
-    let filterRes = [];
+    const filterRes = [];
     if (!resp.empty) {
       resp.forEach(it => filterRes.push(it.data()));
 
@@ -206,7 +206,7 @@ export class DatabaseService {
   }
 
   public sendOffer(offer: Offer, removeImages: string[], editOffer: boolean): Promise<void> {
-    for (let img of removeImages) {
+    for (const img of removeImages) {
       this.storageService.deleteUserImage(img);
     }
     return editOffer ? this.offersCollectionRef.doc(offer.offerId).update(offer) :
@@ -216,14 +216,14 @@ export class DatabaseService {
   public deleteOffer(offer: Offer): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       if (offer.imagesURL && offer.imagesURL.length) {
-        for (let img of offer.imagesURL) {
+        for (const img of offer.imagesURL) {
           this.storageService.deleteUserImage(img);
         }
       }
 
       this.commentsCollectionRef.where('offerId', '==', offer.offerId).get()
         .then((resp) => {
-          let batch = this.db.firestore.batch();
+          const batch = this.db.firestore.batch();
 
           resp.docs.forEach(userDocRef => {
             batch.delete(userDocRef.ref);
@@ -240,8 +240,8 @@ export class DatabaseService {
 
   public async updateUserDataInOffers(userId: string, field: string, newValue: string): Promise<void> {
     try {
-      let offersRes = await this.offersCollectionRef.where('userId', '==', userId).get();
-      let offersBatch = this.db.firestore.batch();
+      const offersRes = await this.offersCollectionRef.where('userId', '==', userId).get();
+      const offersBatch = this.db.firestore.batch();
       offersRes.docs.forEach(userDocRef => {
         offersBatch.update(userDocRef.ref, {[field]: newValue});
       });
@@ -252,8 +252,8 @@ export class DatabaseService {
         return;
       }
 
-      let commentsRes = await this.commentsCollectionRef.where('userId', '==', userId).get();
-      let commentsBatch = this.db.firestore.batch();
+      const commentsRes = await this.commentsCollectionRef.where('userId', '==', userId).get();
+      const commentsBatch = this.db.firestore.batch();
 
       commentsRes.docs.forEach(userCommentsRef => {
         commentsBatch.update(userCommentsRef.ref, {[field]: newValue});
@@ -275,7 +275,7 @@ export class DatabaseService {
             return;
 
           }
-          let comments: OfferComment[] = [];
+          const comments: OfferComment[] = [];
           res.forEach(it => comments.push(it.data() as OfferComment));
           resolve(comments);
         }).catch(() => reject());

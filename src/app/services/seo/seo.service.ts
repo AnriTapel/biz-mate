@@ -18,7 +18,7 @@ export class SeoService {
   public updateRouteMetaTagsByData(data: any): void {
     this.clearPreviousRouteTags();
 
-    for (let key of Object.keys(data)) {
+    for (const key of Object.keys(data)) {
       switch (key) {
         case 'title':
           this.setTitleTags(data[key]);
@@ -46,7 +46,7 @@ export class SeoService {
   public updateRouteMetaTagsByOffer(offer: Offer): void {
     this.clearPreviousRouteTags();
 
-    let tags = {
+    const tags = {
       title: `${offer.title} | BizMate`,
       description: offer.desc,
       site: `https://biz-mate.ru/offer/${offer.offerId}`
@@ -63,14 +63,14 @@ export class SeoService {
 
   private setTitleTags(title: string): void {
     this.title.setTitle(title);
-    let titleTags = SeoService.TAG_NAME_VALUES.filter(it => it.indexOf('title') > -1);
+    const titleTags = SeoService.TAG_NAME_VALUES.filter(it => it.indexOf('title') > -1);
     titleTags.forEach(it => {
       this.meta.addTag({name: it, content: title});
     });
   }
 
   private setDescriptionTags(desc: string): void {
-    let descTags = SeoService.TAG_NAME_VALUES.filter(it => it.indexOf('description') > -1);
+    const descTags = SeoService.TAG_NAME_VALUES.filter(it => it.indexOf('description') > -1);
     descTags.forEach(it => {
       this.meta.addTag({name: it, content: desc});
     });

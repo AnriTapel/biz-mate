@@ -27,6 +27,6 @@ export class FooterComponent implements OnInit {
 
   public sendEmailYmGoal(): void {
     //@ts-ignore
-    ym(65053642,'reachGoal','emailLink')
+    ym(65053642,'reachGoal','emailLink');
   }
 }

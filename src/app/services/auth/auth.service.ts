@@ -29,8 +29,9 @@ export class AuthService {
           if (!this.user.emailVerified && !this.firstUserSession) {
             this.openEmailVerificationDialog();
           }
-        } else
+        } else {
           this.user = null;
+        }
         return of(user);
       }));
   }
@@ -38,7 +39,7 @@ export class AuthService {
   public appInitAuth(): Promise<any> {
     return new Promise<void>((resolve, reject) => {
       this.afAuth.useDeviceLanguage();
-      let handler = this.afAuth.authState.subscribe((userData) => {
+      const handler = this.afAuth.authState.subscribe((userData) => {
         if (userData && !userData.isAnonymous) {
           this.user = {
             displayName: userData.displayName, uid: userData.uid,
@@ -83,7 +84,7 @@ export class AuthService {
     try {
       this.firstUserSession = true;
       await this.afAuth.createUserWithEmailAndPassword(credentials.email, credentials.password);
-      let userData = await this.afAuth.currentUser;
+      const userData = await this.afAuth.currentUser;
       await userData.updateProfile({
         displayName: credentials.name,
         photoURL: AppService.getDefaultAvatar()
@@ -103,7 +104,7 @@ export class AuthService {
         user.updateEmail(newValue).then(() => {
           user.sendEmailVerification();
           resolve();
-        }).catch(() => reject())
+        }).catch(() => reject());
       });
     });
   }
@@ -133,9 +134,9 @@ export class AuthService {
 
   // Update this.user when firebaseUser data is changed
   public async updateCurrentUserData(): Promise<User> {
-    let user = await this.afAuth.currentUser;
+    const user = await this.afAuth.currentUser;
     if (user) {
-      if (user)
+      if (user) {
         this.user = {
           displayName: user.displayName,
           uid: user.uid,
@@ -143,8 +144,9 @@ export class AuthService {
           emailVerified: user.emailVerified,
           photoURL: user.photoURL
         };
-      else
+      } else {
         this.user = null;
+      }
     }
     return this.user;
   }

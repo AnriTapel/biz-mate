@@ -38,18 +38,18 @@ export class OfferCardComponent {
       return this.offer.desc;
     }
 
-    let cutDesc = this.offer.desc.substr(0, 245);
-    let lastSpaceIndex = cutDesc.lastIndexOf(' ');
+    const cutDesc = this.offer.desc.substr(0, 245);
+    const lastSpaceIndex = cutDesc.lastIndexOf(' ');
     return cutDesc.substring(0, lastSpaceIndex) + '...';
   }
 
   public onDeleteOfferButtonClick(): void {
-    let dialog = this.dialog.open(DeleteOfferComponent, MatDialogConfig.narrowDialogWindow);
+    const dialog = this.dialog.open(DeleteOfferComponent, MatDialogConfig.narrowDialogWindow);
     dialog.afterClosed().subscribe((res) => {
       if (res === true) {
         this.deleteOffer();
       }
-    })
+    });
   }
 
   private deleteOffer(): void {

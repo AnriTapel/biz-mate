@@ -39,7 +39,7 @@ export class CustomImageCropperComponent {
   async imageCropped(event: ImageCroppedEvent) {
     //Find out if file with such fileName already exists
     OverlayService.showOverlay();
-    let uploadRes = await this.storageService.uploadUserImage(this.base64toFile(event.base64), this.fileName);
+    const uploadRes = await this.storageService.uploadUserImage(this.base64toFile(event.base64), this.fileName);
     if (uploadRes) {
       this.dialogRef.close(uploadRes);
     } else {
@@ -55,23 +55,21 @@ export class CustomImageCropperComponent {
     }
 
     const fileName = `${file.name.substr(0, file.name.lastIndexOf('.'))}.png`;
-    if (!fileName || fileName === "")
-      this.fileName = `${Date.now()}.png`;
-    else
-      this.fileName = fileName;
+    this.fileName = !fileName || fileName === "" ? `${Date.now()}.png` : fileName;
   }
 
   base64toFile(dataURL: string): File {
     let outputFile: File = null;
     try {
-      let arr = dataURL.split(',');
-      let mime = arr[0].match(/:(.*?);/)[1];
-      let bstr = atob(arr[1]);
+      const arr = dataURL.split(',');
+      const mime = arr[0].match(/:(.*?);/)[1];
+      const bstr = atob(arr[1]);
       let n = bstr.length;
-      let u8arr = new Uint8Array(n);
+      const u8arr = new Uint8Array(n);
 
-      while (n--)
+      while (n--) {
         u8arr[n] = bstr.charCodeAt(n);
+      }
 
       outputFile = new File([u8arr], this.fileName, {type: mime});
     } catch (e) {

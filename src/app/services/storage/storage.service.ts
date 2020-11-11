@@ -22,13 +22,12 @@ export class StorageService {
       console.log(`File with name ${fileName} doesn't exist.`);
     }
 
-    let imageRef = this.storage.ref('/user-images/').child(fileName);
-
-    let uploadRef = await imageRef.put(file);
+    const imageRef = this.storage.ref('/user-images/').child(fileName);
+    const uploadRef = await imageRef.put(file);
     if (uploadRef.state === 'success') {
       return await uploadRef.ref.getDownloadURL();
-    } else
-      return false;
+    }
+    return false;
   }
 
   public deleteUserImage(url: string): void {
