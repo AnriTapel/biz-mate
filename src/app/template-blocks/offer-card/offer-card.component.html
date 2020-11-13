@@ -2,7 +2,7 @@
   <div>
     <div class="offer-card-header">
       <div class="avatar-container">
-        <img [src]="offer.photoURL" alt="Аватар"/>
+        <img onerror="this.style.display='none'" [src]="offer.photoURL || ''" alt="Аватар"/>
       </div>
 
       <div class="title-and-author">

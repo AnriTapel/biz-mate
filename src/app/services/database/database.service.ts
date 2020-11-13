@@ -89,7 +89,7 @@ export class DatabaseService {
           query = await this.offersCollectionRef.orderBy('date', 'desc')
             .limit(DatabaseService.SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE).startAfter(this.lastLoadedSortedOffer).get();
         } else {
-          if (this.sortedOffers$ !== undefined) {
+          if (this.sortedOffers$ != undefined) {
             resolve(this.sortedOffers$);
             return;
           }

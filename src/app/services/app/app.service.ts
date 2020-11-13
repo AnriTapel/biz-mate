@@ -64,15 +64,15 @@ export class AppService {
   }
 
   public static getCityByFiledValue(field: string, value: any): City {
-    return AppService.cities.filter(it => it[field] === value)[0] || null;
+    return AppService.cities.filter(it => it[field] == value)[0] || null;
   }
 
   public static getBusinessAreaByFiledValue(field: string, value: any): BusinessArea {
-    return AppService.businessArea.filter(it => it[field] === value)[0] || null;
+    return AppService.businessArea.filter(it => it[field] == value)[0] || null;
   }
 
   public static getOfferTypeByFiledValue(field: string, value: any): any {
-    return AppService.offerTypes.filter(it => it[field] === value)[0] || null;
+    return AppService.offerTypes.filter(it => it[field] == value)[0] || null;
   }
 
   public static _filterCities(value: string): any[] {
