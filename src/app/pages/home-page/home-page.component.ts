@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Observable, of} from "rxjs";
+import {Observable} from "rxjs";
 import {Offer} from "../../models/Offer";
 import {NotificationComponent} from "../../dialogs/notification/notification.component";
 import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";

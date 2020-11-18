@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import {AppService} from "../../services/app/app.service";
+import {Component, OnInit} from '@angular/core';
 import {OverlayService} from "../../services/overlay/overlay.service";
 
 @Component({
