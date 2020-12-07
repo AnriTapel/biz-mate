@@ -74,6 +74,11 @@ $main-theme-color: #2E7990;
     margin-bottom: 2em;
   }
 
+  .full-width-block > p > a{
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+  }
+
   .contacts {
     .prefered-contact-methods{
       & > div {

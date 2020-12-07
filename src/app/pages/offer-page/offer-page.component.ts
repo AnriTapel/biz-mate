@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ViewEncapsulation} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {Offer} from "../../models/Offer";
 import {AppService} from "../../services/app/app.service";
@@ -16,7 +16,8 @@ import {DatabaseService} from "../../services/database/database.service";
 @Component({
   selector: 'app-offer-page',
   templateUrl: './offer-page.component.html',
-  styleUrls: ['./offer-page.component.scss']
+  styleUrls: ['./offer-page.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class OfferPageComponent extends ComponentBrowserAbstractClass {
 
@@ -69,7 +70,7 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
 
   private static replaceUrlsInText(text: string): string {
     return text.replace(OfferPageComponent.URL_REGEX, function(url) {
-      let urlText = url.length > 25 ? `${url.substring(0, 25)}...` : url;
+      let urlText = url.length > 50 ? `${url.substring(0, 50)}...` : url;
       return '<a href="' + url + '" target="_blank">' + urlText + '</a>';
     });
   }
