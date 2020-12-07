@@ -44,17 +44,17 @@
 
       <div class="full-width-block">
         <h3>Описание оффера</h3>
-        <p>{{offer.desc}}</p>
+        <p [innerHTML]="offer.desc"></p>
       </div>
 
       <div *ngIf="offer.conditions" class="full-width-block">
         <h3>{{getConditionsLabel()}}</h3>
-        <p>{{offer.conditions}}</p>
+        <p [innerHTML]="offer.conditions"></p>
       </div>
 
       <div *ngIf="offer.experience" class="full-width-block">
         <h3>{{getExperienceLabel()}}</h3>
-        <p>{{offer.experience}}</p>
+        <p [innerHTML]="offer.experience"></p>
       </div>
 
       <div *ngIf="offer.imagesURL && offer.imagesURL.length" class="full-width-field images-container">

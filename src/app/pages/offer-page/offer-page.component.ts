@@ -20,6 +20,7 @@ import {DatabaseService} from "../../services/database/database.service";
 })
 export class OfferPageComponent extends ComponentBrowserAbstractClass {
 
+  static readonly URL_REGEX = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
   public readonly COMMENT_TEXT_MAX_LENGTH: number = 1024;
   public offer: Offer = null;
 
@@ -37,7 +38,7 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
     this.isUserAuth = !!this.authService.user;
     this.databaseService.getOfferByOfferId(route.snapshot.paramMap.get("id").toString())
       .then((res) => {
-        this.offer = res;
+        this.offer = OfferPageComponent.searchForUrlsInText(res);
         this.getOfferComments();
         this.seoService.updateRouteMetaTagsByOffer(this.offer);
       })
@@ -51,6 +52,26 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
         this.offerComments$ = of(res);
         this.commentsCount = res.length;
       })
+  }
+
+  private static searchForUrlsInText(offer: Offer): Offer {
+    offer.desc = OfferPageComponent.replaceUrlsInText(offer.desc);
+
+    if (offer.conditions && offer.conditions.length) {
+      offer.conditions = OfferPageComponent.replaceUrlsInText(offer.conditions);
+    }
+
+    if (offer.experience && offer.experience.length) {
+      offer.experience = OfferPageComponent.replaceUrlsInText(offer.experience);
+    }
+    return offer;
+  }
+
+  private static replaceUrlsInText(text: string): string {
+    return text.replace(OfferPageComponent.URL_REGEX, function(url) {
+      let urlText = url.length > 25 ? `${url.substring(0, 25)}...` : url;
+      return '<a href="' + url + '" target="_blank">' + urlText + '</a>';
+    });
   }
 
   public getOfferDate(): string {
