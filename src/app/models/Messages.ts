@@ -13,7 +13,7 @@ export enum Messages{
   'FEEDBACK_SUCCESS' = 'Письмо успешно отправлено',
   'FEEDBACK_ERROR' = 'Не удалось отправить письмо, попробуйте еще раз',
   'DELETE_OFFER_SUCCESS' = 'Объявление успешно удалено',
-  'COMMENT_SUCCESS' = 'Комментарий успешно размещен',
-  'COMMENT_ERROR' = 'Не удалось разместить комментарий'
+  'COMMENT_ERROR' = 'Не удалось разместить комментарий',
+  'OFFERS_FILTER_ERROR' = 'Указаны неверные параметры фильтра'
 
 }

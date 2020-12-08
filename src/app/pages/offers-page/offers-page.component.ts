@@ -101,6 +101,7 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
 
   public async applyFilter(loadNextChunk: boolean = false): Promise<void> {
     if (this.searchForm.status === 'INVALID') {
+      this.notificationService.showNotificationBar(Messages.OFFERS_FILTER_ERROR, false);
       return;
     }
 

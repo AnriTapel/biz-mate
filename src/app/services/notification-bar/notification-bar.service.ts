@@ -5,7 +5,7 @@ import {Injectable} from '@angular/core';
 })
 export class NotificationBarService {
 
-  private static NOTIFICATION_BAR_TIMEOUT_MSEC: number = 3000;
+  private static NOTIFICATION_BAR_TIMEOUT_MSEC: number = 2000;
   private static _isVisible: boolean = false;
   private _message: string = null;
   private _isSuccess: boolean = true;
