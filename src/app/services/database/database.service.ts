@@ -178,6 +178,7 @@ export class DatabaseService {
     const filterRes = [];
     if (!resp.empty) {
       resp.forEach(it => filterRes.push(it.data()));
+      this.lastLoadedFilteredOffer = resp.docs[resp.docs.length - 1];
 
       if (loadNextChunk) {
         this.filteredOffers$ = zip(this.filteredOffers$, of(filterRes))
@@ -186,7 +187,6 @@ export class DatabaseService {
         this.filteredOffers$ = of<Offer[]>(filterRes);
       }
 
-      this.lastLoadedFilteredOffer = filterRes[filterRes.length - 1];
       if (filterRes.length < DatabaseService.SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE) {
         this.allFilteredOffersLoaded = true;
       }
