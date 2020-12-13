@@ -229,8 +229,11 @@ label.mat-form-field-label > span {
   }
 
   .mat-dialog-content {
-    overflow: visible;
     flex-direction: column;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   mat-form-field, mat-checkbox,
