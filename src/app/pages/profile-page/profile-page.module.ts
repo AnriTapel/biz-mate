@@ -7,6 +7,7 @@ import {ImageCropperModule} from "ngx-image-cropper";
 import {MaterialModule} from "../../modules/material.module";
 import {ReactiveFormsModule} from "@angular/forms";
 import {OfferCardModule} from "../../modules/offer-card.module";
+import {OfferCardSkeletonModule} from "../../modules/offer-card-skeleton.module";
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import {OfferCardModule} from "../../modules/offer-card.module";
     MaterialModule,
     ReactiveFormsModule,
     OfferCardModule,
-    ImageCropperModule
+    ImageCropperModule,
+    OfferCardSkeletonModule
   ]
 })
 export class ProfilePageModule { }

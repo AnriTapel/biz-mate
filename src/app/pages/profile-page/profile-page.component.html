@@ -54,6 +54,10 @@
       <button class="button-primary" [routerLink]="'/new-offer'">Создать оффер</button>
     </div>
     <div class="offers-list" *ngIf="hasOffers">
+      <ng-container *ngIf="!userOffers$">
+        <app-offer-card-skeleton></app-offer-card-skeleton>
+        <app-offer-card-skeleton></app-offer-card-skeleton>
+      </ng-container>
       <app-offer-card *ngFor="let offer of userOffers$ | async" [offer]="offer" [editable]="true"></app-offer-card>
     </div>
     <ng-container *ngIf="!hasOffers">
