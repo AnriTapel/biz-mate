@@ -72,6 +72,10 @@ app-header, app-footer, app-offer-card, app-offer-card-skeleton {
   z-index: 1;
 }
 
+app-share-buttons {
+  z-index: 2;
+}
+
 app-footer {
   margin-top: auto;
 }
@@ -369,7 +373,7 @@ mat-checkbox {
 
 @media screen and (max-width: 770px) {
   app-home-page {
-    background-image: url('/assets/img/watermark.svg');
+    background-image: url('/src/assets/img/biz_mate/watermark.svg');
     background-repeat: no-repeat;
     background-size: contain;
     background-position: top center;

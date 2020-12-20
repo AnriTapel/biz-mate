@@ -2,7 +2,7 @@
   <!-- Desktop menu -->
   <nav class="desktop-menu">
     <div class="logo-block">
-      <img src="/assets/img/logo_header.svg" alt="BizMate логотип" [routerLink]="'/'"/>
+      <img src="/assets/img/biz_mate/logo_header.svg" alt="BizMate логотип" [routerLink]="'/'"/>
     </div>
 
     <div class="nav-buttons">
@@ -13,17 +13,17 @@
 
     <div class="login-button">
       <button class="button-primary login-button" (click)="onAuthButtonClick()">{{loggedIn ? 'Выйти' : 'Войти'}}
-        <img *ngIf="!loggedIn" src="/assets/img/login_thumb.svg" alt="Аутентификация"/>
+        <img *ngIf="!loggedIn" src="/assets/img/icons/login_thumb.svg" alt="Аутентификация"/>
       </button>
     </div>
   </nav>
 
   <!-- Mobile menu -->
   <nav class="mobile-menu">
-    <img src="/assets/img/logo_header.svg" alt="BizMate логотип" [routerLink]="'/'"/>
+    <img src="/assets/img/biz_mate/logo_header.svg" alt="BizMate логотип" [routerLink]="'/'"/>
 
     <div class="mobile-menu-button">
-      <img src="/assets/img/hamburger_menu.svg" alt="Меню" (click)="showMobileMenu()"/>
+      <img src="/assets/img/icons/hamburger_menu.svg" alt="Меню" (click)="showMobileMenu()"/>
     </div>
 
     <div class="mobile-menu-wrapper" id="mobileMenuWrapper" (click)="hideMobileMenu()" (scroll)="$event.stopImmediatePropagation()">
@@ -31,7 +31,7 @@
         <div class="user-info">
           <span *ngIf="loggedIn">{{userName}}</span>
           <button class="button-primary login-button" (click)="onAuthButtonClick()">{{loggedIn ? 'Выйти' : 'Войти'}}
-            <img *ngIf="!loggedIn" src="/assets/img/login_thumb.svg" alt="Аутентификация"/>
+            <img *ngIf="!loggedIn" src="/assets/img/icons/login_thumb.svg" alt="Аутентификация"/>
           </button>
         </div>
         <div class="mobile-menu-nav">

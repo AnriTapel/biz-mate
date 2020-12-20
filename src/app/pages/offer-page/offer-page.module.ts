@@ -4,6 +4,7 @@ import {OfferPageRoutingModule} from './offer-page-routing.module';
 import {OfferPageComponent} from "./offer-page.component";
 import {MaterialModule} from "../../modules/material.module";
 import {ReactiveFormsModule} from "@angular/forms";
+import {ShareButtonsModule} from "../../modules/share-buttons.module";
 
 @NgModule({
   declarations: [OfferPageComponent],
@@ -11,7 +12,8 @@ import {ReactiveFormsModule} from "@angular/forms";
     CommonModule,
     MaterialModule,
     ReactiveFormsModule,
-    OfferPageRoutingModule
+    OfferPageRoutingModule,
+    ShareButtonsModule
   ]
 })
 export class OfferPageModule { }

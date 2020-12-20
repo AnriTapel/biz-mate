@@ -70,11 +70,11 @@
         <div *ngIf="isContactMethodSelected()" class="prefered-contact-methods">
           <span>Предпочетаемые способы свзяи:</span>
           <div>
-            <img *ngIf="offer.contactMethods.email" src="/assets/img/email.svg" title="Электронная пота" alt="Электронная пота"/>
-            <img *ngIf="offer.contactMethods.phone" src="/assets/img/phone.svg" title="Телефонный звонок" alt="Телефонный звонок"/>
-            <img *ngIf="offer.contactMethods.whatsapp" src="/assets/img/whatsapp.svg" title="WhatsApp" alt="WhatsApp"/>
-            <img *ngIf="offer.contactMethods.telegram" src="/assets/img/telegram.svg" title="Telegram" alt="Telegram"/>
-            <img *ngIf="offer.contactMethods.viber" src="/assets/img/viber.svg" title="Viber" alt="Viber"/>
+            <img *ngIf="offer.contactMethods.email" src="/assets/img/icons/email.svg" title="Электронная пота" alt="Электронная пота"/>
+            <img *ngIf="offer.contactMethods.phone" src="/assets/img/icons/phone.svg" title="Телефонный звонок" alt="Телефонный звонок"/>
+            <img *ngIf="offer.contactMethods.whatsapp" src="/assets/img/socials/whatsapp.svg" title="WhatsApp" alt="WhatsApp"/>
+            <img *ngIf="offer.contactMethods.telegram" src="/assets/img/socials/telegram.svg" title="Telegram" alt="Telegram"/>
+            <img *ngIf="offer.contactMethods.viber" src="/assets/img/socials/viber.svg" title="Viber" alt="Viber"/>
           </div>
         </div>
       </div>
@@ -93,7 +93,7 @@
           </div>
 
           <p>{{comment.commentText}}</p>
-          <img *ngIf="isCommentDeleteAllowed(comment)" src="/assets/img/delete.svg" title="Удалить"
+          <img *ngIf="isCommentDeleteAllowed(comment)" src="/assets/img/icons/delete.svg" title="Удалить"
                (click)="onDeleteCommentButtonClick(comment.commentId)"/>
         </article>
 
@@ -111,5 +111,9 @@
         <p *ngIf="!isUserAuth">Оставлять комментарии к объявлениям могут только авторизованные пользователи.</p>
       </div>
     </section>
+
+    <app-share-buttons [isOffer]="true"></app-share-buttons>
   </ng-container>
 </main>
+
+

@@ -4,7 +4,7 @@
     <div (click)="isSearchFormVisible = !isSearchFormVisible">
       <h3>Поиск офферов</h3>
       <button class="button-primary button-circle">
-        <img src="/assets/img/bold_arrow.svg" alt="Скрыть/Показать меню"
+        <img src="/assets/img/icons/bold_arrow.svg" alt="Скрыть/Показать меню"
              [class.transform-arrow]="isSearchFormVisible"/>
       </button>
     </div>
@@ -101,5 +101,5 @@
   <a *ngIf="getNextOffersChunkButtonStatus()" class="more-offers link-underline"
      (click)="getNextOffersChunk()">Больше офферов</a>
   <img *ngIf="!getNextOffersChunkButtonStatus()" class="all-offers-loaded"
-       src="/assets/img/all_offers_loaded.svg" title="На этом все..." alt="На этом все..."/>
+       src="/assets/img/icons/all_offers_loaded.svg" title="На этом все..." alt="На этом все..."/>
 </main>
