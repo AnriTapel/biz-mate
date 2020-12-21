@@ -27,12 +27,7 @@ import {AppService} from "../../services/app/app.service";
   `,
   styles: [`    
     .share-buttons-container {
-      position: fixed;
-      left: 0;
-      top: 40%;
-      transform: translateY(-50%);
       display: flex;
-      flex-direction: column;
     }
     .share-buttons-container button {
       width: 30px;
@@ -41,6 +36,12 @@ import {AppService} from "../../services/app/app.service";
       cursor: pointer;
       background: transparent;
       padding: 0;
+    }
+    .share-buttons-container button:not(:last-child) {
+      margin-right: .75em;
+    }
+    .share-buttons-container button img{
+      border-radius: 2px;
     }
     `]
 })

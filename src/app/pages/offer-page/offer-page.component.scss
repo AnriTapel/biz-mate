@@ -106,6 +106,16 @@ $main-theme-color: #2E7990;
     }
   }
 
+  .share-offer-block {
+    margin: 3em auto 0;
+
+    & > span {
+      font-weight: bold;
+      display: block;
+      margin-bottom: .75em;
+    }
+  }
+
   button {
     float: right;
   }

@@ -79,6 +79,11 @@
         </div>
       </div>
 
+      <div class="share-offer-block">
+        <span>Поделиться оффером:</span>
+        <app-share-buttons [isOffer]="true"></app-share-buttons>
+      </div>
+
       <div class="comments-block">
         <h3>Комментарии ({{commentsCount}})</h3>
 
@@ -111,8 +116,6 @@
         <p *ngIf="!isUserAuth">Оставлять комментарии к объявлениям могут только авторизованные пользователи.</p>
       </div>
     </section>
-
-    <app-share-buttons [isOffer]="true"></app-share-buttons>
   </ng-container>
 </main>
 
