@@ -7,6 +7,7 @@ import {FeedbackMessage} from "../../models/FeedbackMessage";
 import {StorageService} from "../storage/storage.service";
 import {OfferComment} from "../../models/OfferComment";
 import {FilterField} from "../../models/FilterFields";
+import {UserSubscriptions} from "../../models/UserSubscriptions";
 
 @Injectable({
   providedIn: 'root'
@@ -294,5 +295,30 @@ export class DatabaseService {
     await this.db.collection('/messages').add(message);
   }
 
+  public async getUserSubscriptionsByEmail(email: string): Promise<UserSubscriptions> {
+    return new Promise<UserSubscriptions>((resolve, reject) => {
+      this.db.collection('user-subscriptions').ref.doc(email).get()
+        .then((doc) => {
+          resolve(doc.data() as UserSubscriptions);
+        }).catch(() => {
+        resolve(null);
+      });
+    });
+  }
 
+  public async setUserSubscriptionsByEmail(params: UserSubscriptions): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      let ref = this.db.collection('user-subscriptions').ref;
+      ref.doc(params.email).get().then((res) => {
+        if (res.exists) {
+          ref.doc(params.email).update({email: params.email, newOfferAreas: params.newOfferAreas});
+        } else {
+          ref.doc(params.email).set({email: params.email, newOfferAreas: params.newOfferAreas});
+        }
+        resolve();
+      }).catch((err) => {
+        reject(err);
+      });
+    });
+  }
 }

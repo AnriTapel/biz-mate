@@ -176,7 +176,7 @@ export class AuthService {
       MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, {email: this.user.email, alreadySent: false}));
   }
 
-  async signOut(): Promise<void> {
+  public async signOut(): Promise<void> {
     await this.afAuth.signOut();
     await this.afAuth.signInAnonymously();
   }

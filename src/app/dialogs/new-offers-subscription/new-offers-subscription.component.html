@@ -1,0 +1,48 @@
+<h1 mat-dialog-title>Уведомления о новых офферах</h1>
+<div mat-dialog-content>
+  <p>Получайте уведомления на электронную почту о размещении новых офферов, которые могут
+    быть Вам интересны. Выберите несколько интересующих сфер бизнеса или следите за всеми
+    офферами, указав сферу бизнеса "Любая".</p>
+
+  <div class="subscription-form-block" mat-dialog-content [formGroup]="newOffersSubscriptionForm">
+    <mat-form-field appearance="legacy">
+      <mat-label>E-mail</mat-label>
+      <input matInput formControlName="email">
+    </mat-form-field>
+
+    <mat-form-field>
+      <input type="text" placeholder="Сфера деятельности *" aria-label="Сфера деятельности *" matInput
+             formControlName="firstArea" [matAutocomplete]="firstArea">
+      <mat-autocomplete #firstArea="matAutocomplete">
+        <mat-option *ngFor="let area of filteredFirstBusinessArea$ | async" [value]="area.name">
+          {{area.name}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <mat-form-field>
+      <input type="text" placeholder="Сфера деятельности" aria-label="Сфера деятельности *" matInput
+             formControlName="secondArea" [matAutocomplete]="secondArea">
+      <mat-autocomplete #secondArea="matAutocomplete">
+        <mat-option *ngFor="let area of filteredSecondBusinessArea$ | async" [value]="area.name">
+          {{area.name}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <mat-form-field>
+      <input type="text" placeholder="Сфера деятельности" aria-label="Сфера деятельности *" matInput
+             formControlName="thirdArea" [matAutocomplete]="thirdArea">
+      <mat-autocomplete #thirdArea="matAutocomplete">
+        <mat-option *ngFor="let area of filteredThirdBusinessArea$ | async" [value]="area.name">
+          {{area.name}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </div>
+</div>
+
+<div mat-dialog-actions class="buttons-block">
+  <button class="button-primary button-white" (click)="closeDialog()">Нет, спасибо</button>
+  <button class="button-primary" (click)="subscribeNewOffers()">Подписаться</button>
+</div>

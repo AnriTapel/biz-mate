@@ -1,0 +1,37 @@
+.subscription-form-block {
+  margin: 1em auto;
+  display: grid;
+  grid-template: 1fr / 1fr 1fr 1fr;
+  grid-gap: 2em 1em;
+
+  & > mat-form-field:nth-of-type(2) {
+    grid-column-start: 1;
+  }
+}
+
+.buttons-block {
+  float: right;
+  margin-right: 1em;
+
+  & > button:nth-of-type(1) {
+    margin-right: 2em;
+  }
+}
+
+@media screen and(max-width: 770px) {
+  .subscription-form-block {
+    grid-template: 1fr / 1fr;
+    grid-gap: 0;
+  }
+
+  .buttons-block {
+    float: unset;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+
+    & > button:nth-of-type(1){
+      margin-right: unset;
+    }
+  }
+}

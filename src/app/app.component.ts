@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {UserSubscriptionsService} from "./services/user-subscriptions/user-subscriptions.service";
 
 @Component({
   selector: 'app-root',
@@ -10,7 +11,7 @@ export class AppComponent {
   private INITIAL_SPINNER_ELEMENT_ID = 'initial_spinner';
   private isInitialRouteActivated: boolean = false;
 
-  constructor() {
+  constructor(private userSubscriptionsService: UserSubscriptionsService) {
   }
 
   public onActivate() {
