@@ -298,11 +298,8 @@ export class DatabaseService {
   public async getUserSubscriptionsByEmail(email: string): Promise<UserSubscriptions> {
     return new Promise<UserSubscriptions>((resolve, reject) => {
       this.db.collection('user-subscriptions').ref.doc(email).get()
-        .then((doc) => {
-          resolve(doc.data() as UserSubscriptions);
-        }).catch(() => {
-        resolve(null);
-      });
+        .then((doc) => resolve(doc.data() as UserSubscriptions))
+        .catch(() => resolve(null));
     });
   }
 
@@ -311,9 +308,26 @@ export class DatabaseService {
       let ref = this.db.collection('user-subscriptions').ref;
       ref.doc(params.email).get().then((res) => {
         if (res.exists) {
-          ref.doc(params.email).update({email: params.email, newOfferAreas: params.newOfferAreas});
+          ref.doc(params.email).update({newOfferAreas: params.newOfferAreas});
         } else {
           ref.doc(params.email).set({email: params.email, newOfferAreas: params.newOfferAreas});
+        }
+        resolve();
+      }).catch((err) => {
+        reject(err);
+      });
+    });
+  }
+
+  // field: field name as string from UserSubscriptions
+  public async removeUserSubscriptionByField(email: string, fields: string[]): Promise<void>{
+    return new Promise<void>((resolve, reject) => {
+      let ref = this.db.collection('user-subscriptions').ref;
+      ref.doc(email).get().then((res) => {
+        if (res.exists) {
+          let data = {};
+          fields.forEach(it => data[it] = []);
+          ref.doc(email).update(data);
         }
         resolve();
       }).catch((err) => {

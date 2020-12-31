@@ -6,6 +6,8 @@ import {MatDialog} from "@angular/material/dialog";
 import {NewOffersSubscriptionComponent} from "../../dialogs/new-offers-subscription/new-offers-subscription.component";
 import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
 import {UserSubscriptions} from "../../models/UserSubscriptions";
+import {Messages} from "../../models/Messages";
+import {OverlayService} from "../overlay/overlay.service";
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +31,7 @@ export class UserSubscriptionsService {
       this.setNewOffersSubscriptionTimeout();
       return;
     }
-    if (this.authService.user && await this.dbService.getUserSubscriptionsByEmail(this.authService.user.email)) {
+    if (this.authService.user && await this.dbService.getUserSubscriptionsByEmail(btoa(this.authService.user.email))) {
       UserSubscriptionsService.setNewOffersSubscriptionStatus(true);
       return;
     }
@@ -37,6 +39,10 @@ export class UserSubscriptionsService {
   }
 
   private setNewOffersSubscriptionTimeout(): void {
+    if (Math.random() <= 0.5) {
+      return;
+    }
+
     setTimeout(() => {
       let dialog = this.matDialog.open(NewOffersSubscriptionComponent, this.authService.user
         ? MatDialogConfig.getConfigWithData(DialogConfigType.WIDE_CONFIG, {email: this.authService.user.email})
@@ -45,12 +51,43 @@ export class UserSubscriptionsService {
         if (!res) {
           UserSubscriptionsService.setNewOffersSubscriptionStatus(false);
         } else {
+          res.email = btoa(res.email);
           this.dbService.setUserSubscriptionsByEmail(res as UserSubscriptions)
-            .then(() => UserSubscriptionsService.setNewOffersSubscriptionStatus(true))
-            .catch(console.log);
+            .then(() => {
+              UserSubscriptionsService.setNewOffersSubscriptionStatus(true);
+              this.notificationService.showNotificationBar(Messages.SUBSCRIPTION_SUCCESS, true);
+            })
+            .catch(() => this.notificationService.showNotificationBar(Messages.SUBSCRIPTION_ERROR, false));
         }
       });
     }, UserSubscriptionsService.NEW_OFFERS_SUBSCRIPTION_DIALOG_TIMEOUT_MSEC)
+  }
+
+  public async resolveUnsubscribeQuery(params: any): Promise<void> {
+    switch (params['action']) {
+      case 'new_offers':
+        if (params['user']) {
+          try {
+            await this.unsubscribeNewOffersByEmail(params['user']);
+          } catch (e) {
+            console.log(e);
+          }
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
+  public async unsubscribeNewOffersByEmail(email: string): Promise<void> {
+    OverlayService.showOverlay();
+    this.dbService.removeUserSubscriptionByField(email, ['newOfferAreas'])
+      .then(() => {
+        UserSubscriptionsService.setNewOffersSubscriptionStatus(false);
+        this.notificationService.showNotificationBar(Messages.UNSUBSCRIBE_SUCCESS, true);
+      })
+      .catch(() => this.notificationService.showNotificationBar(Messages.UNSUBSCRIBE_ERROR, false))
+      .finally(() => OverlayService.hideOverlay());
   }
 
   public static getNewOffersSubscriptionStatus(): boolean {

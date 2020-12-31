@@ -1,4 +1,4 @@
 export interface UserSubscriptions {
   email: string;
-  newOfferAreas?: number[];
+  newOfferAreas?: number[]; // if [] - no subscriptions
 }

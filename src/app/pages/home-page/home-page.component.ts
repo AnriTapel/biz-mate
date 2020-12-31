@@ -1,15 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {Observable} from "rxjs";
 import {Offer} from "../../models/Offer";
-import {NotificationComponent} from "../../dialogs/notification/notification.component";
-import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
-import {ActivatedRoute} from "@angular/router";
-import {MatDialog} from "@angular/material/dialog";
 import {SeoService} from "../../services/seo/seo.service";
 import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
 import {OfferTypes} from "../../models/OfferTypes";
 import {AppService} from "../../services/app/app.service";
-import NotificationEvent from "../../models/NotificationEvent";
 import {DatabaseService} from "../../services/database/database.service";
 
 @Component({
@@ -27,31 +22,6 @@ export class HomePageComponent extends ComponentBrowserAbstractClass implements 
     description: 'Сервис BizMate помогает найти партнёра по бизнесу, привлечь или предложить инвестиции, а также продать работающий бизнес. И все это абсолютно бесплатно!',
     keywords: 'бизнес инвестор, партнер по бизнесу, инвестор искать, куда вклыдвать деньги, вложить в бизнес, купить бизнес, купить готовый бизнес, начинающий бизнес, бизнес партнер, частный инвестор',
     site: '',
-  };
-
-  private readonly resetPasswordEvent: NotificationEvent = {
-    title: 'Пароль изменен',
-    mainText: 'Вы успешно сменили пароль к своей учетной записи!',
-    extraButton: [{
-        route: '/profile',
-        buttonText: 'Войти',
-        buttonClass: 'button-primary'
-      }
-    ]
-  };
-
-  private readonly emailVerifyEvent: NotificationEvent = {
-    title: 'Электронная почта подтверждена',
-    mainText: 'Вы успешно подтвердили свой адрес электронной почты! Теперь Вы можете отредактировать информацию о себе и перейти к созданию своего первого оффера.',
-    extraButton: [{
-      route: '/new-offer',
-      buttonText: 'Создать оффер',
-      buttonClass: 'button-primary'
-    }, {
-      route: '/profile',
-      buttonText: 'Личный кабинет',
-      buttonClass: 'button-primary'
-    }]
   };
 
   public readonly offerTypesBlockData = [
@@ -77,20 +47,8 @@ export class HomePageComponent extends ComponentBrowserAbstractClass implements 
     }
   ];
 
-  constructor(private databaseService: DatabaseService, private route: ActivatedRoute, private dialog: MatDialog,
-              private seoService: SeoService) {
+  constructor(private databaseService: DatabaseService, private seoService: SeoService) {
     super();
-    this.route.queryParams.subscribe(params => {
-      if (params['password_reset']) {
-        this.dialog.open(NotificationComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, this.resetPasswordEvent))
-        //@ts-ignore
-        ym(65053642,'reachGoal','resetPassword')
-      } else if (params['email_verify']) {
-        this.dialog.open(NotificationComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, this.emailVerifyEvent))
-        //@ts-ignore
-        ym(65053642,'reachGoal','completeSignUp');
-      }
-    });
   }
 
   ngOnInit(): void {
