@@ -22,6 +22,7 @@ import {NotificationBarComponent} from "./template-blocks/notification-bar/notif
 import {OverlayComponent} from "./template-blocks/overlay/overlay.component";
 import {AuthService} from "./services/auth/auth.service";
 import {MaterialModule} from "./modules/material.module";
+import {NewOffersSubscriptionComponent} from './dialogs/new-offers-subscription/new-offers-subscription.component';
 
 export function appInitFactory(auth: AuthService) {
   return (): Promise<any> => {
@@ -41,7 +42,8 @@ export function appInitFactory(auth: AuthService) {
     NotificationComponent,
     NotificationBarComponent,
     DeleteOfferComponent,
-    OverlayComponent
+    OverlayComponent,
+    NewOffersSubscriptionComponent
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebase),

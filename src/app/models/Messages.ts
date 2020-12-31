@@ -14,6 +14,9 @@ export enum Messages{
   'FEEDBACK_ERROR' = 'Не удалось отправить письмо, попробуйте еще раз',
   'DELETE_OFFER_SUCCESS' = 'Объявление успешно удалено',
   'COMMENT_ERROR' = 'Не удалось разместить комментарий',
-  'OFFERS_FILTER_ERROR' = 'Указаны неверные параметры фильтра'
-
+  'OFFERS_FILTER_ERROR' = 'Указаны неверные параметры фильтра',
+  'SUBSCRIPTION_SUCCESS' = 'Вы успешно подписались на рассылку',
+  'SUBSCRIPTION_ERROR' = 'Не удалось подписаться на рассылку',
+  'UNSUBSCRIBE_SUCCESS' = 'Пописка на рассылку успешно отменена',
+  'UNSUBSCRIBE_ERROR' = 'Не удалось отменить подписку'
 }
