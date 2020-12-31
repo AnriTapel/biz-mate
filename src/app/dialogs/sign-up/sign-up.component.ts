@@ -38,8 +38,9 @@ export class SignUpComponent implements OnInit {
   }
 
   signUp() {
-    if(this.signUpFormGroup.status === 'INVALID')
+    if(!this.signUpFormGroup.valid){
       return;
+    }
 
     const credentials = {
       email: this.signUpFormGroup.controls.email.value,

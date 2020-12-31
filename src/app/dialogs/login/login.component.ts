@@ -21,7 +21,7 @@ export class LoginComponent implements OnInit {
 
   constructor(private auth: AuthService, private dialog: MatDialog, private dialogRef: MatDialogRef<LoginComponent>, private router: Router) {
     this.loginFormGroup = new FormGroup({
-      login: new FormControl('', Validators.required),
+      login: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', Validators.required)
     });
 
@@ -38,8 +38,9 @@ export class LoginComponent implements OnInit {
   }
 
   public logIn() {
-    if (this.loginFormGroup.status === 'INVALID')
+    if (!this.loginFormGroup.valid) {
       return;
+    }
 
     const credentials = {
       login: this.loginFormGroup.controls.login.value,

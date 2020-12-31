@@ -38,7 +38,7 @@ export class FeedbackComponent extends ComponentBrowserAbstractClass implements 
   }
 
   public async sendForm(): Promise<void> {
-    if (this.feedbackForm.status === 'INVALID') {
+    if (!this.feedbackForm.valid) {
       return;
     }
 

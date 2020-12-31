@@ -92,8 +92,9 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
   }
 
   public async editUserData(field: string): Promise<void> {
-    if (this.userDataForm.get(field).status == "INVALID")
+    if (!this.userDataForm.get(field).valid) {
       return;
+    }
 
     OverlayService.showOverlay();
     let newValue = this.userDataForm.get(field).value;

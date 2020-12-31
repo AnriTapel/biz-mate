@@ -165,7 +165,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
 
   public isPhoneValid(): boolean {
     const phone = this.newOfferForm.controls['phone'];
-    return phone.value && phone.value.length && phone.status === 'VALID';
+    return phone.value && phone.value.length && phone.valid;
   }
 
   public clearForm(): void {
@@ -223,7 +223,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
   }
 
   public sendOffer(): Promise<void> {
-    if (this.newOfferForm.status == "INVALID") {
+    if (!this.newOfferForm.valid) {
       this.isFormValid = false;
       return;
     }

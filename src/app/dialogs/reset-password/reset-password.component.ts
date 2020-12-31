@@ -23,7 +23,7 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   async sendEmailAndResetPassword(): Promise<void> {
-    if (this.emailControl.status === 'INVALID')
+    if (!this.emailControl.valid)
       return;
     let email = this.emailControl.value;
 
