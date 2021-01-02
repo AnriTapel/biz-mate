@@ -5,6 +5,7 @@ import {MatDialogConfig} from "../../dialogs/mat-dialog-config";
 import {AuthService} from "../../services/auth/auth.service";
 import {Router} from "@angular/router";
 import {OverlayService} from "../../services/overlay/overlay.service";
+import {UserSubscriptionsService} from "../../services/user-subscriptions/user-subscriptions.service";
 
 @Component({
   selector: 'app-header',
@@ -16,7 +17,8 @@ export class HeaderComponent implements OnInit {
   public loggedIn: boolean;
   public userName: string;
 
-  constructor(private dialog: MatDialog, private auth: AuthService, private router: Router) {
+  constructor(private dialog: MatDialog, private auth: AuthService, private router: Router,
+              private userSubscriptionsService: UserSubscriptionsService) {
   }
 
   ngOnInit(): void {
@@ -27,7 +29,7 @@ export class HeaderComponent implements OnInit {
     });
   }
 
-  onAuthButtonClick(): void {
+  public onAuthButtonClick(): void {
     if (this.loggedIn) {
       this.logOut();
     } else {
@@ -35,22 +37,26 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  openLoginDialog(): void {
+  public openLoginDialog(): void {
     this.dialog.open(LoginComponent, MatDialogConfig.narrowDialogWindow);
     this.hideMobileMenu();
   }
 
-  showMobileMenu(): void {
+  public onNotificationButtonClick(): void {
+    this.userSubscriptionsService.showNewOffersSubscriptionDialog();
+  }
+
+  public showMobileMenu(): void {
     document.getElementById('mobileMenuWrapper').style.visibility = 'visible';
     document.getElementById('mobileMenuWrapper').style.opacity = '1';
   }
 
-  hideMobileMenu(): void {
+  public hideMobileMenu(): void {
     document.getElementById('mobileMenuWrapper').style.visibility = 'hidden';
     document.getElementById('mobileMenuWrapper').style.opacity = '0';
   }
 
-  logOut(): void {
+  public logOut(): void {
     OverlayService.showOverlay();
     this.auth.signOut().then(() => {
       this.router.navigateByUrl("/");

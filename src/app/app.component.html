@@ -2,4 +2,7 @@
 <app-notification-bar></app-notification-bar>
 <app-header></app-header>
 <router-outlet (activate)="onActivate()"></router-outlet>
+<div (click)="onNotificationButtonClick()" *ngIf="showNotificationButton()" class="new-offers-notification-button button-primary button-circle">
+  <img src="/assets/img/icons/bell.svg" alt="Уведомления"/>
+</div>
 <app-footer></app-footer>

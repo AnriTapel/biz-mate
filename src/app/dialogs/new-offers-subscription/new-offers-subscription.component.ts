@@ -20,9 +20,10 @@ export class NewOffersSubscriptionComponent {
 
   public newOffersSubscriptionForm: FormGroup = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
-    firstArea: new FormControl(null, [Validators.required, AppService.businessAreaFieldValidator()]),
-    secondArea: new FormControl(null, [AppService.businessAreaFieldValidator()]),
-    thirdArea: new FormControl(null, [AppService.businessAreaFieldValidator()]),
+    firstArea: new FormControl(AppService.getBusinessAreaByFiledValue('id', 0).name,
+      [Validators.required, AppService.businessAreaFieldValidator()]),
+    secondArea: new FormControl('', [AppService.businessAreaFieldValidator()]),
+    thirdArea: new FormControl('', [AppService.businessAreaFieldValidator()]),
   });
 
   constructor(private matDialogRef: MatDialogRef<NewOffersSubscriptionComponent>, @Inject(MAT_DIALOG_DATA) private data: any) {
@@ -32,19 +33,19 @@ export class NewOffersSubscriptionComponent {
 
     this.filteredFirstBusinessArea$ = this.newOffersSubscriptionForm.controls.firstArea.valueChanges
       .pipe(
-        startWith(''),
+        startWith( this.newOffersSubscriptionForm.controls.firstArea.value),
         map(value => AppService._filterBusinessAreas(value))
       );
 
     this.filteredSecondBusinessArea$ = this.newOffersSubscriptionForm.controls.secondArea.valueChanges
       .pipe(
-        startWith(''),
+        startWith(this.newOffersSubscriptionForm.controls.secondArea.value),
         map(value => AppService._filterBusinessAreas(value))
       );
 
     this.filteredThirdBusinessArea$ = this.newOffersSubscriptionForm.controls.thirdArea.valueChanges
       .pipe(
-        startWith(''),
+        startWith(this.newOffersSubscriptionForm.controls.thirdArea.value),
         map(value => AppService._filterBusinessAreas(value))
       );
   }

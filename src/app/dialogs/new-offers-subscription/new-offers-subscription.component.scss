@@ -19,6 +19,14 @@
 }
 
 @media screen and(max-width: 770px) {
+  h1 {
+    font-size: 18px;
+  }
+
+  p {
+    font-size: 14px;
+  }
+
   .subscription-form-block {
     grid-template: 1fr / 1fr;
     grid-gap: 0;

@@ -38,29 +38,30 @@ export class UserSubscriptionsService {
     this.setNewOffersSubscriptionTimeout();
   }
 
-  private setNewOffersSubscriptionTimeout(): void {
-    if (Math.random() <= 0.5) {
-      return;
-    }
+  public showNewOffersSubscriptionDialog(): void {
+    let dialog = this.matDialog.open(NewOffersSubscriptionComponent, this.authService.user
+      ? MatDialogConfig.getConfigWithData(DialogConfigType.WIDE_CONFIG, {email: this.authService.user.email})
+      : MatDialogConfig.wideDialogWindow);
+    dialog.afterClosed().subscribe((res) => {
+      if (!res) {
+        UserSubscriptionsService.setNewOffersSubscriptionStatus(false);
+      } else {
+        res.email = btoa(res.email);
+        this.dbService.setUserSubscriptionsByEmail(res as UserSubscriptions)
+          .then(() => {
+            UserSubscriptionsService.setNewOffersSubscriptionStatus(true);
+            this.notificationService.showNotificationBar(Messages.SUBSCRIPTION_SUCCESS, true);
+          })
+          .catch(() => this.notificationService.showNotificationBar(Messages.SUBSCRIPTION_ERROR, false));
+      }
+    });
+  }
 
-    setTimeout(() => {
-      let dialog = this.matDialog.open(NewOffersSubscriptionComponent, this.authService.user
-        ? MatDialogConfig.getConfigWithData(DialogConfigType.WIDE_CONFIG, {email: this.authService.user.email})
-        : MatDialogConfig.wideDialogWindow);
-      dialog.afterClosed().subscribe((res) => {
-        if (!res) {
-          UserSubscriptionsService.setNewOffersSubscriptionStatus(false);
-        } else {
-          res.email = btoa(res.email);
-          this.dbService.setUserSubscriptionsByEmail(res as UserSubscriptions)
-            .then(() => {
-              UserSubscriptionsService.setNewOffersSubscriptionStatus(true);
-              this.notificationService.showNotificationBar(Messages.SUBSCRIPTION_SUCCESS, true);
-            })
-            .catch(() => this.notificationService.showNotificationBar(Messages.SUBSCRIPTION_ERROR, false));
-        }
-      });
-    }, UserSubscriptionsService.NEW_OFFERS_SUBSCRIPTION_DIALOG_TIMEOUT_MSEC)
+  private setNewOffersSubscriptionTimeout(): void {
+    if (Math.random() > 0.5) {
+      setTimeout(this.showNewOffersSubscriptionDialog.bind(this),
+        UserSubscriptionsService.NEW_OFFERS_SUBSCRIPTION_DIALOG_TIMEOUT_MSEC);
+    }
   }
 
   public async resolveUnsubscribeQuery(params: any): Promise<void> {

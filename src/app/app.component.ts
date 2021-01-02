@@ -13,6 +13,7 @@ import {ActivatedRoute} from "@angular/router";
 })
 export class AppComponent {
 
+  static readonly ROUTES_FOR_NOTIFICATION_BUTTON: string[] = ['/offer/', '/offers-page'];
   private INITIAL_SPINNER_ELEMENT_ID = 'initial_spinner';
   private isInitialRouteActivated: boolean = false;
 
@@ -58,12 +59,20 @@ export class AppComponent {
     });
   }
 
-  public onActivate() {
+  public onActivate(): void {
     if (this.isInitialRouteActivated) {
       return;
     }
 
     document.getElementById(this.INITIAL_SPINNER_ELEMENT_ID).style.display = 'none';
     this.isInitialRouteActivated = true;
+  }
+
+  public onNotificationButtonClick(): void {
+    this.userSubscriptionsService.showNewOffersSubscriptionDialog();
+  }
+
+  public showNotificationButton(): boolean {
+    return AppComponent.ROUTES_FOR_NOTIFICATION_BUTTON.filter(it => location.href.indexOf(it) !== -1).length > 0;
   }
 }

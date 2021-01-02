@@ -40,6 +40,11 @@
           <a [routerLink]="'/offers-page'" (click)="hideMobileMenu()">Офферы</a>
           <a [routerLink]="'/feedback'" (click)="hideMobileMenu()">Помощь</a>
         </div>
+        <div class="mobile-menu-bottom-bar">
+          <a href="mailto:info@biz-mate.ru"><img src="/assets/img/icons/email_footer.svg" alt="Почта"/></a>
+          <a (click)="onNotificationButtonClick()"><img src="/assets/img/icons/bell.svg" alt="Уведомления"/></a>
+          <a href="https://vk.com/bizmate" target="_blank"><img src="/assets/img/socials/vk_logo.svg" alt="VK"/></a>
+        </div>
       </div>
     </div>
   </nav>

@@ -19,6 +19,10 @@ $main-theme-color: #2E7990;
 
     .avatar-container {
       margin-bottom: 1em;
+
+      & img:-moz-loading {
+        visibility: hidden;
+      }
     }
   }
 

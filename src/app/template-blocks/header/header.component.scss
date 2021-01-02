@@ -129,6 +129,7 @@ header {
           display: flex;
           flex-direction: column;
           padding: 20px;
+          flex-grow: 1;
 
           a{
             font-weight: bold;
@@ -137,6 +138,24 @@ header {
 
           a:not(:last-child) {
             margin-bottom: 2em;
+          }
+        }
+
+        .mobile-menu-bottom-bar {
+          background-color: #2E7990;
+          display: flex;
+          padding: 10px;
+
+          & > a{
+            cursor: pointer;
+
+            &:not(:last-child) {
+              margin-right: 1.25em;
+            }
+
+            & > img {
+              height: 25px;
+            }
           }
         }
       }
