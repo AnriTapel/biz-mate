@@ -48,34 +48,34 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
   async ngOnInit(): Promise<void> {
     this.seoService.updateRouteMetaTagsByData(this.metaTags);
     this.searchForm = new FormGroup({
-      type: new FormControl(null, [AppService.offerTypeValidator()]),
-      businessArea: new FormControl(null, [AppService.businessAreaFieldValidator()]),
-      city: new FormControl(null, [AppService.cityFieldValidator()])
+      type: new FormControl(null, [this.appService.offerTypeValidator()]),
+      businessArea: new FormControl(null, [this.appService.businessAreaFieldValidator()]),
+      city: new FormControl(null, [this.appService.cityFieldValidator()])
     });
 
     this.filteredOfferTypes$ = this.searchForm.controls.type.valueChanges
       .pipe(
         startWith(''),
-        map(value => AppService._filterOfferTypes(value))
+        map(value => this.appService._filterOfferTypes(value))
       );
 
     this.filteredCities$ = this.searchForm.controls.city.valueChanges
       .pipe(
         startWith(''),
-        map(value => AppService._filterCities(value))
+        map(value => this.appService._filterCities(value))
       );
 
     this.filteredBusinessArea$ = this.searchForm.controls.businessArea.valueChanges
       .pipe(
         startWith(''),
-        map(value => AppService._filterBusinessAreas(value))
+        map(value => this.appService._filterBusinessAreas(value))
       );
 
     this.route.queryParams.subscribe(res => {
       if (!res || Object.keys(res).length > 0) {
-        let offerType = res.offerType ? AppService.getOfferTypeByFiledValue('id', res.offerType).title : null;
-        let city = res.city ? AppService.getCityByFiledValue('id', res.city).name : null;
-        let businessArea = res.businessArea ? AppService.getBusinessAreaByFiledValue('id', res.businessArea).name : null;
+        let offerType = res.offerType ? this.appService.getOfferTypeByFiledValue('id', res.offerType).title : null;
+        let city = res.city ? this.appService.getCityByFiledValue('id', res.city).name : null;
+        let businessArea = res.businessArea ? this.appService.getBusinessAreaByFiledValue('id', res.businessArea).name : null;
         this.searchForm.controls.type.setValue(offerType);
         this.searchForm.controls.city.setValue(city);
         this.searchForm.controls.businessArea.setValue(businessArea);
@@ -135,23 +135,23 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
 
     if (formValue.type && formValue.type.length)
       queryParams.push({
-        value: AppService.getOfferTypeByFiledValue('title', formValue.type).id,
+        value: this.appService.getOfferTypeByFiledValue('title', formValue.type).id,
         operator: FilterFieldOperator.EQUALS,
         name: FilterFieldName.OFFER_TYPE
       });
 
     if (formValue.city && formValue.city.length)
       queryParams.push({
-        value: AppService.getCityByFiledValue('name', formValue.city).id,
+        value: this.appService.getCityByFiledValue('name', formValue.city).id,
         operator: FilterFieldOperator.EQUALS,
         name: FilterFieldName.CITY
       });
 
 
     if (formValue.businessArea && formValue.businessArea.length) {
-      if (AppService.getBusinessAreaByFiledValue('name', formValue.businessArea).id > 0) {
+      if (this.appService.getBusinessAreaByFiledValue('name', formValue.businessArea).id > 0) {
         queryParams.push({
-          value: AppService.getBusinessAreaByFiledValue('name', formValue.businessArea).id,
+          value: this.appService.getBusinessAreaByFiledValue('name', formValue.businessArea).id,
           operator: FilterFieldOperator.INCLUDES,
           name: FilterFieldName.BUSINESS_AREA
         });
@@ -173,8 +173,7 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
     this.filteredOffers$ = null;
 
     if (!this.sortedOffers$) {
-      OverlayService.showOverlay();
-      this.getSortedOffers().finally(() => OverlayService.hideOverlay());
+      this.getSortedOffers();
     }
   }
 

@@ -32,7 +32,8 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
   public isUserAuth: boolean = undefined;
 
   constructor(private route: ActivatedRoute, private seoService: SeoService, private databaseService: DatabaseService,
-              private router: Router, private authService: AuthService, private notificationService: NotificationBarService) {
+              private router: Router, private authService: AuthService, private notificationService: NotificationBarService,
+              private appService: AppService) {
     super();
     OverlayService.showOverlay();
     this.commentInput = new FormControl('', [Validators.required, Validators.maxLength(this.COMMENT_TEXT_MAX_LENGTH)]);
@@ -84,22 +85,22 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
   }
 
   public getOfferCity(): string {
-    return AppService.getCityByFiledValue('id', this.offer.city).name;
+    return this.appService.getCityByFiledValue('id', this.offer.city).name;
   }
 
   public getOfferMainBusinessArea(): string {
-    return AppService.getBusinessAreaByFiledValue('id', this.offer.businessArea[0]).name;
+    return this.appService.getBusinessAreaByFiledValue('id', this.offer.businessArea[0]).name;
   }
 
   public getOfferSecondaryBusinessArea(): string {
     if (this.offer.businessArea.length === 1) {
       return null;
     }
-    return AppService.getBusinessAreaByFiledValue('id', this.offer.businessArea[1]).name;
+    return this.appService.getBusinessAreaByFiledValue('id', this.offer.businessArea[1]).name;
   }
 
   public getOfferTypeTitle(): string {
-    return AppService.offerTypes.filter(it => it.id === this.offer.type)[0].title;
+    return this.appService.offerTypes.filter(it => it.id === this.offer.type)[0].title;
   }
 
   public getCapitalLabel(): string {

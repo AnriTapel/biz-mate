@@ -20,13 +20,14 @@ export class NewOffersSubscriptionComponent {
 
   public newOffersSubscriptionForm: FormGroup = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
-    firstArea: new FormControl(AppService.getBusinessAreaByFiledValue('id', 0).name,
-      [Validators.required, AppService.businessAreaFieldValidator()]),
-    secondArea: new FormControl('', [AppService.businessAreaFieldValidator()]),
-    thirdArea: new FormControl('', [AppService.businessAreaFieldValidator()]),
+    firstArea: new FormControl(this.appService.getBusinessAreaByFiledValue('id', 0).name,
+      [Validators.required, this.appService.businessAreaFieldValidator()]),
+    secondArea: new FormControl('', [this.appService.businessAreaFieldValidator()]),
+    thirdArea: new FormControl('', [this.appService.businessAreaFieldValidator()]),
   });
 
-  constructor(private matDialogRef: MatDialogRef<NewOffersSubscriptionComponent>, @Inject(MAT_DIALOG_DATA) private data: any) {
+  constructor(private matDialogRef: MatDialogRef<NewOffersSubscriptionComponent>, @Inject(MAT_DIALOG_DATA) private data: any,
+      private appService: AppService) {
     if (data && data.email) {
       this.newOffersSubscriptionForm.controls['email'].setValue(data.email);
     }
@@ -34,19 +35,19 @@ export class NewOffersSubscriptionComponent {
     this.filteredFirstBusinessArea$ = this.newOffersSubscriptionForm.controls.firstArea.valueChanges
       .pipe(
         startWith( this.newOffersSubscriptionForm.controls.firstArea.value),
-        map(value => AppService._filterBusinessAreas(value))
+        map(value => this.appService._filterBusinessAreas(value))
       );
 
     this.filteredSecondBusinessArea$ = this.newOffersSubscriptionForm.controls.secondArea.valueChanges
       .pipe(
         startWith(this.newOffersSubscriptionForm.controls.secondArea.value),
-        map(value => AppService._filterBusinessAreas(value))
+        map(value => this.appService._filterBusinessAreas(value))
       );
 
     this.filteredThirdBusinessArea$ = this.newOffersSubscriptionForm.controls.thirdArea.valueChanges
       .pipe(
         startWith(this.newOffersSubscriptionForm.controls.thirdArea.value),
-        map(value => AppService._filterBusinessAreas(value))
+        map(value => this.appService._filterBusinessAreas(value))
       );
   }
 
@@ -59,12 +60,12 @@ export class NewOffersSubscriptionComponent {
       return;
     }
     let data = this.newOffersSubscriptionForm.getRawValue();
-    let areas = [AppService.getBusinessAreaByFiledValue('name', data.firstArea).id];
+    let areas = [this.appService.getBusinessAreaByFiledValue('name', data.firstArea).id];
     if (data.secondArea !== null && data.secondArea !== '') {
-      areas.push(AppService.getBusinessAreaByFiledValue('name', data.secondArea).id);
+      areas.push(this.appService.getBusinessAreaByFiledValue('name', data.secondArea).id);
     }
     if (data.thirdArea !== null && data.thirdArea !== '') {
-      areas.push(AppService.getBusinessAreaByFiledValue('name', data.thirdArea).id);
+      areas.push(this.appService.getBusinessAreaByFiledValue('name', data.thirdArea).id);
     }
 
     let subscriptionParams: UserSubscriptions = {

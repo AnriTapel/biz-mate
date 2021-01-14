@@ -23,10 +23,15 @@ import {OverlayComponent} from "./template-blocks/overlay/overlay.component";
 import {AuthService} from "./services/auth/auth.service";
 import {MaterialModule} from "./modules/material.module";
 import {NewOffersSubscriptionComponent} from './dialogs/new-offers-subscription/new-offers-subscription.component';
+import {AppService} from "./services/app/app.service";
 
-export function appInitFactory(auth: AuthService) {
+export function appInitFactory(auth: AuthService, appService: AppService) {
   return (): Promise<any> => {
-    return auth.appInitAuth();
+    return new Promise<any>((resolve, reject) => {
+      auth.appInitAuth();
+      appService.appInit().then(() => resolve())
+        .catch(() => reject());
+    })
   }
 }
 
@@ -56,7 +61,7 @@ export function appInitFactory(auth: AuthService) {
     BrowserAnimationsModule,
     MaterialModule
   ], providers: [
-    {provide: APP_INITIALIZER, useFactory: appInitFactory, deps: [AuthService], multi: true}
+    {provide: APP_INITIALIZER, useFactory: appInitFactory, deps: [AuthService, AppService], multi: true}
   ],
   bootstrap: [AppComponent]
 })

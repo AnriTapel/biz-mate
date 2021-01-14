@@ -36,8 +36,7 @@ export class AuthService {
       }));
   }
 
-  public appInitAuth(): Promise<any> {
-    return new Promise<void>((resolve, reject) => {
+  public appInitAuth(): any {
       this.afAuth.useDeviceLanguage();
       const handler = this.afAuth.authState.subscribe((userData) => {
         if (userData && !userData.isAnonymous) {
@@ -47,26 +46,16 @@ export class AuthService {
             emailVerified: userData.emailVerified
           };
           handler.unsubscribe();
-          resolve();
         } else if (userData && userData.isAnonymous) {
           this.user = null;
           handler.unsubscribe();
-          resolve();
         } else {
           this.afAuth.signInAnonymously().then(() => {
             this.user = null;
             handler.unsubscribe();
-            resolve();
-          }).catch((err) => {
-            handler.unsubscribe();
-            reject(err);
-          });
+          }).catch(() => handler.unsubscribe());
         }
-      }, (error) => {
-        handler.unsubscribe();
-        reject(error);
-      });
-    });
+      }, () => handler.unsubscribe());
   }
 
   public emailAndPasswordLogin(credentials: any): Promise<void> {

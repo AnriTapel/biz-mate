@@ -8,6 +8,10 @@ import {StorageService} from "../storage/storage.service";
 import {OfferComment} from "../../models/OfferComment";
 import {FilterField} from "../../models/FilterFields";
 import {UserSubscriptions} from "../../models/UserSubscriptions";
+import {AppService} from "../app/app.service";
+import {City} from "../../models/City";
+import {BusinessArea} from "../../models/BusinessArea";
+import {OfferTypes} from "../../models/OfferTypes";
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +20,11 @@ export class DatabaseService {
 
   static readonly LATEST_OFFERS_CHUNK_SIZE: number = 4;
   static readonly SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE: number = 20;
+  static readonly OFFERS_COLLECTION_PATH: string = 'offers';
+  static readonly COMMENTS_COLLECTION_PATH: string = 'offers-comments';
+  static readonly OFFER_TYPES_COLLECTION_PATH: string = 'offers-types';
+  static readonly CITIES_COLLECTION_PATH: string = 'cities';
+  static readonly BUSINESS_AREAS_COLLECTION_PATH: string = 'business-areas';
 
   private latestSortedOffers$: Observable<Offer[]> = undefined;
   private latestSortedOffersHandler: any = undefined;
@@ -31,12 +40,45 @@ export class DatabaseService {
   private commentsCollectionRef: any = undefined;
 
   constructor(private db: AngularFirestore, private storageService: StorageService) {
-    this.offersCollectionRef = this.db.collection('offers').ref;
-    this.commentsCollectionRef = this.db.collection('offers-comments').ref;
+    this.offersCollectionRef = this.db.collection(DatabaseService.OFFERS_COLLECTION_PATH).ref;
+    this.commentsCollectionRef = this.db.collection(DatabaseService.COMMENTS_COLLECTION_PATH).ref;
   }
 
   public createId(): string {
     return this.db.createId();
+  }
+
+  public getCitiesCollection(): Promise<City[]> {
+    return new Promise<City[]>((resolve, reject) => {
+      this.db.collection(DatabaseService.CITIES_COLLECTION_PATH).get().toPromise()
+        .then((res) => {
+          const cities: City[] = [];
+          res.forEach(it => cities.push(it.data() as City));
+          resolve(cities);
+        }).catch(() => reject(null));
+    });
+  }
+
+  public getBusinessAreasCollection(): Promise<BusinessArea[]> {
+    return new Promise<BusinessArea[]>((resolve, reject) => {
+      this.db.collection(DatabaseService.BUSINESS_AREAS_COLLECTION_PATH).ref.get()
+        .then((res) => {
+          const businessAreas: BusinessArea[] = [];
+          res.forEach(it => businessAreas.push(it.data() as City));
+          resolve(businessAreas);
+        }).catch(() => reject(null));
+    });
+  }
+
+  public getOfferTypesCollection(): Promise<any[]> {
+    return new Promise<any[]>((resolve, reject) => {
+      this.db.collection(DatabaseService.OFFER_TYPES_COLLECTION_PATH).get().toPromise()
+        .then((res) => {
+          const offerTypes: any[] = [];
+          res.forEach(it => offerTypes.push(it.data()));
+          resolve(offerTypes);
+        }).catch(() => reject(null));
+    });
   }
 
   public async getOfferByOfferId(id: string): Promise<Offer> {

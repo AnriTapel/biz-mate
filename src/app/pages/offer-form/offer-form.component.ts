@@ -67,7 +67,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
 
   constructor(private auth: AuthService, private activeRoute: ActivatedRoute, private storageService: StorageService,
               private notificationBarService: NotificationBarService, private seoService: SeoService, private router: Router,
-              private databaseService: DatabaseService) {
+              private databaseService: DatabaseService, private appService: AppService) {
     super();
   }
 
@@ -75,9 +75,9 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     this.seoService.updateRouteMetaTagsByData(this.metaTags);
     const offerData = await this.getOfferData();
     this.newOfferForm = new FormGroup({
-      city: new FormControl(offerData.city, [Validators.required, AppService.cityFieldValidator()]),
-      businessArea: new FormControl(offerData.businessArea, [Validators.required, AppService.businessAreaFieldValidator()]),
-      extraBusinessArea: new FormControl(offerData.extraBusinessArea, [AppService.businessAreaFieldValidator()]),
+      city: new FormControl(offerData.city, [Validators.required, this.appService.cityFieldValidator()]),
+      businessArea: new FormControl(offerData.businessArea, [Validators.required, this.appService.businessAreaFieldValidator()]),
+      extraBusinessArea: new FormControl(offerData.extraBusinessArea, [this.appService.businessAreaFieldValidator()]),
       title: new FormControl(offerData.title, [Validators.required, Validators.maxLength(this.fieldMaxLength.title)]),
       capital: new FormControl(offerData.capital, [this.capitalFieldValidator()]),
       desc: new FormControl(offerData.desc, [Validators.required, Validators.maxLength(this.fieldMaxLength.desc)]),
@@ -97,19 +97,19 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     this.filteredCities$ = this.newOfferForm.controls.city.valueChanges
       .pipe(
         startWith(''),
-        map(value => AppService._filterCities(value))
+        map(value => this.appService._filterCities(value))
       );
 
     this.filteredBusinessArea$ = this.newOfferForm.controls.businessArea.valueChanges
       .pipe(
         startWith(''),
-        map(value => AppService._filterBusinessAreas(value))
+        map(value => this.appService._filterBusinessAreas(value))
       );
 
     this.filteredExtraBusinessArea$ = this.newOfferForm.controls.extraBusinessArea.valueChanges
       .pipe(
         startWith(''),
-        map(value => AppService._filterBusinessAreas(value))
+        map(value => this.appService._filterBusinessAreas(value))
       );
   }
 
@@ -131,7 +131,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
   }
 
   public getOfferTypesArray(): Array<any> {
-    return AppService.offerTypes;
+    return this.appService.offerTypes;
   }
 
   public async fileChangeEvent(event): Promise<void> {
@@ -193,14 +193,14 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
       offerData['desc'] = offer.desc || null;
       offerData['capital'] = offer.capital || null;
       offerData['experience'] = offer.experience || null;
-      offerData['businessArea'] = AppService.getBusinessAreaByFiledValue('id', offer.businessArea[0]).name || null;
+      offerData['businessArea'] = this.appService.getBusinessAreaByFiledValue('id', offer.businessArea[0]).name || null;
       if (offer.businessArea[1]) {
-        offerData['extraBusinessArea'] = AppService.getBusinessAreaByFiledValue('id', offer.businessArea[1]).name || null;
+        offerData['extraBusinessArea'] = this.appService.getBusinessAreaByFiledValue('id', offer.businessArea[1]).name || null;
         this.isExtraBusinessAreaFieldAvail = true;
       }
       offerData['conditions'] = offer.conditions || null;
       offerData['phone'] = offer.phone || null;
-      offerData['city'] = AppService.getCityByFiledValue('id', offer.city).name || null;
+      offerData['city'] = this.appService.getCityByFiledValue('id', offer.city).name || null;
       this.contactMethods = offer.contactMethods || this.contactMethods;
       this.offerImages = offer.imagesURL || [];
       this.offerDate = offer.date;
@@ -238,10 +238,10 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     offerData.type = this.currentType;
     offerData.displayName = this.auth.user.displayName;
     offerData.userId = this.auth.user.uid;
-    offerData.city = AppService.getCityByFiledValue('name', offerData.city).id;
-    let areas = [AppService.getBusinessAreaByFiledValue('name', offerData.businessArea).id];
+    offerData.city = this.appService.getCityByFiledValue('name', offerData.city).id;
+    let areas = [this.appService.getBusinessAreaByFiledValue('name', offerData.businessArea).id];
     if (offerData.extraBusinessArea && offerData.extraBusinessArea.length > 0) {
-      areas.push(AppService.getBusinessAreaByFiledValue('name', offerData.extraBusinessArea).id);
+      areas.push(this.appService.getBusinessAreaByFiledValue('name', offerData.extraBusinessArea).id);
     }
     offerData.businessArea = areas;
     offerData.date = this.offerDate || Date.now();
