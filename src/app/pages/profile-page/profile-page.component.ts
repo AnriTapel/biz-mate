@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {User} from "../../models/User";
 import {Router} from "@angular/router";
 import {AppService} from "../../services/app/app.service";
@@ -22,7 +22,7 @@ import {DatabaseService} from "../../services/database/database.service";
   templateUrl: './profile-page.component.html',
   styleUrls: ['./profile-page.component.scss']
 })
-export class ProfilePageComponent extends ComponentBrowserAbstractClass implements OnInit {
+export class ProfilePageComponent extends ComponentBrowserAbstractClass implements OnInit, OnDestroy {
 
   private deleteOfferHandler = null;
 

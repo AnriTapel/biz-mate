@@ -17,10 +17,7 @@ export class AuthGuardService implements CanActivate {
   constructor(private router: Router, private authService: AuthService, private dialog: MatDialog) {
     router.events
       .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
-        console.log('prev:', event.url);
-        this.previousUrl = event.url;
-      });
+      .subscribe((event: NavigationEnd) => this.previousUrl = event.url);
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {

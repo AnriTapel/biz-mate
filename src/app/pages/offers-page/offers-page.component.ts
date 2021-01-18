@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Observable} from "rxjs";
 import {Offer} from "../../models/Offer";
 import {FormControl, FormGroup} from "@angular/forms";
@@ -20,7 +20,7 @@ import {FilterField, FilterFieldName, FilterFieldOperator} from "../../models/Fi
   templateUrl: './offers-page.component.html',
   styleUrls: ['./offers-page.component.scss']
 })
-export class OffersPageComponent extends ComponentBrowserAbstractClass implements OnInit {
+export class OffersPageComponent extends ComponentBrowserAbstractClass implements OnInit, OnDestroy {
 
   private readonly metaTags = {
     title: 'Доска предложений | BizMate',
