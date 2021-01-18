@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Inject} from '@angular/core';
 import {AuthService} from "../../services/auth/auth.service";
-import {MatDialog, MatDialogRef} from "@angular/material/dialog";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {SignUpComponent} from "../sign-up/sign-up.component";
 import {MatDialogConfig} from "../mat-dialog-config";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
@@ -13,22 +13,20 @@ import {Router} from "@angular/router";
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
 
   hidePassword: boolean = true;
   loginFormGroup: FormGroup;
   errorMessage: string = null;
 
-  constructor(private auth: AuthService, private dialog: MatDialog, private dialogRef: MatDialogRef<LoginComponent>, private router: Router) {
+  constructor(private auth: AuthService, private dialog: MatDialog, private dialogRef: MatDialogRef<LoginComponent>,
+              private router: Router, @Inject(MAT_DIALOG_DATA) public data: any) {
     this.loginFormGroup = new FormGroup({
       login: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', Validators.required)
     });
 
     this.loginFormGroup.valueChanges.subscribe(() => this.errorMessage = null);
-  }
-
-  ngOnInit(): void {
   }
 
   public onKeyPress(event): void {
@@ -48,32 +46,33 @@ export class LoginComponent implements OnInit {
     };
 
     this.auth.emailAndPasswordLogin(credentials)
-      .then(() => {
-        this.dialogRef.close();
-        setTimeout(() => this.router.navigateByUrl('/profile'), 0);
-      }).catch((err) => this.errorMessage = Messages[err.code] || Messages.DEFAULT_MESSAGE);
-  }
-
-  loginGoogle() {
-    this.auth.googleAuth()
-      .then(() => {
-        this.dialogRef.close();
-        setTimeout(() => {
-          this.router.navigateByUrl('/profile');
-          //@ts-ignore
-          ym(65053642,'reachGoal','completeSignUp');
-        }, 0);
-      })
+      .then(() => this.onSuccessfulLogin())
       .catch((err) => this.errorMessage = Messages[err.code] || Messages.DEFAULT_MESSAGE);
   }
 
-  signUp() {
-    this.dialogRef.close();
+  public loginGoogle() {
+    this.auth.googleAuth()
+      .then(() => {
+        //@ts-ignore
+        ym(65053642,'reachGoal','completeSignUp');
+        this.onSuccessfulLogin();
+      }).catch((err) => this.errorMessage = Messages[err.code] || Messages.DEFAULT_MESSAGE);
+  }
+
+  private onSuccessfulLogin(): void {
+    this.dialogRef.close(true);
+    if (this.data && this.data.redirectUrl && this.data.redirectUrl.length) {
+      setTimeout(() => this.router.navigateByUrl(this.data.redirectUrl), 0);
+    }
+  }
+
+  public signUp() {
+    this.dialogRef.close(false);
     this.dialog.open(SignUpComponent, MatDialogConfig.narrowDialogWindow);
   }
 
-  forgotPassword() {
-    this.dialogRef.close();
+  public forgotPassword() {
+    this.dialogRef.close(false);
     this.dialog.open(ResetPasswordComponent, MatDialogConfig.narrowDialogWindow);
   }
 

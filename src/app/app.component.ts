@@ -43,6 +43,7 @@ export class AppComponent {
 
   constructor(private route: ActivatedRoute, private userSubscriptionsService: UserSubscriptionsService, private dialog: MatDialog) {
     this.route.queryParams.subscribe(params => {
+      this.onRouteActivated();
       if (params['password_reset']) {
         this.dialog.open(NotificationComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, this.resetPasswordEvent));
         //@ts-ignore
@@ -59,7 +60,7 @@ export class AppComponent {
     });
   }
 
-  public onActivate(): void {
+  public onRouteActivated(): void {
     if (this.isInitialRouteActivated) {
       return;
     }

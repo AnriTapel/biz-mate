@@ -20,4 +20,7 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule {
+
+  constructor(private authGuardService: AuthGuardService){}
+
 }

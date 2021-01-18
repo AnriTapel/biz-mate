@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {MatDialog} from "@angular/material/dialog";
 import {LoginComponent} from "../../dialogs/login/login.component";
-import {MatDialogConfig} from "../../dialogs/mat-dialog-config";
+import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
 import {AuthService} from "../../services/auth/auth.service";
 import {Router} from "@angular/router";
 import {OverlayService} from "../../services/overlay/overlay.service";
@@ -38,7 +38,7 @@ export class HeaderComponent implements OnInit {
   }
 
   public openLoginDialog(): void {
-    this.dialog.open(LoginComponent, MatDialogConfig.narrowDialogWindow);
+    this.dialog.open(LoginComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, {redirectUrl: '/profile'}));
     this.hideMobileMenu();
   }
 
