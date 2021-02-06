@@ -1,6 +1,7 @@
 .top-block {
   width: 100%;
   margin-top: 5em;
+  margin-bottom: 6em;
   display: flex;
   justify-content: space-between;
 
@@ -92,10 +93,42 @@
       display: none;
     }
   }
+
+  @media screen and (min-width: 1921px) {
+    margin-top: 20vh;
+    margin-bottom: 25vh;
+
+    .text {
+      width: 70%;
+      min-width: 600px;
+      max-width: 950px;
+
+      p:nth-of-type(1) {
+        font-size: 17px;
+        margin: 1em 0 0;
+        line-height: 20px;
+      }
+
+      h1 {
+        font-size: 58px;
+        line-height: 62px;
+      }
+
+      p:nth-of-type(2) {
+        font-size: 18px;
+        width: 65%;
+        line-height: 25px;
+        margin-bottom: 3em;
+      }
+    }
+
+    .image-block {
+      background-size: 80vh auto;
+    }
+  }
 }
 
-.offers-block{
-  margin-top: 6em;
+.offers-block {
 
   h2 {
     text-align: center;
