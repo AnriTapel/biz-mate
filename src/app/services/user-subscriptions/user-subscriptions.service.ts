@@ -51,6 +51,8 @@ export class UserSubscriptionsService {
           .then(() => {
             UserSubscriptionsService.setNewOffersSubscriptionStatus(true);
             this.notificationService.showNotificationBar(Messages.SUBSCRIPTION_SUCCESS, true);
+            //@ts-ignore
+            ym(65053642,'reachGoal','newOffersSubscription')
           })
           .catch(() => this.notificationService.showNotificationBar(Messages.SUBSCRIPTION_ERROR, false));
       }
