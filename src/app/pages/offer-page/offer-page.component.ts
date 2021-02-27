@@ -70,7 +70,7 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
   }
 
   private static replaceUrlsInText(text: string): string {
-    return text.replace(OfferPageComponent.URL_REGEX, function(url) {
+    return text.replace(OfferPageComponent.URL_REGEX, function (url) {
       let urlText = url.length > 50 ? `${url.substring(0, 50)}...` : url;
       return '<a href="' + url + '" target="_blank">' + urlText + '</a>';
     });
@@ -121,6 +121,15 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
 
   public openImage(url: string): void {
     window.open(url, '_blank');
+  }
+
+  public onImageLoadError(event: any): void {
+    event.target.parentElement.style.display = 'none';
+  }
+
+  public onOfferContactsClick(): void {
+    //@ts-ignore
+    ym(65053642, 'reachGoal', 'offerContactsClicked');
   }
 
   public openOffersPageByFilter(field: string): void {

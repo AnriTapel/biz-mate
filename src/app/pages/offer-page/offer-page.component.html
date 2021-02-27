@@ -59,7 +59,7 @@
 
       <div *ngIf="offer.imagesURL && offer.imagesURL.length" class="full-width-field images-container">
         <div *ngFor="let url of offer.imagesURL" class="image-block">
-          <img [src]="url" alt="Изображение" (click)="openImage(url)"/>
+          <img [src]="url" (error)="onImageLoadError($event)" alt="Изображение" (click)="openImage(url)"/>
         </div>
       </div>
 
@@ -90,8 +90,8 @@
         <article class="comment highlight-box" *ngFor="let comment of offerComments$ | async">
           <div class="name-date">
             <div>
-              <span>{{comment.displayName}}</span>
-              <span><{{comment.userEmail}}></span>
+              <span (click)="onOfferContactsClick()">{{comment.displayName}}</span>
+              <span (click)="onOfferContactsClick()"><{{comment.userEmail}}></span>
             </div>
 
             <span>{{getCommentDate(comment.date)}}</span>
