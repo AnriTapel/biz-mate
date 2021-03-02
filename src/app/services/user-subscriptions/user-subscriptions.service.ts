@@ -24,16 +24,19 @@ export class UserSubscriptionsService {
   }
 
   private async initService(): Promise<void> {
-    let newOffersSubStatus = UserSubscriptionsService.getNewOffersSubscriptionStatus();
-    if (newOffersSubStatus) {
+    const newOffersSubStatus = UserSubscriptionsService.getNewOffersSubscriptionStatus();
+    if (newOffersSubStatus === true) {
       return;
     } else if (newOffersSubStatus === false) {
       this.setNewOffersSubscriptionTimeout();
       return;
     }
-    if (this.authService.user && await this.dbService.getUserSubscriptionsByEmail(btoa(this.authService.user.email))) {
-      UserSubscriptionsService.setNewOffersSubscriptionStatus(true);
-      return;
+    if (this.authService.user) {
+      const userSubscriptionData = await this.dbService.getUserSubscriptionsByEmail(btoa(this.authService.user.email));
+      if (userSubscriptionData) {
+        UserSubscriptionsService.setNewOffersSubscriptionStatus(true);
+        return;
+      }
     }
     this.setNewOffersSubscriptionTimeout();
   }
@@ -43,7 +46,7 @@ export class UserSubscriptionsService {
       ? MatDialogConfig.getConfigWithData(DialogConfigType.WIDE_CONFIG, {email: this.authService.user.email})
       : MatDialogConfig.wideDialogWindow);
     dialog.afterClosed().subscribe((res) => {
-      if (!res) {
+      if (!res && this.authService.user) {
         UserSubscriptionsService.setNewOffersSubscriptionStatus(false);
       } else {
         res.email = btoa(res.email);
@@ -93,7 +96,7 @@ export class UserSubscriptionsService {
       .finally(() => OverlayService.hideOverlay());
   }
 
-  public static getNewOffersSubscriptionStatus(): boolean {
+  private static getNewOffersSubscriptionStatus(): boolean {
     const status = localStorage.getItem(UserSubscriptionsService.NEW_OFFERS_SUBSCRIPTION_STORAGE_FIELD_NAME);
     if (status === null) {
       return null;

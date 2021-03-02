@@ -52,8 +52,9 @@ export class DatabaseService {
     return new Promise<City[]>((resolve, reject) => {
       this.db.collection(DatabaseService.CITIES_COLLECTION_PATH).get().toPromise()
         .then((res) => {
-          const cities: City[] = [];
+          let cities: City[] = [];
           res.forEach(it => cities.push(it.data() as City));
+          cities.sort((a, b) => a.name.localeCompare(b.name));
           resolve(cities);
         }).catch(() => reject(null));
     });
@@ -63,8 +64,10 @@ export class DatabaseService {
     return new Promise<BusinessArea[]>((resolve, reject) => {
       this.db.collection(DatabaseService.BUSINESS_AREAS_COLLECTION_PATH).ref.get()
         .then((res) => {
-          const businessAreas: BusinessArea[] = [];
+          let businessAreas: BusinessArea[] = [];
           res.forEach(it => businessAreas.push(it.data() as City));
+          let anyArea = businessAreas.shift();
+          businessAreas.sort((a, b) => a.name.localeCompare(b.name)).unshift(anyArea);
           resolve(businessAreas);
         }).catch(() => reject(null));
     });
