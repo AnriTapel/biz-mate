@@ -48,7 +48,7 @@ export class UserSubscriptionsService {
     dialog.afterClosed().subscribe((res) => {
       if (!res && this.authService.user) {
         UserSubscriptionsService.setNewOffersSubscriptionStatus(false);
-      } else {
+      } else if (res) {
         res.email = btoa(res.email);
         this.dbService.setUserSubscriptionsByEmail(res as UserSubscriptions)
           .then(() => {

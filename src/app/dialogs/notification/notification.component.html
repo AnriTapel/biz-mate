@@ -1,8 +1,8 @@
-<h1 mat-dialog-title>{{data.title}}</h1>
-<div mat-dialog-content>
+<h1>{{data.title}}</h1>
+<div>
   {{data.mainText}}
 </div>
-<div mat-dialog-actions class="full-width-action-buttons">
+<div class="full-width-action-buttons">
   <ng-container *ngIf="data.extraButton && data.extraButton.length">
     <button *ngFor="let button of data.extraButton" [routerLink]="button.route" class="{{button.buttonClass}}"
             [mat-dialog-close]>{{button.buttonText}}</button>

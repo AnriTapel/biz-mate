@@ -1,8 +1,8 @@
-<h1 mat-dialog-title>Регистрация</h1>
+<h1>Регистрация</h1>
 
 <p class="error-message" *ngIf="errorMessage">{{errorMessage}}</p>
 
-<div mat-dialog-content [formGroup]="signUpFormGroup">
+<form [formGroup]="signUpFormGroup">
   <mat-form-field appearance="legacy">
     <mat-label>Имя</mat-label>
     <input matInput formControlName="name">
@@ -26,9 +26,9 @@
   <mat-checkbox (change)="acceptRules = !acceptRules" [checked]="acceptRules">
     Ознакомлен и согласен с <a target="_blank" rel="noopener noreferrer" href="/rules">правилами размещения объявлений</a>
   </mat-checkbox>
-</div>
 
-<div mat-dialog-actions class="full-width-action-buttons">
-  <a class="non-border-link-button has-account-link" (click)="logIn()">Уже есть профиль?&nbsp;Войти</a>
-  <button class="button-primary" (click)="signUp()" [disabled]="!acceptRules">Создать профиль</button>
-</div>
+  <div class="full-width-action-buttons">
+    <a class="non-border-link-button has-account-link" (click)="logIn()">Уже есть профиль?&nbsp;Войти</a>
+    <button class="button-primary" (click)="signUp()" [disabled]="!acceptRules">Создать профиль</button>
+  </div>
+</form>

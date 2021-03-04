@@ -19,11 +19,11 @@ export class NewOffersSubscriptionComponent {
   public filteredThirdBusinessArea$: Observable<BusinessArea[]>;
 
   public newOffersSubscriptionForm: FormGroup = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email]),
+    email: new FormControl(null, [Validators.required, Validators.email]),
     firstArea: new FormControl(this.appService.getBusinessAreaByFiledValue('id', 0).name,
       [Validators.required, this.appService.businessAreaFieldValidator()]),
-    secondArea: new FormControl('', [this.appService.businessAreaFieldValidator()]),
-    thirdArea: new FormControl('', [this.appService.businessAreaFieldValidator()]),
+    secondArea: new FormControl(null, [this.appService.businessAreaFieldValidator()]),
+    thirdArea: new FormControl(null, [this.appService.businessAreaFieldValidator()]),
   });
 
   constructor(private matDialogRef: MatDialogRef<NewOffersSubscriptionComponent>, @Inject(MAT_DIALOG_DATA) private data: any,

@@ -1,8 +1,8 @@
-<h1 mat-dialog-title>Удалить оффер?</h1>
-<div class="content" mat-dialog-content>
+<h1>Удалить оффер?</h1>
+<div class="content">
   Вы уверены, что хотите удалить это объявление без возможности восстановления?
 </div>
-<div mat-dialog-actions class="full-width-action-buttons">
+<div class="full-width-action-buttons">
   <button class="button-primary button-white" (click)="cancelDelete()">Отменить</button>
-  <button class="button-primary" [mat-dialog-close] (click)="deleteOffer()">Удалить</button>
+  <button class="button-primary" (click)="deleteOffer()">Удалить</button>
 </div>
