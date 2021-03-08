@@ -351,6 +351,18 @@ label.mat-form-field-label > span {
   background: $main-theme-color !important;
 }
 
+.mat-form-field-appearance-fill .mat-form-field-flex {
+  background-color: transparent !important;
+}
+
+.mobile-cities-field > .mat-form-field-wrapper > .mat-form-field-flex{
+  padding-left: 0.75em;
+}
+
+.mobile-cities-field label > span{
+  color: $main-theme-color !important;
+}
+
 .mat-option {
   overflow: unset !important;
   text-overflow: unset !important;

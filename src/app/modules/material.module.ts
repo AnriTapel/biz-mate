@@ -5,6 +5,7 @@ import {MatInputModule} from "@angular/material/input";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {MatDialogModule} from "@angular/material/dialog";
 import {MatCheckboxModule} from "@angular/material/checkbox";
+import {MatSelectModule} from "@angular/material/select";
 
 
 
@@ -16,13 +17,15 @@ import {MatCheckboxModule} from "@angular/material/checkbox";
     MatInputModule,
     MatAutocompleteModule,
     MatDialogModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatSelectModule
   ], exports: [
     MatButtonModule,
     MatInputModule,
     MatAutocompleteModule,
     MatDialogModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatSelectModule
   ]
 })
 export class MaterialModule { }

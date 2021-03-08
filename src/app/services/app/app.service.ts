@@ -131,6 +131,10 @@ export class AppService {
     });
   }
 
+  public static isTouchableDevice(): boolean {
+    return navigator.msMaxTouchPoints > 0 || 'ontouchstart' in window;
+  }
+
 
   get offerTypes(): any[] {
     return this._offerTypes;

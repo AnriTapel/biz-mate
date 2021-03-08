@@ -32,6 +32,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
   private offerDate: number = undefined;
   public editOffer: boolean = false;
   public isOfferLoaded: boolean = false;
+  public isTouchableDevice: boolean = AppService.isTouchableDevice();
 
   public newOfferForm: FormGroup;
   public filteredBusinessArea$: Observable<BusinessArea[]>;
@@ -130,8 +131,12 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     return this.currentType;
   }
 
-  public getOfferTypesArray(): Array<any> {
+  public getOfferTypesArray(): any[] {
     return this.appService.offerTypes;
+  }
+
+  public getBusinessAreas(): BusinessArea[] {
+    return this.appService.businessAreas;
   }
 
   public async fileChangeEvent(event): Promise<void> {

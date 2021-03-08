@@ -31,6 +31,7 @@
   }
 
   form {
+    display: grid;
     grid-template: auto / 1fr 1fr;
     grid-gap: 0 3em;
 
@@ -43,14 +44,6 @@
         width: 40%;
       }
     }
-  }
-
-  .desktop-form {
-    display: grid;
-  }
-
-  .mobile-form {
-    display: none;
   }
 
   @media screen and (max-width: 770px) {
@@ -71,7 +64,6 @@
 
 
     form {
-      display: none;
       grid-template: auto / 1fr;
       grid-gap: 0 .5em;
 
@@ -79,14 +71,6 @@
       & > div > button {
         width: 45%;
       }
-    }
-
-    .desktop-form {
-      display: none;
-    }
-
-    .mobile-form {
-      display: grid;
     }
   }
 }

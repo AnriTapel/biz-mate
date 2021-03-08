@@ -13,7 +13,7 @@
         <button class="button-primary button-white clear-form-btn" (click)="clearForm()">Очистить</button>
       </div>
 
-      <mat-form-field>
+      <mat-form-field [ngClass]="{'mobile-cities-field': isTouchableDevice}">
         <input type="text" placeholder="Населенный пункт *" aria-label="Населенный пункт" matInput
                formControlName="city" [matAutocomplete]="cities">
         <mat-autocomplete #cities="matAutocomplete">
@@ -24,27 +24,50 @@
       </mat-form-field>
 
       <div class="business-areas-block">
-        <mat-form-field>
-          <input type="text" placeholder="Сфера бизнеса *" aria-label="Сфера бизнеса" matInput
-                 formControlName="businessArea" [matAutocomplete]="businessArea">
-          <mat-autocomplete #businessArea="matAutocomplete">
-            <mat-option *ngFor="let category of filteredBusinessArea$ | async" [value]="category.name">
-              {{category.name}}
-            </mat-option>
-          </mat-autocomplete>
-          <mat-hint *ngIf="!isExtraBusinessAreaFieldAvail" class="business-area-hint"
-                    (click)="isExtraBusinessAreaFieldAvail = true">Выбрать второстепенную сферу бизнеса</mat-hint>
-        </mat-form-field>
+        <!-- Для десктопа -->
+        <ng-container *ngIf="!isTouchableDevice">
+          <mat-form-field>
+            <input type="text" placeholder="Сфера бизнеса *" aria-label="Сфера бизнеса" matInput
+                   formControlName="businessArea" [matAutocomplete]="businessArea">
+            <mat-autocomplete #businessArea="matAutocomplete">
+              <mat-option *ngFor="let category of filteredBusinessArea$ | async" [value]="category.name">
+                {{category.name}}
+              </mat-option>
+            </mat-autocomplete>
+            <mat-hint *ngIf="!isExtraBusinessAreaFieldAvail" class="business-area-hint"
+                      (click)="isExtraBusinessAreaFieldAvail = true">Выбрать второстепенную сферу бизнеса</mat-hint>
+          </mat-form-field>
 
-        <mat-form-field class="extra-business-area-field" *ngIf="isExtraBusinessAreaFieldAvail">
-          <input type="text" placeholder="Доп. сфера бизнеса" aria-label="Доп. сфера бизнеса" matInput
-                 formControlName="extraBusinessArea" [matAutocomplete]="extraBusinessArea">
-          <mat-autocomplete #extraBusinessArea="matAutocomplete">
-            <mat-option *ngFor="let category of filteredExtraBusinessArea$ | async" [value]="category.name">
-              {{category.name}}
-            </mat-option>
-          </mat-autocomplete>
-        </mat-form-field>
+          <mat-form-field class="extra-business-area-field" *ngIf="isExtraBusinessAreaFieldAvail">
+            <input type="text" placeholder="Доп. сфера бизнеса" aria-label="Доп. сфера бизнеса" matInput
+                   formControlName="extraBusinessArea" [matAutocomplete]="extraBusinessArea">
+            <mat-autocomplete #extraBusinessArea="matAutocomplete">
+              <mat-option *ngFor="let category of filteredExtraBusinessArea$ | async" [value]="category.name">
+                {{category.name}}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </ng-container>
+
+        <!-- Для устройств с тачем -->
+        <ng-container *ngIf="isTouchableDevice">
+          <mat-form-field appearance="fill">
+            <mat-label>Сфера бизнеса*</mat-label>
+            <mat-select formControlName="businessArea">
+              <mat-option *ngFor="let type of getBusinessAreas()" [value]="type.name">{{type.name}}</mat-option>
+            </mat-select>
+            <mat-hint *ngIf="!isExtraBusinessAreaFieldAvail" class="business-area-hint"
+                      (click)="isExtraBusinessAreaFieldAvail = true">Выбрать второстепенную сферу бизнеса</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="extra-business-area-field" *ngIf="isExtraBusinessAreaFieldAvail">
+            <mat-label>Доп. сфера бизнеса</mat-label>
+            <mat-select formControlName="extraBusinessArea">
+              <mat-option [value]="''">-</mat-option>
+              <mat-option *ngFor="let type of getBusinessAreas()" [value]="type.name">{{type.name}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ng-container>
       </div>
 
       <h4 class="full-width-field">Детали оффера</h4>

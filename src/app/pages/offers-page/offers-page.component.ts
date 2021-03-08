@@ -14,6 +14,7 @@ import {OverlayService} from "../../services/overlay/overlay.service";
 import {ActivatedRoute} from "@angular/router";
 import {DatabaseService} from "../../services/database/database.service";
 import {FilterField, FilterFieldName, FilterFieldOperator} from "../../models/FilterFields";
+import {OfferTypes} from "../../models/OfferTypes";
 
 @Component({
   selector: 'app-offers-page',
@@ -39,6 +40,7 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
   public filteredBusinessArea$: Observable<BusinessArea[]>;
   public filteredCities$: Observable<City[]>;
   public isSearchFormVisible: boolean = false;
+  public isTouchDevice: boolean = AppService.isTouchableDevice();
 
   constructor(private appService: AppService, private notificationService: NotificationBarService, private seoService: SeoService,
               private route: ActivatedRoute, private databaseService: DatabaseService) {
@@ -89,6 +91,14 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
   ngOnDestroy(): void {
     super.ngOnDestroy();
     this.databaseService.clearSortedOffers();
+  }
+
+  public getOfferTypes(): any[] {
+    return this.appService.offerTypes;
+  }
+
+  public getBusinessAreas(): BusinessArea[] {
+    return this.appService.businessAreas;
   }
 
   private async getSortedOffers(loadNextChunk: boolean = false): Promise<void> {
