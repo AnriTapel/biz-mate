@@ -24,6 +24,7 @@ import {AuthService} from "./services/auth/auth.service";
 import {MaterialModule} from "./modules/material.module";
 import {NewOffersSubscriptionComponent} from './dialogs/new-offers-subscription/new-offers-subscription.component';
 import {AppService} from "./services/app/app.service";
+import {AngularFireAnalyticsModule} from "@angular/fire/analytics";
 
 export function appInitFactory(auth: AuthService, appService: AppService) {
   return (): Promise<any> => {
@@ -55,6 +56,7 @@ export function appInitFactory(auth: AuthService, appService: AppService) {
     AngularFireDatabaseModule,
     AngularFirestoreModule,
     AngularFireAuthModule,
+    AngularFireAnalyticsModule,
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
