@@ -23,7 +23,6 @@
       }
     }
 
-
     .transform-arrow {
       vertical-align: unset !important;
       transform: rotateX(180deg);
@@ -31,7 +30,6 @@
   }
 
   form {
-    display: grid;
     grid-template: auto / 1fr 1fr;
     grid-gap: 0 3em;
 
@@ -44,6 +42,14 @@
         width: 40%;
       }
     }
+  }
+
+  .desktop-menu {
+    display: grid;
+  }
+
+  .mobile-menu {
+    display: none
   }
 
   @media screen and (max-width: 770px) {
@@ -71,6 +77,14 @@
       & > div > button {
         width: 45%;
       }
+    }
+
+    .desktop-menu {
+      display: none;
+    }
+
+    .mobile-menu {
+      display: grid;
     }
   }
 }

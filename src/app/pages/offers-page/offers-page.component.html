@@ -9,27 +9,44 @@
       </button>
     </div>
     <!-- Desktop form -->
-    <form *ngIf="!isTouchDevice" [formGroup]="searchForm">
-      <mat-form-field>
-        <input type="text" placeholder="Тип объявления" aria-label="Тип объявления" matInput
-               formControlName="type" [matAutocomplete]="offerType">
-        <mat-autocomplete #offerType="matAutocomplete">
-          <mat-option *ngFor="let type of filteredOfferTypes$ | async" [value]="type.title">
-            {{type.title}}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
+    <form class="desktop-menu" [formGroup]="searchForm">
+      <ng-container *ngIf="!isTouchDevice">
+        <mat-form-field>
+          <input type="text" placeholder="Тип объявления" aria-label="Тип объявления" matInput
+                 formControlName="type" [matAutocomplete]="offerType">
+          <mat-autocomplete #offerType="matAutocomplete">
+            <mat-option *ngFor="let type of filteredOfferTypes$ | async" [value]="type.title">
+              {{type.title}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
 
-      <mat-form-field>
-        <input type="text" placeholder="Сфера бизнеса" aria-label="Сфера бизнеса" matInput
-               formControlName="businessArea" [matAutocomplete]="businessArea">
-        <mat-autocomplete #businessArea="matAutocomplete">
-          <mat-option *ngFor="let category of filteredBusinessArea$ | async" [value]="category.name">
-            {{category.name}}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
+        <mat-form-field>
+          <input type="text" placeholder="Сфера бизнеса" aria-label="Сфера бизнеса" matInput
+                 formControlName="businessArea" [matAutocomplete]="businessArea">
+          <mat-autocomplete #businessArea="matAutocomplete">
+            <mat-option *ngFor="let category of filteredBusinessArea$ | async" [value]="category.name">
+              {{category.name}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </ng-container>
 
+      <ng-container *ngIf="isTouchDevice">
+        <mat-form-field appearance="fill">
+          <mat-label>Тип объявления</mat-label>
+          <mat-select formControlName="type">
+            <mat-option *ngFor="let type of getOfferTypes()" [value]="type.title">{{type.title}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Сфера бизнеса</mat-label>
+          <mat-select formControlName="businessArea">
+            <mat-option *ngFor="let type of getBusinessAreas()" [value]="type.name">{{type.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
 
       <mat-form-field>
         <input type="text" placeholder="Населенный пункт" aria-label="Населенный пункт" matInput
@@ -48,22 +65,46 @@
     </form>
 
     <!-- Mobile form -->
-    <form *ngIf="isTouchDevice && isSearchFormVisible" [formGroup]="searchForm">
-      <mat-form-field appearance="fill">
-        <mat-label>Тип объявления</mat-label>
-        <mat-select formControlName="type">
-          <mat-option *ngFor="let type of getOfferTypes()" [value]="type.title">{{type.title}}</mat-option>
-        </mat-select>
-      </mat-form-field>
+    <form *ngIf="isSearchFormVisible" class="mobile-menu" [formGroup]="searchForm">
+      <ng-container *ngIf="!isTouchDevice">
+        <mat-form-field>
+          <input type="text" placeholder="Тип объявления" aria-label="Тип объявления" matInput
+                 formControlName="type" [matAutocomplete]="offerType">
+          <mat-autocomplete #offerType="matAutocomplete">
+            <mat-option *ngFor="let type of filteredOfferTypes$ | async" [value]="type.title">
+              {{type.title}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
 
-      <mat-form-field appearance="fill">
-        <mat-label>Сфера бизнеса</mat-label>
-        <mat-select formControlName="businessArea">
-          <mat-option *ngFor="let type of getBusinessAreas()" [value]="type.name">{{type.name}}</mat-option>
-        </mat-select>
-      </mat-form-field>
+        <mat-form-field>
+          <input type="text" placeholder="Сфера бизнеса" aria-label="Сфера бизнеса" matInput
+                 formControlName="businessArea" [matAutocomplete]="businessArea">
+          <mat-autocomplete #businessArea="matAutocomplete">
+            <mat-option *ngFor="let category of filteredBusinessArea$ | async" [value]="category.name">
+              {{category.name}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </ng-container>
 
-      <mat-form-field class="mobile-cities-field">
+      <ng-container *ngIf="isTouchDevice">
+        <mat-form-field appearance="fill">
+          <mat-label>Тип объявления</mat-label>
+          <mat-select formControlName="type">
+            <mat-option *ngFor="let type of getOfferTypes()" [value]="type.title">{{type.title}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Сфера бизнеса</mat-label>
+          <mat-select formControlName="businessArea">
+            <mat-option *ngFor="let type of getBusinessAreas()" [value]="type.name">{{type.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <mat-form-field [ngClass]="{'mobile-cities-field': isTouchDevice}">
         <input type="text" placeholder="Населенный пункт" aria-label="Населенный пункт" matInput
                formControlName="city" [matAutocomplete]="cities">
         <mat-autocomplete #cities="matAutocomplete">
