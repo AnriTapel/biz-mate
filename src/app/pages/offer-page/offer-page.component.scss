@@ -77,6 +77,7 @@ $main-theme-color: #2E7990;
   .full-width-block > p > a{
     word-wrap: break-word;
     overflow-wrap: anywhere;
+    word-break: break-all;
   }
 
   .contacts {
