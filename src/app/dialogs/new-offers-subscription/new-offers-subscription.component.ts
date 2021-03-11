@@ -17,6 +17,7 @@ export class NewOffersSubscriptionComponent {
   public filteredFirstBusinessArea$: Observable<BusinessArea[]>;
   public filteredSecondBusinessArea$: Observable<BusinessArea[]>;
   public filteredThirdBusinessArea$: Observable<BusinessArea[]>;
+  public isTouchableDevice: boolean;
 
   public newOffersSubscriptionForm: FormGroup = new FormGroup({
     email: new FormControl(null, [Validators.required, Validators.email]),
@@ -28,6 +29,7 @@ export class NewOffersSubscriptionComponent {
 
   constructor(private matDialogRef: MatDialogRef<NewOffersSubscriptionComponent>, @Inject(MAT_DIALOG_DATA) private data: any,
       private appService: AppService) {
+    this.isTouchableDevice = AppService.isTouchableDevice();
     if (data && data.email) {
       this.newOffersSubscriptionForm.controls['email'].setValue(data.email);
     }
@@ -49,6 +51,10 @@ export class NewOffersSubscriptionComponent {
         startWith(this.newOffersSubscriptionForm.controls.thirdArea.value),
         map(value => this.appService._filterBusinessAreas(value))
       );
+  }
+
+  public getBusinessAreas(): BusinessArea[] {
+    return this.appService.businessAreas;
   }
 
   public closeDialog(): void {

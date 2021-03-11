@@ -9,4 +9,12 @@ if (environment.production) {
 }
 
 platformBrowserDynamic().bootstrapModule(AppModule)
-  .catch(err => console.error(err));
+  .catch(err => {
+    console.error(err);
+
+    const errorMsgElement = document.getElementById('init_error_message');
+    errorMsgElement.removeAttribute('style');
+
+    const initialSpinnerElement = document.getElementById('initial_spinner');
+    initialSpinnerElement.style.display = 'none';
+  });

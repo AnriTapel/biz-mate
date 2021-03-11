@@ -26,10 +26,11 @@
   <meta name="og:site_name" content="BizMate">
   <meta name="og:type" content="website">
   <style>
-    #initial_spinner{position: fixed;top: 0;left: 0;right: 0;bottom: 0;background-color: #ffffff;display: flex;flex-direction:column;justify-content: center;align-items: center;z-index: 2147483647;}
+    #initial_spinner, #init_error_message{position: fixed;top: 0;left: 0;right: 0;bottom: 0;background-color: #ffffff;display: flex;flex-direction:column;justify-content: center;align-items: center;z-index: 2147483647;}
     #initial_spinner>div{display: inline-block;position: relative;width: 80px;height: 80px;margin-bottom:1em;}
     #initial_spinner>div:after{content: " ";display: block;border-radius: 50%;width: 0;height: 0;margin: 8px;box-sizing: border-box;border: 32px solid #fff;border-color: #2E7990 transparent #2E7990 transparent;animation: initial_spinner 1.2s infinite;}
     #initial_spinner>span{text-align:center;color:#2E7990}
+    #init_error_message>p{text-align:center}
     @keyframes initial_spinner{
       0%{transform: rotate(0);animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);}
       50% {transform: rotate(900deg);animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);}
@@ -41,6 +42,9 @@
   <div id="initial_spinner">
     <div></div>
     <span>Идёт загрузка...</span>
+  </div>
+  <div id="init_error_message" style="display: none">
+    <p>Произошла ошибка при инициализации сервиса. Пожлауйста, перезагрузите страницу.</p>
   </div>
   <app-root></app-root>
   <!-- Yandex.Metrika counter -->

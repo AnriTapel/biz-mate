@@ -9,35 +9,60 @@
         <input matInput formControlName="email">
       </mat-form-field>
 
-      <mat-form-field>
-        <input type="text" placeholder="Сфера деятельности *" aria-label="Сфера деятельности *" matInput
-               formControlName="firstArea" [matAutocomplete]="firstArea">
-        <mat-autocomplete #firstArea="matAutocomplete">
-          <mat-option *ngFor="let area of filteredFirstBusinessArea$ | async" [value]="area.name">
-            {{area.name}}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
+      <ng-container *ngIf="!isTouchableDevice">
+        <mat-form-field>
+          <input type="text" placeholder="Сфера деятельности *" aria-label="Сфера деятельности *" matInput
+                 formControlName="firstArea" [matAutocomplete]="firstArea">
+          <mat-autocomplete #firstArea="matAutocomplete">
+            <mat-option *ngFor="let area of filteredFirstBusinessArea$ | async" [value]="area.name">
+              {{area.name}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
 
-      <mat-form-field>
-        <input type="text" placeholder="Сфера деятельности" aria-label="Сфера деятельности *" matInput
-               formControlName="secondArea" [matAutocomplete]="secondArea">
-        <mat-autocomplete #secondArea="matAutocomplete">
-          <mat-option *ngFor="let area of filteredSecondBusinessArea$ | async" [value]="area.name">
-            {{area.name}}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
+        <mat-form-field>
+          <input type="text" placeholder="Сфера деятельности" aria-label="Сфера деятельности *" matInput
+                 formControlName="secondArea" [matAutocomplete]="secondArea">
+          <mat-autocomplete #secondArea="matAutocomplete">
+            <mat-option *ngFor="let area of filteredSecondBusinessArea$ | async" [value]="area.name">
+              {{area.name}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
 
-      <mat-form-field>
-        <input type="text" placeholder="Сфера деятельности" aria-label="Сфера деятельности *" matInput
-               formControlName="thirdArea" [matAutocomplete]="thirdArea">
-        <mat-autocomplete #thirdArea="matAutocomplete">
-          <mat-option *ngFor="let area of filteredThirdBusinessArea$ | async" [value]="area.name">
-            {{area.name}}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
+        <mat-form-field>
+          <input type="text" placeholder="Сфера деятельности" aria-label="Сфера деятельности *" matInput
+                 formControlName="thirdArea" [matAutocomplete]="thirdArea">
+          <mat-autocomplete #thirdArea="matAutocomplete">
+            <mat-option *ngFor="let area of filteredThirdBusinessArea$ | async" [value]="area.name">
+              {{area.name}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </ng-container>
+
+      <ng-container *ngIf="isTouchableDevice">
+        <mat-form-field appearance="fill">
+          <mat-label>Сфера бизнеса *</mat-label>
+          <mat-select formControlName="firstArea">
+            <mat-option *ngFor="let type of getBusinessAreas()" [value]="type.name">{{type.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Сфера бизнеса</mat-label>
+          <mat-select formControlName="secondArea">
+            <mat-option *ngFor="let type of getBusinessAreas()" [value]="type.name">{{type.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Сфера бизнеса</mat-label>
+          <mat-select formControlName="thirdArea">
+            <mat-option *ngFor="let type of getBusinessAreas()" [value]="type.name">{{type.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
     </div>
 
     <div class="buttons-block">
