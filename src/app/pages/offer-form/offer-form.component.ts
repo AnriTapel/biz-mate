@@ -29,6 +29,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
   private currentType: number = undefined;
 
   private editOfferId: string = null;
+  private _areChangesSaved: boolean = true;
   private offerDate: number = undefined;
   public editOffer: boolean = false;
   public isOfferLoaded: boolean = false;
@@ -112,6 +113,8 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
         startWith(''),
         map(value => this.appService._filterBusinessAreas(value))
       );
+
+    this.newOfferForm.valueChanges.subscribe(() => this.areChangesSaved = false);
   }
 
   public setOfferType(type: OfferTypes, resetControls: boolean = true): void {
@@ -259,6 +262,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     this.databaseService.sendOffer(offerData, this.removedImages, this.editOffer)
       .then(() => {
         this.removedImages = [];
+        this.areChangesSaved = true;
         this.notificationBarService.showNotificationBar(this.editOffer ? Messages.SAVE_SUCCESS : Messages.OFFER_CREATED, true);
         if (this.editOffer) {
           //@ts-ignore
@@ -275,5 +279,13 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
 
   private static getFieldsLabels(offerType: OfferTypes): object {
     return AppService.offerFieldsLabels[offerType - 1];
+  }
+
+  get areChangesSaved(): boolean {
+    return this._areChangesSaved;
+  }
+
+  set areChangesSaved(value: boolean) {
+    this._areChangesSaved = value;
   }
 }

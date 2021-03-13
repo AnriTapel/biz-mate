@@ -25,6 +25,7 @@ import {MaterialModule} from "./modules/material.module";
 import {NewOffersSubscriptionComponent} from './dialogs/new-offers-subscription/new-offers-subscription.component';
 import {AppService} from "./services/app/app.service";
 import {AngularFireAnalyticsModule} from "@angular/fire/analytics";
+import { OfferFormGuardComponent } from './dialogs/offer-form-guard/offer-form-guard.component';
 
 export function appInitFactory(auth: AuthService, appService: AppService) {
   return (): Promise<any> => {
@@ -49,7 +50,8 @@ export function appInitFactory(auth: AuthService, appService: AppService) {
     NotificationBarComponent,
     DeleteOfferComponent,
     OverlayComponent,
-    NewOffersSubscriptionComponent
+    NewOffersSubscriptionComponent,
+    OfferFormGuardComponent
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebase),

@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, NavigationEnd, Router, RouterStateSnapshot} from "@angular/router";
 import {Observable} from "rxjs";
-import {AuthService} from "../auth/auth.service";
+import {AuthService} from "../../auth/auth.service";
 import {MatDialog} from "@angular/material/dialog";
-import {LoginComponent} from "../../dialogs/login/login.component";
-import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
+import {LoginComponent} from "../../../dialogs/login/login.component";
+import {DialogConfigType, MatDialogConfig} from "../../../dialogs/mat-dialog-config";
 import {filter} from "rxjs/operators";
 
 @Injectable({
