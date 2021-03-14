@@ -25,7 +25,6 @@ export class HeaderComponent implements OnInit {
     this.hideMobileMenu();
     this.auth.user$.subscribe((res) => {
       this.loggedIn = res && !res.isAnonymous;
-      this.userName = this.loggedIn ? res.displayName : undefined;
     });
   }
 
@@ -47,6 +46,7 @@ export class HeaderComponent implements OnInit {
   }
 
   public showMobileMenu(): void {
+    this.userName = this.loggedIn ? this.auth.user.displayName : undefined;
     document.getElementById('mobileMenuWrapper').style.visibility = 'visible';
     document.getElementById('mobileMenuWrapper').style.opacity = '1';
   }

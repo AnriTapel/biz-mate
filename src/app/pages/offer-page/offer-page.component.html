@@ -13,14 +13,14 @@
         <span class="clickable" (click)="openOffersPageByFilter('city')">{{getOfferCity()}}</span>
       </div>
 
-      <div *ngIf="offer.capital" class="item">
-        <span>{{getCapitalLabel()}}</span>
-        <span>{{getCapitalValueAsString()}}</span>
-      </div>
-
       <div class="item">
         <span>Тип объявления</span>
         <span class="clickable" (click)="openOffersPageByFilter('type')">{{getOfferTypeTitle()}}</span>
+      </div>
+
+      <div *ngIf="offer.capital" class="item">
+        <span>{{getCapitalLabel()}}</span>
+        <span>{{getCapitalValueAsString()}}</span>
       </div>
 
       <div class="item">
