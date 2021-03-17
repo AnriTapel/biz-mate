@@ -6,7 +6,7 @@
       </div>
 
       <div class="title-and-author">
-        <h3 [routerLink]="'/offer/'+offer.offerId">{{offer.title}}</h3>
+        <h3 (click)="openOfferPage()">{{offer.title}}</h3>
         <span>{{offer.displayName}}</span>
       </div>
 
@@ -20,7 +20,7 @@
     </div>
   </div>
   <div class="offer-card-footer">
-    <a class="link-underline" [routerLink]="'/offer/'+offer.offerId">Подробнее</a>
+    <a class="link-underline" (click)="openOfferPage()">Подробнее</a>
     <div *ngIf="editable">
       <img class="edit-btn" src="/assets/img/icons/edit.svg" title="Редактировать" alt="Редактировать" (click)="editOffer()"/>
       <img class="edit-btn" src="/assets/img/icons/delete.svg" title="Удалить" alt="Удалить" (click)="onDeleteOfferButtonClick()"/>

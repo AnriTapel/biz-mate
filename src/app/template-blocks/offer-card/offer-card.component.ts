@@ -29,6 +29,10 @@ export class OfferCardComponent {
     return AppService.getDateAsString(offer.date);
   }*/
 
+  public openOfferPage(): void {
+    window.open(`/offer/${this.offer.offerId}`, '_blank');
+  }
+
   public editOffer(): void {
     this.router.navigateByUrl(`/edit-offer/${this.offer.offerId}`);
   }
