@@ -120,6 +120,8 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
     let queryParams = this.getSearchFormParams();
     if (!queryParams.length) {
       OverlayService.hideOverlay();
+      this.filteredOffers$ = null;
+      await this.getSortedOffers(false);
       return;
     }
 
