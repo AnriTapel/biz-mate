@@ -12,5 +12,6 @@ export enum FilterFieldName{
 
 export enum FilterFieldOperator{
   EQUALS = '==',
-  INCLUDES = 'array-contains'
+  INCLUDES = 'array-contains',
+  INCLUDES_ANY = 'array-contains-any'
 }

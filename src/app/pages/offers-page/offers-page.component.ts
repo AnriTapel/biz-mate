@@ -159,13 +159,13 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
 
 
     if (formValue.businessArea && formValue.businessArea.length) {
-      if (this.appService.getBusinessAreaByFiledValue('name', formValue.businessArea).id > 0) {
+      const areaId = this.appService.getBusinessAreaByFiledValue('name', formValue.businessArea).id;
+      if (areaId !== 0) {
         queryParams.push({
-          value: this.appService.getBusinessAreaByFiledValue('name', formValue.businessArea).id,
-          operator: FilterFieldOperator.INCLUDES,
+          value: [areaId, 0],
+          operator: FilterFieldOperator.INCLUDES_ANY,
           name: FilterFieldName.BUSINESS_AREA
         });
-
       }
     }
 
