@@ -8,6 +8,7 @@ import {AppService} from "../app/app.service";
 import {MatDialog} from "@angular/material/dialog";
 import {EmailVerifyComponent} from "../../dialogs/email-verify-message/email-verify.component";
 import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
+import {AppInitEvents} from "../../app.module";
 
 @Injectable({
   providedIn: 'root'
@@ -45,17 +46,26 @@ export class AuthService {
             email: userData.email, photoURL: userData.photoURL,
             emailVerified: userData.emailVerified
           };
+          document.dispatchEvent(new Event(AppInitEvents.INIT_AUTH_SUCCESS));
           handler.unsubscribe();
         } else if (userData && userData.isAnonymous) {
           this.user = null;
+          document.dispatchEvent(new Event(AppInitEvents.INIT_AUTH_SUCCESS));
           handler.unsubscribe();
         } else {
           this.afAuth.signInAnonymously().then(() => {
             this.user = null;
+            document.dispatchEvent(new Event(AppInitEvents.INIT_AUTH_SUCCESS));
             handler.unsubscribe();
-          }).catch(() => handler.unsubscribe());
+          }).catch(() => {
+            handler.unsubscribe();
+            this.appInitAuth();
+          });
         }
-      }, () => handler.unsubscribe());
+      }, () => {
+        handler.unsubscribe();
+        this.appInitAuth();
+      });
   }
 
   public emailAndPasswordLogin(credentials: any): Promise<void> {

@@ -30,10 +30,23 @@ import { OfferFormGuardComponent } from './dialogs/offer-form-guard/offer-form-g
 export function appInitFactory(auth: AuthService, appService: AppService) {
   return (): Promise<any> => {
     return new Promise<any>((resolve, reject) => {
+      let status = {app: false, auth: false};
+      document.addEventListener(AppInitEvents.INIT_AUTH_SUCCESS, () => {
+        status.auth = true;
+        if (status.app) {
+          resolve();
+        }
+      });
+
+      document.addEventListener(AppInitEvents.INIT_APP_DATA_SUCCESS, () => {
+        status.app = true;
+        if (status.auth) {
+          resolve();
+        }
+      });
       auth.appInitAuth();
-      appService.appInit().then(() => resolve())
-        .catch(() => reject());
-    })
+      appService.appInit();
+    });
   }
 }
 
@@ -70,3 +83,8 @@ export function appInitFactory(auth: AuthService, appService: AppService) {
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+export enum AppInitEvents {
+  INIT_APP_DATA_SUCCESS = 'initappdatasuccess',
+  INIT_AUTH_SUCCESS = 'initauthsuccess'
+}

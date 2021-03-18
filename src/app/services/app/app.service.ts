@@ -3,6 +3,7 @@ import {City} from "../../models/City";
 import {BusinessArea} from "../../models/BusinessArea";
 import {AbstractControl, ValidatorFn} from "@angular/forms";
 import {DatabaseService} from "../database/database.service";
+import {AppInitEvents} from "../../app.module";
 
 @Injectable({
   providedIn: 'root'
@@ -31,15 +32,40 @@ export class AppService {
   constructor(private databaseService: DatabaseService) {
   }
 
-  public async appInit(): Promise<void> {
-    try {
-      this._cities = await this.databaseService.getCitiesCollection();
-      this._businessAreas = await this.databaseService.getBusinessAreasCollection();
-      this._offerTypes = await this.databaseService.getOfferTypesCollection();
-    } catch(err) {
-     console.error(err);
-    }
+  public appInit(): void {
+    this.initCitiesCollection();
+    this.initBusinessAreasCollection();
+    this.initOfferTypesCollection();
+  }
 
+  private initCitiesCollection(): void {
+    this.databaseService.getCitiesCollection()
+      .then((res) => {
+        this._cities = res;
+        this.checkAppInitStatus();
+      }).catch(this.initCitiesCollection.bind(this));
+  }
+
+  private initOfferTypesCollection(): void {
+    this.databaseService.getOfferTypesCollection()
+      .then((res) => {
+        this._offerTypes = res;
+        this.checkAppInitStatus();
+      }).catch(this.initOfferTypesCollection.bind(this));
+  }
+
+  private initBusinessAreasCollection(): void {
+    this.databaseService.getBusinessAreasCollection()
+      .then((res) => {
+        this._businessAreas = res;
+        this.checkAppInitStatus();
+      }).catch(this.initBusinessAreasCollection.bind(this));
+  }
+
+  private checkAppInitStatus(): void {
+    if (this.cities && this.offerTypes && this.businessAreas) {
+      document.dispatchEvent(new Event(AppInitEvents.INIT_APP_DATA_SUCCESS));
+    }
   }
 
   public static getDefaultAvatar(): string {
@@ -86,7 +112,7 @@ export class AppService {
   }
 
   public _filterOfferTypes(value: string): any[] {
-    if (value === null){
+    if (value === null) {
       value = '';
     }
 
