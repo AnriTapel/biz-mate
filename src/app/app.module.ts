@@ -27,6 +27,12 @@ import {AppService} from "./services/app/app.service";
 import {AngularFireAnalyticsModule} from "@angular/fire/analytics";
 import { OfferFormGuardComponent } from './dialogs/offer-form-guard/offer-form-guard.component';
 
+
+/***
+ *
+ * Resolving init only after getting both succeed events from Auth and App
+ *
+ */
 export function appInitFactory(auth: AuthService, appService: AppService) {
   return (): Promise<any> => {
     return new Promise<any>((resolve, reject) => {

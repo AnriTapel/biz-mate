@@ -73,6 +73,15 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
         map(value => this.appService._filterBusinessAreas(value))
       );
 
+    this.resolveGetParams();
+  }
+
+  ngOnDestroy(): void {
+    super.ngOnDestroy();
+    this.databaseService.clearSortedOffers();
+  }
+
+  private resolveGetParams(): void {
     this.route.queryParams.subscribe(res => {
       if (!res || Object.keys(res).length > 0) {
         let offerType = res.offerType ? this.appService.getOfferTypeByFiledValue('id', res.offerType).title : null;
@@ -86,11 +95,6 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
         this.getSortedOffers(false);
       }
     });
-  }
-
-  ngOnDestroy(): void {
-    super.ngOnDestroy();
-    this.databaseService.clearSortedOffers();
   }
 
   public getOfferTypes(): any[] {
@@ -109,6 +113,13 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
       .finally(() => OverlayService.hideOverlay());
   }
 
+  /***
+   *
+   * If businessArea filter param is the only picked & equals "Any", result of such query will be sorted offers
+   * Offers with area "Any" are included in any query with filter by businessArea
+   *
+   * @param loadNextChunk - whether user pressed "More offers" button or not
+   */
   public async applyFilter(loadNextChunk: boolean = false): Promise<void> {
     if (!this.searchForm.valid) {
       this.notificationService.showNotificationBar(Messages.OFFERS_FILTER_ERROR, false);

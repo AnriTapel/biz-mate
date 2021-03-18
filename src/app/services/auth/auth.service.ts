@@ -81,6 +81,7 @@ export class AuthService {
 
   public async emailPasswordSignUp(credentials: any): Promise<void> {
     try {
+      // This param is used to avoid showing unnecessary "Confirm email" dialog after user signed up and authState changed
       this.firstUserSession = true;
       await this.afAuth.createUserWithEmailAndPassword(credentials.email, credentials.password);
       const userData = await this.afAuth.currentUser;

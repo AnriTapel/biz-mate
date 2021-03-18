@@ -8,10 +8,8 @@ import {StorageService} from "../storage/storage.service";
 import {OfferComment} from "../../models/OfferComment";
 import {FilterField} from "../../models/FilterFields";
 import {UserSubscriptions} from "../../models/UserSubscriptions";
-import {AppService} from "../app/app.service";
 import {City} from "../../models/City";
 import {BusinessArea} from "../../models/BusinessArea";
-import {OfferTypes} from "../../models/OfferTypes";
 
 @Injectable({
   providedIn: 'root'
@@ -284,6 +282,7 @@ export class DatabaseService {
     });
   }
 
+  // Called when users' personal info is changed (name, avatar etc.)
   public async updateUserDataInOffers(userId: string, field: string, newValue: string): Promise<void> {
     try {
       const offersRes = await this.offersCollectionRef.where('userId', '==', userId).get();
