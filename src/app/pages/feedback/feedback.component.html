@@ -1,7 +1,7 @@
 <main>
   <p>Вы можете задать любой интересующий Вас вопрос, оставить комментарий о работе сервиса или описать возникшую проблему ниже. Наш оператор ознакомится с Вашим письмом и в течение 24-х часов ответит по указанному в форме адресу электронной почты.</p>
 
-  <form class="highlight-box" [formGroup]="feedbackForm">
+  <form class="highlight-box" [formGroup]="feedbackForm" (keydown.enter)="$event.preventDefault()">
     <mat-form-field>
       <mat-label>Ваше имя</mat-label>
       <input matInput formControlName="name">

@@ -2,7 +2,7 @@
 
 <p class="error-message" *ngIf="errorMessage">{{errorMessage}}</p>
 
-<form [formGroup]="signUpFormGroup">
+<form [formGroup]="signUpFormGroup" (keydown.enter)="$event.preventDefault()">
   <mat-form-field appearance="legacy">
     <mat-label>Имя</mat-label>
     <input matInput formControlName="name">

@@ -9,7 +9,7 @@
       </button>
     </div>
     <!-- Desktop form -->
-    <form class="desktop-menu" [formGroup]="searchForm">
+    <form class="desktop-menu" [formGroup]="searchForm" (keydown.enter)="$event.preventDefault()">
       <ng-container *ngIf="!isTouchDevice">
         <mat-form-field>
           <input type="text" placeholder="Тип объявления" aria-label="Тип объявления" matInput
@@ -65,7 +65,7 @@
     </form>
 
     <!-- Mobile form -->
-    <form *ngIf="isSearchFormVisible" class="mobile-menu" [formGroup]="searchForm">
+    <form *ngIf="isSearchFormVisible" class="mobile-menu" [formGroup]="searchForm" (keydown.enter)="$event.preventDefault()">
       <ng-container *ngIf="!isTouchDevice">
         <mat-form-field>
           <input type="text" placeholder="Тип объявления" aria-label="Тип объявления" matInput

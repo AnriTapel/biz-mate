@@ -29,12 +29,6 @@ export class LoginComponent {
     this.loginFormGroup.valueChanges.subscribe(() => this.errorMessage = null);
   }
 
-  public onKeyPress(event): void {
-    if (event.which == 13 || event.keyCode == 13) {
-      this.logIn();
-    }
-  }
-
   public logIn() {
     if (!this.loginFormGroup.valid) {
       return;

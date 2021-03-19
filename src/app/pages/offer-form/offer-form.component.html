@@ -7,7 +7,7 @@
   </aside>
 
   <section *ngIf="isOfferLoaded && getOfferType()">
-    <form class="new-offer-form" [formGroup]="newOfferForm">
+    <form class="new-offer-form" [formGroup]="newOfferForm" (keydown.enter)="$event.preventDefault()">
       <div class="header-and-clear full-width-field">
         <h4>Общая информация</h4>
         <button class="button-primary button-white clear-form-btn" (click)="clearForm()">Очистить</button>
