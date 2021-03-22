@@ -24,9 +24,6 @@ export class DatabaseService {
   static readonly CITIES_COLLECTION_PATH: string = 'cities';
   static readonly BUSINESS_AREAS_COLLECTION_PATH: string = 'business-areas';
 
-  private latestSortedOffers$: Observable<Offer[]> = undefined;
-  private latestSortedOffersHandler: any = undefined;
-
   private sortedOffers$: Observable<Offer[]> = undefined;
   private filteredOffers$: Observable<Offer[]> = undefined;
   private lastLoadedSortedOffer: any = undefined;
@@ -48,7 +45,7 @@ export class DatabaseService {
 
   public getCitiesCollection(): Promise<City[]> {
     return new Promise<City[]>((resolve, reject) => {
-      this.db.collection(DatabaseService.CITIES_COLLECTION_PATH).get().toPromise()
+      this.db.collection(DatabaseService.CITIES_COLLECTION_PATH).ref.get()
         .then((res) => {
           let cities: City[] = [];
           res.forEach(it => cities.push(it.data() as City));
@@ -73,7 +70,7 @@ export class DatabaseService {
 
   public getOfferTypesCollection(): Promise<any[]> {
     return new Promise<any[]>((resolve, reject) => {
-      this.db.collection(DatabaseService.OFFER_TYPES_COLLECTION_PATH).get().toPromise()
+      this.db.collection(DatabaseService.OFFER_TYPES_COLLECTION_PATH).ref.get()
         .then((res) => {
           const offerTypes: any[] = [];
           res.forEach(it => offerTypes.push(it.data()));
@@ -87,42 +84,14 @@ export class DatabaseService {
     return offer.data() as Offer;
   }
 
-  public getUserOffersByUserId(id: string): Promise<Observable<Offer[]>> {
-    return new Promise<Observable<Offer[]>>(async (resolve, reject) => {
-      try {
-        const res = await this.offersCollectionRef.where('userId', '==', id).orderBy('date', 'desc').get();
-        if (res.empty) {
-          resolve(null);
-          return;
-        }
-
-        const offers = [];
-        res.forEach(it => offers.push(it.data() as Offer));
-        resolve(of(offers));
-      } catch (e) {
-        reject(e);
-      }
-
-    });
+  public getUserOffersByUserId(id: string): Observable<Offer[]> {
+    return this.db.collection<Offer>(DatabaseService.OFFERS_COLLECTION_PATH, (ref => ref
+      .where('userId', '==', id).orderBy('date', 'desc'))).valueChanges();
   }
 
   public getLatestOffers(): Observable<Offer[]> {
-    if (this.latestSortedOffers$ && this.latestSortedOffersHandler) {
-      return this.latestSortedOffers$;
-    }
-
-    this.latestSortedOffersHandler = this.offersCollectionRef.orderBy('date', 'desc')
-      .limit(DatabaseService.LATEST_OFFERS_CHUNK_SIZE).onSnapshot((res) => {
-        if (!res || res.empty) {
-          this.latestSortedOffers$ = of([]);
-          return;
-        }
-
-        const offers = [];
-        res.forEach(it => offers.push(it.data() as Offer));
-        this.latestSortedOffers$ = of(offers);
-        return this.latestSortedOffers$;
-      }, (error) => console.log(error));
+    return this.db.collection<Offer>(DatabaseService.OFFERS_COLLECTION_PATH, ref => ref
+      .orderBy('date', 'desc').limit(DatabaseService.LATEST_OFFERS_CHUNK_SIZE)).valueChanges();
   }
 
   public async getSortedOffersChunk(nextChunk: boolean = false): Promise<Observable<Offer[]>> {
@@ -194,7 +163,7 @@ export class DatabaseService {
             .where(queryParams[1].name, queryParams[1].operator, queryParams[1].value)
             .limit(DatabaseService.SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE);
         } else if (queryParams.length === 3) {
-          query = await this.offersCollectionRef.orderBy('date', 'desc').where(queryParams[0].name, queryParams[0].operator, queryParams[0].value)
+          query = this.offersCollectionRef.orderBy('date', 'desc').where(queryParams[0].name, queryParams[0].operator, queryParams[0].value)
             .where(queryParams[1].name, queryParams[1].operator, queryParams[1].value)
             .where(queryParams[2].name, queryParams[2].operator, queryParams[2].value)
             .limit(DatabaseService.SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE);
@@ -311,20 +280,9 @@ export class DatabaseService {
 
   }
 
-  public getOfferCommentsByOfferId(offerId: string): Promise<OfferComment[]> {
-    return new Promise<OfferComment[]>((resolve, reject) => {
-      this.commentsCollectionRef.orderBy('date').where('offerId', '==', offerId).get()
-        .then((res) => {
-          if (res.empty) {
-            resolve([]);
-            return;
-
-          }
-          const comments: OfferComment[] = [];
-          res.forEach(it => comments.push(it.data() as OfferComment));
-          resolve(comments);
-        }).catch(() => reject());
-    });
+  public getOfferCommentsByOfferId(offerId: string): Observable<OfferComment[]> {
+    return this.db.collection<OfferComment>(DatabaseService.COMMENTS_COLLECTION_PATH, (ref => ref
+      .where('offerId', '==', offerId).orderBy('date'))).valueChanges();
   }
 
   public sendOfferComment(comment: OfferComment): Promise<void> {
@@ -364,7 +322,7 @@ export class DatabaseService {
   }
 
   // field: field name as string from UserSubscriptions
-  public async removeUserSubscriptionByField(email: string, fields: string[]): Promise<void>{
+  public async removeUserSubscriptionByField(email: string, fields: string[]): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       let ref = this.db.collection('user-subscriptions').ref;
       ref.doc(email).get().then((res) => {

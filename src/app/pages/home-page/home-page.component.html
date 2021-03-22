@@ -20,11 +20,12 @@
     </div>
 
     <div class="offers-list">
-      <ng-container *ngIf="!latestOffers$">
-        <app-offer-card-skeleton></app-offer-card-skeleton>
-        <app-offer-card-skeleton></app-offer-card-skeleton>
+      <ng-container *ngIf="latestOffers$ | async as offers; else loading">
+        <app-offer-card *ngFor="let offer of offers" [offer]="offer" [editable]="false"></app-offer-card>
       </ng-container>
-      <app-offer-card *ngFor="let offer of latestOffers$ | async" [offer]="offer" [editable]="false"></app-offer-card>
+      <ng-template #loading>
+        <app-offer-card-skeleton *ngFor="let number of [0,1,2,3]"></app-offer-card-skeleton>
+      </ng-template>
     </div>
 
     <a class="more-offers link-underline" [routerLink]="['/offers-page']">Больше офферов</a>

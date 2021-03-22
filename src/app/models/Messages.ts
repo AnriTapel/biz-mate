@@ -14,6 +14,7 @@ export enum Messages{
   'FEEDBACK_ERROR' = 'Не удалось отправить письмо, попробуйте еще раз',
   'DELETE_OFFER_SUCCESS' = 'Объявление успешно удалено',
   'COMMENT_ERROR' = 'Не удалось разместить комментарий',
+  'COULD_NOT_LOAD_OFFER_COMMENTS' = 'Не удалось загрузить комментарии к офферу',
   'OFFERS_FILTER_ERROR' = 'Указаны неверные параметры фильтра',
   'SUBSCRIPTION_SUCCESS' = 'Вы успешно подписались на рассылку',
   'SUBSCRIPTION_ERROR' = 'Не удалось подписаться на рассылку',

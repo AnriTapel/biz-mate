@@ -24,11 +24,8 @@ import {DatabaseService} from "../../services/database/database.service";
 })
 export class ProfilePageComponent extends ComponentBrowserAbstractClass implements OnInit, OnDestroy {
 
-  private deleteOfferHandler = null;
-
   public user: User = null;
   public userOffers$: Observable<Offer[]> = null;
-  public hasOffers: boolean = true;
 
   public userDataForm: FormGroup;
 
@@ -52,21 +49,14 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
   ngOnInit(): void {
     this.seoService.updateRouteMetaTagsByData({title: 'Мой профиль | BizMate'});
     this.getUserOffers();
-    this.deleteOfferHandler = this.getUserOffers.bind(this);
-    document.addEventListener('offerdeleted', this.deleteOfferHandler);
-  }
-
-  ngOnDestroy(): void {
-    super.ngOnDestroy();
-    document.removeEventListener('offerdeleted', this.deleteOfferHandler);
   }
 
   private getUserOffers(): void {
-    this.databaseService.getUserOffersByUserId(this.user.uid)
-      .then((res) => {
-        this.hasOffers = !!res;
-        this.userOffers$ = res;
-      }).catch(() => this.notificationBarService.showNotificationBar(Messages.COULD_NOT_LOAD_USER_OFFERS, false))
+    try {
+      this.userOffers$ = this.databaseService.getUserOffersByUserId(this.user.uid);
+    } catch (e) {
+      this.notificationBarService.showNotificationBar(Messages.COULD_NOT_LOAD_USER_OFFERS, false)
+    }
   }
 
   public switchEditableField(field: string): void {
@@ -116,7 +106,6 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
 
   private async updateUserData(field, newValue): Promise<void> {
     await this.databaseService.updateUserDataInOffers(this.user.uid, field, newValue);
-    this.getUserOffers();
     this.authService.updateCurrentUserData().then((user) => {
       this.user = user;
     });

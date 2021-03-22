@@ -26,7 +26,6 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
   public offer: Offer = null;
 
   public offerComments$: Observable<OfferComment[]> = null;
-  public commentsCount: number = 0;
 
   public commentInput: FormControl;
   public isUserAuth: boolean = undefined;
@@ -49,11 +48,11 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
   }
 
   private getOfferComments(): void {
-    this.databaseService.getOfferCommentsByOfferId(this.offer.offerId)
-      .then((res) => {
-        this.offerComments$ = of(res);
-        this.commentsCount = res.length;
-      })
+    try {
+      this.offerComments$ = this.databaseService.getOfferCommentsByOfferId(this.offer.offerId);
+    } catch (e) {
+      this.notificationService.showNotificationBar(Messages.COULD_NOT_LOAD_OFFER_COMMENTS, false);
+    }
   }
 
   private static searchForUrlsInText(offer: Offer): Offer {
@@ -180,7 +179,6 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
 
     this.databaseService.sendOfferComment(comment)
       .then(() => {
-        this.getOfferComments();
         setTimeout(() => this.commentInput.reset(), 0);
       })
       .catch(() => this.notificationService.showNotificationBar(Messages.COMMENT_ERROR, false))
@@ -198,7 +196,6 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
   public onDeleteCommentButtonClick(commentId: string): void {
     OverlayService.showOverlay();
     this.databaseService.deleteOfferComment(commentId)
-      .then(() => this.getOfferComments())
       .catch(() => this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false))
       .finally(() => OverlayService.hideOverlay());
   }
