@@ -11,10 +11,9 @@ import {Messages} from "../../models/Messages";
 import {SeoService} from "../../services/seo/seo.service";
 import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
 import {OverlayService} from "../../services/overlay/overlay.service";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {DatabaseService} from "../../services/database/database.service";
 import {FilterField, FilterFieldName, FilterFieldOperator} from "../../models/FilterFields";
-import {OfferTypes} from "../../models/OfferTypes";
 
 @Component({
   selector: 'app-offers-page',
@@ -43,7 +42,7 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
   public isTouchDevice: boolean = AppService.isTouchableDevice();
 
   constructor(private appService: AppService, private notificationService: NotificationBarService, private seoService: SeoService,
-              private route: ActivatedRoute, private databaseService: DatabaseService) {
+              private route: ActivatedRoute, private router: Router, private databaseService: DatabaseService) {
     super();
   }
 
@@ -84,17 +83,25 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
   private resolveGetParams(): void {
     this.route.queryParams.subscribe(res => {
       if (!res || Object.keys(res).length > 0) {
-        let offerType = res.offerType ? this.appService.getOfferTypeByFiledValue('id', res.offerType).title : null;
-        let city = res.city ? this.appService.getCityByFiledValue('id', res.city).name : null;
-        let businessArea = res.businessArea ? this.appService.getBusinessAreaByFiledValue('id', res.businessArea).name : null;
-        this.searchForm.controls.type.setValue(offerType);
-        this.searchForm.controls.city.setValue(city);
-        this.searchForm.controls.businessArea.setValue(businessArea);
-        this.applyFilter(false);
+        try {
+          let offerType = res[FilterFieldName.OFFER_TYPE] ? this.appService.getOfferTypeByFiledValue('id', res[FilterFieldName.OFFER_TYPE]).title : null;
+          let city = res[FilterFieldName.CITY] ? this.appService.getCityByFiledValue('id', res[FilterFieldName.CITY]).name : null;
+          let businessArea = res[FilterFieldName.BUSINESS_AREA] ? this.appService.getBusinessAreaByFiledValue('id', res[FilterFieldName.BUSINESS_AREA]).name : null;
+          if (businessArea || city || offerType) {
+            this.searchForm.controls.type.setValue(offerType);
+            this.searchForm.controls.city.setValue(city);
+            this.searchForm.controls.businessArea.setValue(businessArea);
+            this.applyFilter(false);
+          } else {
+            this.getSortedOffers(false);
+          }
+        } catch (e) {
+          this.clearFilterForm();
+        }
       } else {
         this.getSortedOffers(false);
       }
-    });
+    }).unsubscribe();
   }
 
   public getOfferTypes(): any[] {
@@ -127,17 +134,22 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
     }
 
     OverlayService.showOverlay();
-
-    let queryParams = this.getSearchFormParams();
-    if (!queryParams.length) {
+    let filterParams = this.getSearchFormParams();
+    if (!filterParams.length) {
       OverlayService.hideOverlay();
       this.filteredOffers$ = null;
       await this.getSortedOffers(false);
       return;
     }
 
-    this.databaseService.getFilteredOffersChunk(queryParams, loadNextChunk)
+    this.databaseService.getFilteredOffersChunk(filterParams, loadNextChunk)
       .then((res) => {
+        const queryParams = {};
+        filterParams.forEach(it => queryParams[it.name] = it.value[0] ? it.value[0].toString() : it.value.toString());
+        this.router.navigate([], {
+          relativeTo: this.route, skipLocationChange: false,
+          queryParams: queryParams
+        });
         if (res) {
           this.filteredOffers$ = res;
           this.emptyFilterResult = false;
@@ -152,7 +164,7 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
       .finally(() => OverlayService.hideOverlay())
   }
 
-  private getSearchFormParams(): any {
+  private getSearchFormParams(): FilterField[] {
     let formValue = this.searchForm.getRawValue();
     let queryParams: FilterField[] = [];
 
@@ -198,6 +210,7 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
     if (!this.sortedOffers$) {
       this.getSortedOffers();
     }
+    this.router.navigate([], {relativeTo: this.route, skipLocationChange: false, queryParams: {}});
   }
 
   public async getNextOffersChunk(): Promise<void> {

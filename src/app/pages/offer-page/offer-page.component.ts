@@ -12,6 +12,7 @@ import {AuthService} from "../../services/auth/auth.service";
 import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
 import {Messages} from "../../models/Messages";
 import {DatabaseService} from "../../services/database/database.service";
+import {FilterFieldName} from "../../models/FilterFields";
 
 @Component({
   selector: 'app-offer-page',
@@ -134,16 +135,16 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
   public openOffersPageByFilter(field: string): void {
     switch (field) {
       case 'city':
-        this.router.navigate(['/offers-page'], {queryParams: {city: this.offer.city}});
+        this.router.navigate(['/offers-page'], {queryParams: {[FilterFieldName.CITY]: this.offer.city}});
         break;
       case 'type':
-        this.router.navigate(['/offers-page'], {queryParams: {offerType: this.offer.type}});
+        this.router.navigate(['/offers-page'], {queryParams: {[FilterFieldName.OFFER_TYPE]: this.offer.type}});
         break;
       case 'mainBusinessArea':
-        this.router.navigate(['/offers-page'], {queryParams: {businessArea: this.offer.businessArea[0]}});
+        this.router.navigate(['/offers-page'], {queryParams: {[FilterFieldName.BUSINESS_AREA]: this.offer.businessArea[0]}});
         break;
       case 'secondaryBusinessArea':
-        this.router.navigate(['/offers-page'], {queryParams: {businessArea: this.offer.businessArea[1]}});
+        this.router.navigate(['/offers-page'], {queryParams: {[FilterFieldName.BUSINESS_AREA]: this.offer.businessArea[1]}});
         break;
       default:
         break;
