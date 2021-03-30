@@ -20,6 +20,10 @@ export class FooterComponent implements OnInit {
     });
   }
 
+  public getCurrentYearString(): string {
+    return new Date().getFullYear().toString();
+  }
+
   public sendVkGroupYmGoal(): void {
     //@ts-ignore
     ym(65053642,'reachGoal','vkGroup');

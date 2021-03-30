@@ -4,7 +4,7 @@
 
   <form [formGroup]="newOffersSubscriptionForm" (keydown.enter)="$event.preventDefault()">
     <div class="subscription-form-block">
-      <mat-form-field appearance="legacy">
+      <mat-form-field appearance="legacy" [ngClass]="{'mobile-cities-field': isTouchableDevice}">
         <mat-label>E-mail</mat-label>
         <input matInput formControlName="email">
       </mat-form-field>

@@ -30,6 +30,7 @@
   }
 
   form {
+    display: grid;
     grid-template: auto / 1fr 1fr;
     grid-gap: 0 3em;
 
@@ -44,48 +45,24 @@
     }
   }
 
-  .desktop-menu {
-    display: grid;
+  @media screen and (max-width: 770px) {
+    display: none;
   }
+}
 
-  .mobile-menu {
-    display: none
-  }
+.mobile-filter-panel-buttons {
+  display: none;
 
   @media screen and (max-width: 770px) {
-    margin: 2em auto -1em;
-
-    &>div {
-      justify-content: space-between;
-
-      h3 {
-        font-size: 16px;
-        text-align: left;
-      }
-
-      button {
-        display: initial;
-      }
-    }
-
-
-    form {
-      grid-template: auto / 1fr;
-      grid-gap: 0 .5em;
-
-
-      & > div > button {
-        width: 45%;
-      }
-    }
-
-    .desktop-menu {
-      display: none;
-    }
-
-    .mobile-menu {
-      display: grid;
-    }
+    display: block;
+    position: fixed;
+    bottom: 5vh;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
   }
 }
 

@@ -396,8 +396,13 @@ mat-checkbox {
     background-position: top center;
   }
 
+  // this z-index value are mainly overriden because of filter form button on on offers-page for mobiles
   app-offer-card, app-footer {
-    z-index: 0;
+    z-index: unset;
+  }
+
+  app-header {
+    z-index: 2;
   }
 }
 

@@ -14,6 +14,9 @@ import {OverlayService} from "../../services/overlay/overlay.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {DatabaseService} from "../../services/database/database.service";
 import {FilterField, FilterFieldName, FilterFieldOperator} from "../../models/FilterFields";
+import {MatDialog} from "@angular/material/dialog";
+import {OffersFilterFormComponent} from "../../dialogs/offers-filter-form/offers-filter-form.component";
+import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
 
 @Component({
   selector: 'app-offers-page',
@@ -29,6 +32,10 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
     site: '/offers-page'
   };
 
+  private areQueryParamsInitialyResolved: boolean = false;
+  private mobileFilterParamsText: string = '';
+  private queryParamsHandler: any = undefined;
+
   public sortedOffers$: Observable<Offer[]> = undefined;
   public filteredOffers$: Observable<Offer[]> = undefined;
   public emptyFilterResult: boolean = false;
@@ -38,20 +45,19 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
   public filteredOfferTypes$: Observable<any[]>;
   public filteredBusinessArea$: Observable<BusinessArea[]>;
   public filteredCities$: Observable<City[]>;
-  public isSearchFormVisible: boolean = false;
   public isTouchDevice: boolean = AppService.isTouchableDevice();
 
   constructor(private appService: AppService, private notificationService: NotificationBarService, private seoService: SeoService,
-              private route: ActivatedRoute, private router: Router, private databaseService: DatabaseService) {
+              private route: ActivatedRoute, private router: Router, private databaseService: DatabaseService, private dialog: MatDialog) {
     super();
   }
 
   async ngOnInit(): Promise<void> {
     this.seoService.updateRouteMetaTagsByData(this.metaTags);
     this.searchForm = new FormGroup({
-      type: new FormControl(null, [this.appService.offerTypeValidator()]),
-      businessArea: new FormControl(null, [this.appService.businessAreaFieldValidator()]),
-      city: new FormControl(null, [this.appService.cityFieldValidator()])
+      [FilterFieldName.OFFER_TYPE]: new FormControl(null, [this.appService.offerTypeValidator()]),
+      [FilterFieldName.BUSINESS_AREA]: new FormControl(null, [this.appService.businessAreaFieldValidator()]),
+      [FilterFieldName.CITY]: new FormControl(null, [this.appService.cityFieldValidator()])
     });
 
     this.filteredOfferTypes$ = this.searchForm.controls.type.valueChanges
@@ -78,11 +84,20 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
   ngOnDestroy(): void {
     super.ngOnDestroy();
     this.databaseService.clearSortedOffers();
+    if (this.queryParamsHandler) {
+      this.queryParamsHandler.unsubscribe();
+      this.queryParamsHandler = undefined;
+    }
   }
 
   private resolveGetParams(): void {
-    this.route.queryParams.subscribe(res => {
-      if (!res || Object.keys(res).length > 0) {
+    this.queryParamsHandler = this.route.queryParams.subscribe(res => {
+      this.mobileFilterParamsText = res && Object.keys(res).length ? ` | ${Object.keys(res).length}` : '';
+      if (this.areQueryParamsInitialyResolved) {
+        return;
+      }
+
+      if (res && Object.keys(res).length) {
         try {
           let offerType = res[FilterFieldName.OFFER_TYPE] ? this.appService.getOfferTypeByFiledValue('id', res[FilterFieldName.OFFER_TYPE]).title : null;
           let city = res[FilterFieldName.CITY] ? this.appService.getCityByFiledValue('id', res[FilterFieldName.CITY]).name : null;
@@ -101,7 +116,8 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
       } else {
         this.getSortedOffers(false);
       }
-    }).unsubscribe();
+      this.areQueryParamsInitialyResolved = true;
+    });
   }
 
   public getOfferTypes(): any[] {
@@ -206,11 +222,42 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
     });
 
     this.filteredOffers$ = null;
+    this.router.navigate([], {relativeTo: this.route, skipLocationChange: false, queryParams: {}});
 
     if (!this.sortedOffers$) {
       this.getSortedOffers();
     }
-    this.router.navigate([], {relativeTo: this.route, skipLocationChange: false, queryParams: {}});
+  }
+
+  public getTextForMobileFilterButton(): string {
+    return this.mobileFilterParamsText;
+  }
+
+  public openMobileFilterDialog(): void {
+    const filterValues = this.searchForm.getRawValue();
+    let data = {};
+    if (filterValues[FilterFieldName.OFFER_TYPE] && filterValues[FilterFieldName.OFFER_TYPE].length) {
+      data[FilterFieldName.OFFER_TYPE] = filterValues[FilterFieldName.OFFER_TYPE];
+    }
+    if (filterValues[FilterFieldName.BUSINESS_AREA] && filterValues[FilterFieldName.BUSINESS_AREA].length) {
+      data[FilterFieldName.BUSINESS_AREA] = filterValues[FilterFieldName.BUSINESS_AREA];
+    }
+    if (filterValues[FilterFieldName.CITY] && filterValues[FilterFieldName.CITY].length) {
+      data[FilterFieldName.CITY] = filterValues[FilterFieldName.CITY];
+    }
+
+    let mobileFilter = this.dialog.open(OffersFilterFormComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, data));
+    mobileFilter.afterClosed().subscribe((res) => {
+      if (!res || !Object.values(res).some(x => (x !== null && x !== ''))) {
+        this.clearFilterForm();
+        return;
+      }
+
+      for (let key in res) {
+        this.searchForm.controls[key].setValue(res[key]);
+      }
+      this.applyFilter();
+    });
   }
 
   public async getNextOffersChunk(): Promise<void> {

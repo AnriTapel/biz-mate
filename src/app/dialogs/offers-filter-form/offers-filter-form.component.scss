@@ -1,0 +1,11 @@
+.buttons-block {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2em;
+
+  & > button {
+    margin: auto 1.5em;
+    width: 100%;
+  }
+}

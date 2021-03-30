@@ -1,0 +1,56 @@
+<h1>Поиск по фильтрам</h1>
+
+<form [formGroup]="searchForm" (keydown.enter)="$event.preventDefault()">
+  <ng-container *ngIf="!isTouchDevice">
+    <mat-form-field>
+      <input type="text" placeholder="Тип объявления" aria-label="Тип объявления" matInput
+             formControlName="type" [matAutocomplete]="offerType">
+      <mat-autocomplete #offerType="matAutocomplete">
+        <mat-option *ngFor="let type of filteredOfferTypes$ | async" [value]="type.title">
+          {{type.title}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <mat-form-field>
+      <input type="text" placeholder="Сфера бизнеса" aria-label="Сфера бизнеса" matInput
+             formControlName="businessArea" [matAutocomplete]="businessArea">
+      <mat-autocomplete #businessArea="matAutocomplete">
+        <mat-option *ngFor="let category of filteredBusinessArea$ | async" [value]="category.name">
+          {{category.name}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </ng-container>
+
+  <ng-container *ngIf="isTouchDevice">
+    <mat-form-field appearance="fill">
+      <mat-label>Тип объявления</mat-label>
+      <mat-select formControlName="type">
+        <mat-option *ngFor="let type of getOfferTypes()" [value]="type.title">{{type.title}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Сфера бизнеса</mat-label>
+      <mat-select formControlName="businessArea">
+        <mat-option *ngFor="let type of getBusinessAreas()" [value]="type.name">{{type.name}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </ng-container>
+
+  <mat-form-field [ngClass]="{'mobile-cities-field': isTouchDevice}">
+    <input type="text" placeholder="Населенный пункт" aria-label="Населенный пункт" matInput
+           formControlName="city" [matAutocomplete]="cities">
+    <mat-autocomplete #cities="matAutocomplete">
+      <mat-option *ngFor="let city of filteredCities$ | async" [value]="city.name">
+        {{city.name}}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <div class="buttons-block">
+    <button class="button-primary button-white" (click)="clearFilterForm()">Сбросить</button>
+    <button class="button-primary" (click)="applyFilter()">Искать</button>
+  </div>
+</form>

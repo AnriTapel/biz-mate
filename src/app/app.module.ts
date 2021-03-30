@@ -26,6 +26,7 @@ import {NewOffersSubscriptionComponent} from './dialogs/new-offers-subscription/
 import {AppService} from "./services/app/app.service";
 import {AngularFireAnalyticsModule} from "@angular/fire/analytics";
 import { OfferFormGuardComponent } from './dialogs/offer-form-guard/offer-form-guard.component';
+import { OffersFilterFormComponent } from './dialogs/offers-filter-form/offers-filter-form.component';
 
 
 /***
@@ -70,7 +71,8 @@ export function appInitFactory(auth: AuthService, appService: AppService) {
     DeleteOfferComponent,
     OverlayComponent,
     NewOffersSubscriptionComponent,
-    OfferFormGuardComponent
+    OfferFormGuardComponent,
+    OffersFilterFormComponent
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebase),
