@@ -8,11 +8,14 @@ import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config
 import {UserSubscriptions} from "../../models/UserSubscriptions";
 import {Messages} from "../../models/Messages";
 import {OverlayService} from "../overlay/overlay.service";
+import {AppService} from "../app/app.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserSubscriptionsService {
+
+  private dialogHandler: any = undefined;
 
   static readonly NEW_OFFERS_SUBSCRIPTION_STORAGE_FIELD_NAME: string = 'bm_new_offers_subscription_status';
   static readonly NEW_OFFERS_SUBSCRIPTION_DIALOG_TIMEOUT_MSEC: number = 5000;
@@ -45,7 +48,9 @@ export class UserSubscriptionsService {
     let dialog = this.matDialog.open(NewOffersSubscriptionComponent, this.authService.user
       ? MatDialogConfig.getConfigWithData(DialogConfigType.WIDE_CONFIG, {email: this.authService.user.email})
       : MatDialogConfig.wideDialogWindow);
-    dialog.afterClosed().subscribe((res) => {
+    this.dialogHandler = dialog.afterClosed().subscribe((res) => {
+      AppService.unsubscribeHandler([this.dialogHandler]);
+      this.dialogHandler = undefined;
       if (!res && this.authService.user) {
         UserSubscriptionsService.setNewOffersSubscriptionStatus(false);
       } else if (res) {

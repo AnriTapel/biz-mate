@@ -6,6 +6,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {LoginComponent} from "../../../dialogs/login/login.component";
 import {DialogConfigType, MatDialogConfig} from "../../../dialogs/mat-dialog-config";
 import {filter} from "rxjs/operators";
+import {AppService} from "../../app/app.service";
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,7 @@ import {filter} from "rxjs/operators";
 export class AuthGuardService implements CanActivate {
 
   private previousUrl: string;
+  private dialogHandler: any = undefined;
 
   constructor(private router: Router, private authService: AuthService, private dialog: MatDialog) {
     router.events
@@ -25,12 +27,13 @@ export class AuthGuardService implements CanActivate {
       return true;
     }
     let loginDialogRef = this.dialog.open(LoginComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, {redirectUrl: state.url}));
-    loginDialogRef.afterClosed().subscribe(() => {
+    this.dialogHandler = loginDialogRef.afterClosed().subscribe(() => {
       if (!this.authService.user) {
         if (!this.previousUrl) {
           this.router.navigateByUrl('/');
         }
       }
+      AppService.unsubscribeHandler([this.dialogHandler]);
     });
     return false;
   }

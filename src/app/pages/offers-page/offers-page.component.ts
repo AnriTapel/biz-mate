@@ -35,6 +35,7 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
   private areQueryParamsInitialyResolved: boolean = false;
   private mobileFilterParamsText: string = '';
   private queryParamsHandler: any = undefined;
+  private mobileFilterDialogHandler: any = undefined;
 
   public sortedOffers$: Observable<Offer[]> = undefined;
   public filteredOffers$: Observable<Offer[]> = undefined;
@@ -84,16 +85,14 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
   ngOnDestroy(): void {
     super.ngOnDestroy();
     this.databaseService.clearSortedOffers();
-    if (this.queryParamsHandler) {
-      this.queryParamsHandler.unsubscribe();
-      this.queryParamsHandler = undefined;
-    }
+    AppService.unsubscribeHandler([this.queryParamsHandler, this.mobileFilterDialogHandler]);
   }
 
   private resolveGetParams(): void {
     this.queryParamsHandler = this.route.queryParams.subscribe(res => {
       this.mobileFilterParamsText = res && Object.keys(res).length ? ` | ${Object.keys(res).length}` : '';
       if (this.areQueryParamsInitialyResolved) {
+        AppService.unsubscribeHandler([this.queryParamsHandler]);
         return;
       }
 
@@ -246,8 +245,9 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
       data[FilterFieldName.CITY] = filterValues[FilterFieldName.CITY];
     }
 
-    let mobileFilter = this.dialog.open(OffersFilterFormComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, data));
-    mobileFilter.afterClosed().subscribe((res) => {
+    const mobileFilter = this.dialog.open(OffersFilterFormComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, data));
+    this.mobileFilterDialogHandler = mobileFilter.afterClosed().subscribe((res) => {
+      AppService.unsubscribeHandler([this.mobileFilterDialogHandler]);
       if (!res || !Object.values(res).some(x => (x !== null && x !== ''))) {
         this.clearFilterForm();
         return;

@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {User} from "../../models/User";
 import {Router} from "@angular/router";
 import {AppService} from "../../services/app/app.service";
@@ -22,17 +22,17 @@ import {DatabaseService} from "../../services/database/database.service";
   templateUrl: './profile-page.component.html',
   styleUrls: ['./profile-page.component.scss']
 })
-export class ProfilePageComponent extends ComponentBrowserAbstractClass implements OnInit, OnDestroy {
+export class ProfilePageComponent extends ComponentBrowserAbstractClass implements OnInit {
 
   public user: User = null;
   public userOffers$: Observable<Offer[]> = null;
-
   public userDataForm: FormGroup;
-
   public editableFields = {
     displayName: false,
     email: false
   };
+
+  private dialogHandler: any = undefined;
 
   constructor(private appService: AppService, private authService: AuthService, private router: Router,
               private dialog: MatDialog, private storageService: StorageService, private databaseService: DatabaseService,
@@ -68,7 +68,8 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
 
   public changePhotoURL(): void {
     const dialogRef = this.dialog.open(CustomImageCropperComponent, MatDialogConfig.narrowDialogWindow);
-    dialogRef.afterClosed().subscribe((res) => {
+    this.dialogHandler = dialogRef.afterClosed().subscribe((res) => {
+      AppService.unsubscribeHandler([this.dialogHandler]);
       if (res && typeof res === "string") {
         this.authService.updateUserDisplayNameOrPhotoURL('photoURL', res)
           .then(() => {

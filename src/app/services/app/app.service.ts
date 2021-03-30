@@ -161,6 +161,13 @@ export class AppService {
     return navigator.msMaxTouchPoints > 0 || 'ontouchstart' in window;
   }
 
+  public static unsubscribeHandler(handlers: any[]): void {
+    handlers.forEach(handler => {
+      if (handler && handler.unsubscribe) {
+        handler.unsubscribe();
+      }
+    });
+  }
 
   get offerTypes(): any[] {
     return this._offerTypes;

@@ -5,11 +5,14 @@ import {OfferFormComponent} from "../../../pages/offer-form/offer-form.component
 import {MatDialogConfig} from "../../../dialogs/mat-dialog-config";
 import {MatDialog} from "@angular/material/dialog";
 import {OfferFormGuardComponent} from "../../../dialogs/offer-form-guard/offer-form-guard.component";
+import {AppService} from "../../app/app.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class OfferFormGuardService implements CanDeactivate<OfferFormComponent>{
+
+  private dialogHandler: any = undefined;
 
   constructor(private router: Router, private dialog: MatDialog) { }
 
@@ -19,7 +22,8 @@ export class OfferFormGuardService implements CanDeactivate<OfferFormComponent>{
     }
 
     let offerGuardDialogRef = this.dialog.open(OfferFormGuardComponent, MatDialogConfig.narrowDialogWindow);
-    offerGuardDialogRef.afterClosed().subscribe((res) => {
+    this.dialogHandler = offerGuardDialogRef.afterClosed().subscribe((res) => {
+      AppService.unsubscribeHandler([this.dialogHandler]);
       if (res) {
         component.areChangesSaved = true;
         this.router.navigate([nextState.url]);

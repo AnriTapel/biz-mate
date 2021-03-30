@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnDestroy} from '@angular/core';
 import {Offer} from "../../models/Offer";
 import {AuthService} from "../../services/auth/auth.service";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -9,6 +9,7 @@ import {NotificationBarService} from "../../services/notification-bar/notificati
 import {Messages} from "../../models/Messages";
 import {OverlayService} from "../../services/overlay/overlay.service";
 import {DatabaseService} from "../../services/database/database.service";
+import {AppService} from "../../services/app/app.service";
 
 @Component({
   selector: 'app-offer-card',
@@ -20,6 +21,8 @@ export class OfferCardComponent {
 
   @Input() offer: Offer;
   @Input() editable: boolean;
+
+  private dialogHandler: any = undefined;
 
   constructor(private auth: AuthService, private router: Router, private dialog: MatDialog, private route: ActivatedRoute,
               private notificationService: NotificationBarService, private databaseService: DatabaseService) {
@@ -45,10 +48,11 @@ export class OfferCardComponent {
 
   public onDeleteOfferButtonClick(): void {
     const dialog = this.dialog.open(DeleteOfferComponent, MatDialogConfig.narrowDialogWindow);
-    dialog.afterClosed().subscribe((res) => {
+    this.dialogHandler = dialog.afterClosed().subscribe((res) => {
       if (res === true) {
         this.deleteOffer();
       }
+      AppService.unsubscribeHandler([this.dialogHandler]);
     });
   }
 
