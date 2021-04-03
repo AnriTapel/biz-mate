@@ -93,7 +93,6 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
     this.queryParamsHandler = this.route.queryParams.subscribe(res => {
       this.mobileFilterParamsText = res && Object.keys(res).length ? ` | ${Object.keys(res).length}` : '';
       if (this.areQueryParamsInitialyResolved) {
-        AppService.unsubscribeHandler([this.queryParamsHandler]);
         return;
       }
 
