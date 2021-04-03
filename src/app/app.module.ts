@@ -36,7 +36,7 @@ import { OffersFilterFormComponent } from './dialogs/offers-filter-form/offers-f
  */
 export function appInitFactory(auth: AuthService, appService: AppService) {
   return (): Promise<any> => {
-    return new Promise<any>((resolve, reject) => {
+    return new Promise<any>((resolve) => {
       let status = {app: false, auth: false};
       document.addEventListener(AppInitEvents.INIT_AUTH_SUCCESS, () => {
         status.auth = true;

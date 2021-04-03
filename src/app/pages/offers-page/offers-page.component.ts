@@ -17,6 +17,7 @@ import {FilterField, FilterFieldName, FilterFieldOperator} from "../../models/Fi
 import {MatDialog} from "@angular/material/dialog";
 import {OffersFilterFormComponent} from "../../dialogs/offers-filter-form/offers-filter-form.component";
 import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
+import {OfferType} from "../../models/IOfferType";
 
 @Component({
   selector: 'app-offers-page',
@@ -43,7 +44,7 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
 
   // Панель поиска
   public searchForm: FormGroup;
-  public filteredOfferTypes$: Observable<any[]>;
+  public filteredOfferTypes$: Observable<OfferType[]>;
   public filteredBusinessArea$: Observable<BusinessArea[]>;
   public filteredCities$: Observable<City[]>;
   public isTouchDevice: boolean = AppService.isTouchableDevice();

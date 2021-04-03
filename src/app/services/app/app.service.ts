@@ -4,6 +4,7 @@ import {BusinessArea} from "../../models/BusinessArea";
 import {AbstractControl, ValidatorFn} from "@angular/forms";
 import {DatabaseService} from "../database/database.service";
 import {AppInitEvents} from "../../app.module";
+import {OfferType} from "../../models/IOfferType";
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +26,7 @@ export class AppService {
     'https://firebasestorage.googleapis.com/v0/b/bizmate-5f9a4.appspot.com/o/default_avatar_red.svg?alt=media&token=af29412e-544d-4ea7-aaa0-2259d0833d35'
   ];
 
-  private _offerTypes: any[] = undefined;
+  private _offerTypes: OfferType[] = undefined;
   private _businessAreas: BusinessArea[] = undefined;
   private _cities: City[] = undefined;
 
@@ -89,7 +90,7 @@ export class AppService {
     return this.businessAreas.filter(it => it[field] == value)[0] || null;
   }
 
-  public getOfferTypeByFiledValue(field: string, value: any): any {
+  public getOfferTypeByFiledValue(field: string, value: any): OfferType {
     return this.offerTypes.filter(it => it[field] == value)[0] || null;
   }
 
@@ -111,7 +112,7 @@ export class AppService {
     return this.businessAreas.filter(option => option.name.toLowerCase().includes(filterValue));
   }
 
-  public _filterOfferTypes(value: string): any[] {
+  public _filterOfferTypes(value: string): OfferType[] {
     if (value === null) {
       value = '';
     }
@@ -169,7 +170,7 @@ export class AppService {
     });
   }
 
-  get offerTypes(): any[] {
+  get offerTypes(): OfferType[] {
     return this._offerTypes;
   }
 

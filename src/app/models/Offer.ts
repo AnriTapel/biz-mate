@@ -1,11 +1,11 @@
-import {OfferTypes} from "./OfferTypes";
+import {OfferTypesEnum} from "./IOfferType";
 
 export interface Offer {
   userId?: string;
   offerId?: string;
   displayName: string;
   city: number;
-  type: OfferTypes;
+  type: OfferTypesEnum;
   businessArea: number[];
   date: number;
   title: string;

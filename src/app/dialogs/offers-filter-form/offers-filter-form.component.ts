@@ -7,6 +7,7 @@ import {City} from "../../models/City";
 import {AppService} from "../../services/app/app.service";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {FilterFieldName} from "../../models/FilterFields";
+import {OfferType} from "../../models/IOfferType";
 
 @Component({
   selector: 'app-offers-filter-form',
@@ -16,7 +17,7 @@ import {FilterFieldName} from "../../models/FilterFields";
 export class OffersFilterFormComponent implements OnInit {
 
   public searchForm: FormGroup;
-  public filteredOfferTypes$: Observable<any[]>;
+  public filteredOfferTypes$: Observable<OfferType[]>;
   public filteredBusinessArea$: Observable<BusinessArea[]>;
   public filteredCities$: Observable<City[]>;
   public isTouchDevice: boolean = AppService.isTouchableDevice();

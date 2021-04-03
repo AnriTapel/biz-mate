@@ -10,6 +10,7 @@ import {FilterField} from "../../models/FilterFields";
 import {UserSubscriptions} from "../../models/UserSubscriptions";
 import {City} from "../../models/City";
 import {BusinessArea} from "../../models/BusinessArea";
+import {OfferType} from "../../models/IOfferType";
 
 @Injectable({
   providedIn: 'root'
@@ -72,8 +73,8 @@ export class DatabaseService {
     return new Promise<any[]>((resolve, reject) => {
       this.db.collection(DatabaseService.OFFER_TYPES_COLLECTION_PATH).ref.get()
         .then((res) => {
-          const offerTypes: any[] = [];
-          res.forEach(it => offerTypes.push(it.data()));
+          const offerTypes: OfferType[] = [];
+          res.forEach(it => offerTypes.push(it.data() as OfferType));
           resolve(offerTypes);
         }).catch(() => reject(null));
     });

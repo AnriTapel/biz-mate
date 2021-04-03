@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {OfferTypes} from "../../models/OfferTypes";
+import {OfferTypesEnum, OfferType} from "../../models/IOfferType";
 import {AppService} from "../../services/app/app.service";
 import {AuthService} from "../../services/auth/auth.service";
 import {AbstractControl, FormControl, FormGroup, FormGroupDirective, ValidatorFn, Validators} from "@angular/forms";
@@ -58,7 +58,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
 
   public isFormValid: boolean = true;
   public isExtraBusinessAreaFieldAvail: boolean = false;
-  private offerType = OfferTypes;
+  private offerType = OfferTypesEnum;
 
   private readonly metaTags = {
     title: 'Разместить предложение | BizMate',
@@ -117,7 +117,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     this.newOfferForm.valueChanges.subscribe(() => this.areChangesSaved = false);
   }
 
-  public setOfferType(type: OfferTypes, resetControls: boolean = true): void {
+  public setOfferType(type: OfferTypesEnum, resetControls: boolean = true): void {
     if (this.currentType == type)
       return;
 
@@ -130,11 +130,11 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     }
   }
 
-  public getOfferType(): OfferTypes {
+  public getOfferType(): OfferTypesEnum {
     return this.currentType;
   }
 
-  public getOfferTypesArray(): any[] {
+  public getOfferTypesArray(): OfferType[] {
     return this.appService.offerTypes;
   }
 
@@ -277,7 +277,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
       .finally(() => OverlayService.hideOverlay());
   }
 
-  private static getFieldsLabels(offerType: OfferTypes): object {
+  private static getFieldsLabels(offerType: OfferTypesEnum): object {
     return AppService.offerFieldsLabels[offerType - 1];
   }
 
