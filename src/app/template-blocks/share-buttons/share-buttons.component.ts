@@ -5,23 +5,23 @@ import {AppService} from "../../services/app/app.service";
   selector: 'app-share-buttons',
   template: `
     <div class="share-buttons-container">
-      <button data-sharer="facebook">
-        <img src="/assets/img/socials/facebook_share.svg" (click)="sendYMGoal()" alt="Поделиться в Facebook"/>
+      <button data-sharer="facebook" (click)="sendYMGoal()">
+        <img src="/assets/img/socials/facebook_share.svg" alt="Поделиться в Facebook"/>
       </button>
-      <button data-sharer="twitter">
-        <img src="/assets/img/socials/twitter_share.svg" (click)="sendYMGoal()" alt="Поделиться в Twitter"/>
+      <button data-sharer="twitter" (click)="sendYMGoal()">
+        <img src="/assets/img/socials/twitter_share.svg" alt="Поделиться в Twitter"/>
       </button>
-      <button data-sharer="vk">
-        <img src="/assets/img/socials/vk_share.svg" (click)="sendYMGoal()" alt="Поделиться в VK"/>
+      <button data-sharer="vk" (click)="sendYMGoal()">
+        <img src="/assets/img/socials/vk_share.svg" alt="Поделиться в VK"/>
       </button>
-      <button data-sharer="whatsapp">
-        <img src="/assets/img/socials/whatsapp_share.svg" (click)="sendYMGoal()" alt="Поделиться в WhatsApp"/>
+      <button data-sharer="whatsapp" (click)="sendYMGoal()">
+        <img src="/assets/img/socials/whatsapp_share.svg" alt="Поделиться в WhatsApp"/>
       </button>
-      <button *ngIf="isMobile" data-sharer="telegram">
-        <img src="/assets/img/socials/telegram_share.svg" (click)="sendYMGoal()" alt="Поделиться в Telegram"/>
+      <button *ngIf="isMobile" data-sharer="telegram" (click)="sendYMGoal()">
+        <img src="/assets/img/socials/telegram_share.svg" alt="Поделиться в Telegram"/>
       </button>
-      <button *ngIf="isMobile" data-sharer="viber">
-        <img src="/assets/img/socials/viber_share.svg" (click)="sendYMGoal()" alt="Поделиться в Viber"/>
+      <button *ngIf="isMobile" data-sharer="viber" (click)="sendYMGoal()">
+        <img src="/assets/img/socials/viber_share.svg" alt="Поделиться в Viber"/>
       </button>
     </div>
   `,
