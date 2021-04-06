@@ -31,8 +31,8 @@ export class FeedbackComponent extends ComponentBrowserAbstractClass implements 
   ngOnInit(): void {
     this.seoService.updateRouteMetaTagsByData(this.metaTags);
     this.feedbackForm = new FormGroup({
-      name: new FormControl(this.authService.user ? this.authService.user.displayName : '', [Validators.required]),
-      email: new FormControl(this.authService.user ? this.authService.user.email : '', [Validators.required, Validators.email]),
+      name: new FormControl(this.userAuthData ? this.userAuthData.displayName : '', [Validators.required]),
+      email: new FormControl(this.userAuthData ? this.userAuthData.email : '', [Validators.required, Validators.email]),
       text: new FormControl('', [Validators.required])
     });
   }

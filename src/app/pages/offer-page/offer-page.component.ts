@@ -6,9 +6,8 @@ import {SeoService} from "../../services/seo/seo.service";
 import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
 import {OverlayService} from "../../services/overlay/overlay.service";
 import {FormControl, Validators} from "@angular/forms";
-import {Observable, of} from "rxjs";
+import {Observable} from "rxjs";
 import {OfferComment} from "../../models/OfferComment";
-import {AuthService} from "../../services/auth/auth.service";
 import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
 import {Messages} from "../../models/Messages";
 import {DatabaseService} from "../../services/database/database.service";
@@ -24,20 +23,17 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
 
   static readonly URL_REGEX = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
   public readonly COMMENT_TEXT_MAX_LENGTH: number = 1024;
+
   public offer: Offer = null;
-
   public offerComments$: Observable<OfferComment[]> = null;
-
   public commentInput: FormControl;
-  public isUserAuth: boolean = undefined;
 
   constructor(private route: ActivatedRoute, private seoService: SeoService, private databaseService: DatabaseService,
-              private router: Router, private authService: AuthService, private notificationService: NotificationBarService,
+              private router: Router, private notificationService: NotificationBarService,
               private appService: AppService) {
     super();
     OverlayService.showOverlay();
     this.commentInput = new FormControl('', [Validators.required, Validators.maxLength(this.COMMENT_TEXT_MAX_LENGTH)]);
-    this.isUserAuth = !!this.authService.user;
     this.databaseService.getOfferByOfferId(route.snapshot.paramMap.get("id").toString())
       .then((res) => {
         this.offer = OfferPageComponent.searchForUrlsInText(res);
@@ -171,11 +167,11 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
     let comment: OfferComment = {
       commentId: this.databaseService.createId(),
       offerId: this.offer.offerId,
-      userId: this.authService.user.uid,
-      displayName: this.authService.user.displayName,
+      userId: this.userAuthData.uid,
+      displayName: this.userAuthData.displayName,
       commentText: this.commentInput.value,
       date: Date.now(),
-      userEmail: this.authService.user.email
+      userEmail: this.userAuthData.email
     };
 
     this.databaseService.sendOfferComment(comment)
@@ -187,8 +183,8 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
   }
 
   public isCommentDeleteAllowed(comment: OfferComment): boolean {
-    if (this.authService.user) {
-      return this.authService.user.uid === comment.userId;
+    if (this.userAuthData) {
+      return this.userAuthData.uid === comment.userId;
     } else {
       return false;
     }

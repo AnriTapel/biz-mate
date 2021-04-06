@@ -1,6 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA} from "@angular/material/dialog";
-import NotificationEvent from "../../models/NotificationEvent";
+import NotificationDataModel from "../../models/NotificationDataModel";
 
 @Component({
   selector: 'app-notification',
@@ -9,7 +9,7 @@ import NotificationEvent from "../../models/NotificationEvent";
 })
 export class NotificationComponent implements OnInit {
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: NotificationEvent) { }
+  constructor(@Inject(MAT_DIALOG_DATA) public data: NotificationDataModel) { }
 
   ngOnInit(): void {
   }

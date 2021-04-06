@@ -1,6 +1,5 @@
-import {ChangeDetectionStrategy, Component, Input, OnDestroy} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {Offer} from "../../models/Offer";
-import {AuthService} from "../../services/auth/auth.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {MatDialog} from "@angular/material/dialog";
 import {DeleteOfferComponent} from "../../dialogs/delete-offer/delete-offer.component";
@@ -24,7 +23,7 @@ export class OfferCardComponent {
 
   private dialogHandler: any = undefined;
 
-  constructor(private auth: AuthService, private router: Router, private dialog: MatDialog, private route: ActivatedRoute,
+  constructor(private router: Router, private dialog: MatDialog, private route: ActivatedRoute,
               private notificationService: NotificationBarService, private databaseService: DatabaseService) {
   }
 

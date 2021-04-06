@@ -102,7 +102,7 @@
                (click)="onDeleteCommentButtonClick(comment.commentId)"/>
         </article>
 
-        <div *ngIf="isUserAuth" class="add-comment-block">
+        <div *ngIf="isUserLoggedIn()" class="add-comment-block">
           <h4>Добавить комментарий</h4>
           <mat-form-field class="full-width-field">
             <mat-label>Текст комментария</mat-label>
@@ -113,7 +113,7 @@
           <button class="button-primary" (click)="sendOfferComment()">Отправить</button>
         </div>
 
-        <p *ngIf="!isUserAuth">Оставлять комментарии к объявлениям могут только авторизованные пользователи.</p>
+        <p *ngIf="!isUserLoggedIn()">Оставлять комментарии к объявлениям могут только авторизованные пользователи.</p>
       </div>
     </section>
   </ng-container>

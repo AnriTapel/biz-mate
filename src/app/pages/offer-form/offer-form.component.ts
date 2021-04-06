@@ -1,7 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {OfferTypesEnum, OfferType} from "../../models/IOfferType";
+import {OfferType, OfferTypesEnum} from "../../models/IOfferType";
 import {AppService} from "../../services/app/app.service";
-import {AuthService} from "../../services/auth/auth.service";
 import {AbstractControl, FormControl, FormGroup, FormGroupDirective, ValidatorFn, Validators} from "@angular/forms";
 import {map, startWith} from "rxjs/operators";
 import {Observable} from "rxjs";
@@ -67,8 +66,8 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     site: '/new-offer'
   };
 
-  constructor(private auth: AuthService, private activeRoute: ActivatedRoute, private storageService: StorageService,
-              private notificationBarService: NotificationBarService, private seoService: SeoService, private router: Router,
+  constructor(private activeRoute: ActivatedRoute, private storageService: StorageService, private router: Router,
+              private notificationBarService: NotificationBarService, private seoService: SeoService,
               private databaseService: DatabaseService, private appService: AppService) {
     super();
   }
@@ -244,8 +243,8 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     }
 
     offerData.type = this.currentType;
-    offerData.displayName = this.auth.user.displayName;
-    offerData.userId = this.auth.user.uid;
+    offerData.displayName = this.userAuthData.displayName;
+    offerData.userId = this.userAuthData.uid;
     offerData.city = this.appService.getCityByFiledValue('name', offerData.city).id;
     let areas = [this.appService.getBusinessAreaByFiledValue('name', offerData.businessArea).id];
     if (offerData.extraBusinessArea && offerData.extraBusinessArea.length > 0) {
@@ -254,8 +253,8 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     offerData.businessArea = areas;
     offerData.date = this.offerDate || Date.now();
     offerData.offerId = this.editOfferId || this.databaseService.createId();
-    offerData.email = this.auth.user.email;
-    offerData.photoURL = this.auth.user.photoURL || AppService.getDefaultAvatar();
+    offerData.email = this.userAuthData.email;
+    offerData.photoURL = this.userAuthData.photoURL || AppService.getDefaultAvatar();
     offerData.imagesURL = this.offerImages;
     offerData.contactMethods = offerData.phone ? this.contactMethods : null;
 

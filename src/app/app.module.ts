@@ -27,6 +27,7 @@ import {AppService} from "./services/app/app.service";
 import {AngularFireAnalyticsModule} from "@angular/fire/analytics";
 import { OfferFormGuardComponent } from './dialogs/offer-form-guard/offer-form-guard.component';
 import { OffersFilterFormComponent } from './dialogs/offers-filter-form/offers-filter-form.component';
+import AppEventNames from "./events/AppEventNames";
 
 
 /***
@@ -38,14 +39,14 @@ export function appInitFactory(auth: AuthService, appService: AppService) {
   return (): Promise<any> => {
     return new Promise<any>((resolve) => {
       let status = {app: false, auth: false};
-      document.addEventListener(AppInitEvents.INIT_AUTH_SUCCESS, () => {
+      document.addEventListener(AppEventNames.INIT_AUTH_SUCCESS, () => {
         status.auth = true;
         if (status.app) {
           resolve();
         }
       });
 
-      document.addEventListener(AppInitEvents.INIT_APP_DATA_SUCCESS, () => {
+      document.addEventListener(AppEventNames.INIT_APP_DATA_SUCCESS, () => {
         status.app = true;
         if (status.auth) {
           resolve();
@@ -91,8 +92,3 @@ export function appInitFactory(auth: AuthService, appService: AppService) {
   bootstrap: [AppComponent]
 })
 export class AppModule { }
-
-export enum AppInitEvents {
-  INIT_APP_DATA_SUCCESS = 'initappdatasuccess',
-  INIT_AUTH_SUCCESS = 'initauthsuccess'
-}

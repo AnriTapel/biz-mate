@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {AuthService} from "../auth/auth.service";
 import {NotificationBarService} from "../notification-bar/notification-bar.service";
 import {DatabaseService} from "../database/database.service";
 import {MatDialog} from "@angular/material/dialog";
@@ -9,6 +8,8 @@ import {UserSubscriptions} from "../../models/UserSubscriptions";
 import {Messages} from "../../models/Messages";
 import {OverlayService} from "../overlay/overlay.service";
 import {AppService} from "../app/app.service";
+import AppEventNames from "../../events/AppEventNames";
+import {User} from "../../models/User";
 
 @Injectable({
   providedIn: 'root'
@@ -16,17 +17,19 @@ import {AppService} from "../app/app.service";
 export class UserSubscriptionsService {
 
   private dialogHandler: any = undefined;
+  private userData: User = undefined;
 
   static readonly NEW_OFFERS_SUBSCRIPTION_STORAGE_FIELD_NAME: string = 'bm_new_offers_subscription_status';
   static readonly NEW_OFFERS_SUBSCRIPTION_DIALOG_TIMEOUT_MSEC: number = 5000;
 
-  constructor(private authService: AuthService, private notificationService: NotificationBarService,
-              private dbService: DatabaseService, private matDialog: MatDialog) {
-
+  constructor(private notificationService: NotificationBarService, private dbService: DatabaseService, private matDialog: MatDialog) {
+    document.addEventListener(AppEventNames.AUTH_STATE_RESPONSE, this.onAuthStateInfo.bind(this));
+    document.addEventListener(AppEventNames.AUTH_STATE_CHANGED, this.onAuthStateInfo.bind(this));
     this.initService();
   }
 
   private async initService(): Promise<void> {
+    document.dispatchEvent(new Event(AppEventNames.AUTH_STATE_REQUEST));
     const newOffersSubStatus = UserSubscriptionsService.getNewOffersSubscriptionStatus();
     if (newOffersSubStatus === true) {
       return;
@@ -34,8 +37,8 @@ export class UserSubscriptionsService {
       this.setNewOffersSubscriptionTimeout();
       return;
     }
-    if (this.authService.user) {
-      const userSubscriptionData = await this.dbService.getUserSubscriptionsByEmail(btoa(this.authService.user.email));
+    if (this.userData) {
+      const userSubscriptionData = await this.dbService.getUserSubscriptionsByEmail(btoa(this.userData.email));
       if (userSubscriptionData) {
         UserSubscriptionsService.setNewOffersSubscriptionStatus(true);
         return;
@@ -44,14 +47,18 @@ export class UserSubscriptionsService {
     this.setNewOffersSubscriptionTimeout();
   }
 
+  private onAuthStateInfo(event: CustomEvent): void {
+    this.userData = event.detail;
+  }
+
   public showNewOffersSubscriptionDialog(): void {
-    let dialog = this.matDialog.open(NewOffersSubscriptionComponent, this.authService.user
-      ? MatDialogConfig.getConfigWithData(DialogConfigType.WIDE_CONFIG, {email: this.authService.user.email})
+    let dialog = this.matDialog.open(NewOffersSubscriptionComponent, this.userData
+      ? MatDialogConfig.getConfigWithData(DialogConfigType.WIDE_CONFIG, {email: this.userData.email})
       : MatDialogConfig.wideDialogWindow);
     this.dialogHandler = dialog.afterClosed().subscribe((res) => {
       AppService.unsubscribeHandler([this.dialogHandler]);
       this.dialogHandler = undefined;
-      if (!res && this.authService.user) {
+      if (!res && this.userData) {
         UserSubscriptionsService.setNewOffersSubscriptionStatus(false);
       } else if (res) {
         res.email = btoa(res.email);
@@ -60,7 +67,7 @@ export class UserSubscriptionsService {
             UserSubscriptionsService.setNewOffersSubscriptionStatus(true);
             this.notificationService.showNotificationBar(Messages.SUBSCRIPTION_SUCCESS, true);
             //@ts-ignore
-            ym(65053642,'reachGoal','newOffersSubscription')
+            ym(65053642, 'reachGoal', 'newOffersSubscription')
           })
           .catch(() => this.notificationService.showNotificationBar(Messages.SUBSCRIPTION_ERROR, false));
       }

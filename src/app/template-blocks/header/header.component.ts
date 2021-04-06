@@ -6,6 +6,8 @@ import {AuthService} from "../../services/auth/auth.service";
 import {Router} from "@angular/router";
 import {OverlayService} from "../../services/overlay/overlay.service";
 import {UserSubscriptionsService} from "../../services/user-subscriptions/user-subscriptions.service";
+import AppEventNames from "../../events/AppEventNames";
+import {User} from "../../models/User";
 
 @Component({
   selector: 'app-header',
@@ -19,13 +21,14 @@ export class HeaderComponent implements OnInit {
 
   constructor(private dialog: MatDialog, private auth: AuthService, private router: Router,
               private userSubscriptionsService: UserSubscriptionsService) {
+
+    document.addEventListener(AppEventNames.AUTH_STATE_RESPONSE, this.onAuthStateChange.bind(this));
+    document.addEventListener(AppEventNames.AUTH_STATE_CHANGED, this.onAuthStateChange.bind(this));
   }
 
   ngOnInit(): void {
     this.hideMobileMenu();
-    this.auth.user$.subscribe((res) => {
-      this.loggedIn = res && !res.isAnonymous;
-    });
+    document.dispatchEvent(new Event(AppEventNames.AUTH_STATE_REQUEST));
   }
 
   public onAuthButtonClick(): void {
@@ -34,6 +37,12 @@ export class HeaderComponent implements OnInit {
     } else {
       this.openLoginDialog();
     }
+  }
+
+  private onAuthStateChange(info: CustomEvent): void {
+    let user = info.detail;
+    this.loggedIn = !!user;
+    this.userName = user ? user.displayName : undefined;
   }
 
   public openLoginDialog(): void {
@@ -46,7 +55,6 @@ export class HeaderComponent implements OnInit {
   }
 
   public showMobileMenu(): void {
-    this.userName = this.loggedIn ? this.auth.user.displayName : undefined;
     document.getElementById('mobileMenuWrapper').style.visibility = 'visible';
     document.getElementById('mobileMenuWrapper').style.opacity = '1';
   }

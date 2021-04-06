@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {User} from "../../models/User";
 import {Router} from "@angular/router";
 import {AppService} from "../../services/app/app.service";
 import {AuthService} from "../../services/auth/auth.service";
@@ -24,7 +23,6 @@ import {DatabaseService} from "../../services/database/database.service";
 })
 export class ProfilePageComponent extends ComponentBrowserAbstractClass implements OnInit {
 
-  public user: User = null;
   public userOffers$: Observable<Offer[]> = null;
   public userDataForm: FormGroup;
   public editableFields = {
@@ -38,10 +36,9 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
               private dialog: MatDialog, private storageService: StorageService, private databaseService: DatabaseService,
               private notificationBarService: NotificationBarService, private seoService: SeoService) {
     super();
-    this.user = this.authService.user;
     this.userDataForm = new FormGroup({
-      email: new FormControl(this.user.email || '', [Validators.required]),
-      displayName: new FormControl(this.user.displayName || '', [Validators.required])
+      email: new FormControl(this.userAuthData.email || '', [Validators.required]),
+      displayName: new FormControl(this.userAuthData.displayName || '', [Validators.required])
     });
 
   }
@@ -53,7 +50,7 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
 
   private getUserOffers(): void {
     try {
-      this.userOffers$ = this.databaseService.getUserOffersByUserId(this.user.uid);
+      this.userOffers$ = this.databaseService.getUserOffersByUserId(this.userAuthData.uid);
     } catch (e) {
       this.notificationBarService.showNotificationBar(Messages.COULD_NOT_LOAD_USER_OFFERS, false)
     }
@@ -73,7 +70,7 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
       if (res && typeof res === "string") {
         this.authService.updateUserDisplayNameOrPhotoURL('photoURL', res)
           .then(() => {
-            this.storageService.deleteUserImage(this.user.photoURL);
+            this.storageService.deleteUserImage(this.userAuthData.photoURL);
             this.updateUserData('photoURL', res);
           })
           .catch(() => this.notificationBarService.showNotificationBar(Messages.SAVE_ERROR, false))
@@ -106,10 +103,7 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
   }
 
   private async updateUserData(field, newValue): Promise<void> {
-    await this.databaseService.updateUserDataInOffers(this.user.uid, field, newValue);
-    this.authService.updateCurrentUserData().then((user) => {
-      this.user = user;
-    });
+    await this.databaseService.updateUserDataInOffers(this.userAuthData.uid, field, newValue);
     this.notificationBarService.showNotificationBar(Messages.SAVE_SUCCESS, true);
   }
 }

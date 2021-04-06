@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {UserSubscriptionsService} from "./services/user-subscriptions/user-subscriptions.service";
-import NotificationEvent from "./models/NotificationEvent";
+import NotificationDataModel from "./models/NotificationDataModel";
 import {MatDialog} from "@angular/material/dialog";
 import {NotificationComponent} from "./dialogs/notification/notification.component";
 import {DialogConfigType, MatDialogConfig} from "./dialogs/mat-dialog-config";
@@ -17,7 +17,7 @@ export class AppComponent {
   private INITIAL_SPINNER_ELEMENT_ID = 'initial_spinner';
   private isInitialRouteActivated: boolean = false;
 
-  private readonly resetPasswordEvent: NotificationEvent = {
+  private readonly resetPasswordEvent: NotificationDataModel = {
     title: 'Пароль изменен',
     mainText: 'Вы успешно сменили пароль к своей учетной записи!',
     extraButton: [{
@@ -27,7 +27,7 @@ export class AppComponent {
     }]
   };
 
-  private readonly emailVerifyEvent: NotificationEvent = {
+  private readonly emailVerifyEvent: NotificationDataModel = {
     title: 'Электронная почта подтверждена',
     mainText: 'Вы успешно подтвердили свой адрес электронной почты! Теперь Вы можете отредактировать информацию о себе и перейти к созданию своего первого оффера.',
     extraButton: [{

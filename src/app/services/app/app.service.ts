@@ -3,8 +3,8 @@ import {City} from "../../models/City";
 import {BusinessArea} from "../../models/BusinessArea";
 import {AbstractControl, ValidatorFn} from "@angular/forms";
 import {DatabaseService} from "../database/database.service";
-import {AppInitEvents} from "../../app.module";
 import {OfferType} from "../../models/IOfferType";
+import AppEventNames from "../../events/AppEventNames";
 
 @Injectable({
   providedIn: 'root'
@@ -65,7 +65,7 @@ export class AppService {
 
   private checkAppInitStatus(): void {
     if (this.cities && this.offerTypes && this.businessAreas) {
-      document.dispatchEvent(new Event(AppInitEvents.INIT_APP_DATA_SUCCESS));
+      document.dispatchEvent(new Event(AppEventNames.INIT_APP_DATA_SUCCESS));
     }
   }
 

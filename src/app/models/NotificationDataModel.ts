@@ -4,7 +4,7 @@ interface ExtraButton {
   buttonClass: string;
 }
 
-export default interface NotificationEvent {
+export default interface NotificationDataModel {
   title: string;
   mainText: string;
   actionText?: string;
