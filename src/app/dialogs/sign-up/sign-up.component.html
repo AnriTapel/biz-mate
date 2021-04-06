@@ -21,6 +21,7 @@
             [attr.aria-pressed]="hidePassword">
       <img src="/assets/img/icons/visibility_eye.svg" [style.opacity]="hidePassword ? .3 : 1" />
     </button>
+    <mat-hint>Не менее 8 символов</mat-hint>
   </mat-form-field>
 
   <mat-checkbox (change)="acceptRules = !acceptRules" [checked]="acceptRules">
