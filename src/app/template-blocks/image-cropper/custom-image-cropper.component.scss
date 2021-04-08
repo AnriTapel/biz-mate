@@ -1,14 +1,27 @@
 $main-theme-color: #2E7990;
 
 .upload-file-text-block{
-  margin: 150px auto 0;
-  height: 200px;
+  position: relative;
+  height: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 
   a {
     text-decoration: underline $main-theme-color;
     color: $main-theme-color;
     cursor: pointer;
+  }
+
+  input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
   }
 }
 
