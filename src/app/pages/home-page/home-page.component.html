@@ -21,7 +21,7 @@
 
     <div class="offers-list">
       <ng-container *ngIf="latestOffers$ | async as offers; else loading">
-        <app-offer-card *ngFor="let offer of offers" [offer]="offer" [editable]="false"></app-offer-card>
+        <app-offer-card *ngFor="let offer of offers" [offer]="offer"></app-offer-card>
       </ng-container>
       <ng-template #loading>
         <app-offer-card-skeleton *ngFor="let number of [0,1,2,3]"></app-offer-card-skeleton>

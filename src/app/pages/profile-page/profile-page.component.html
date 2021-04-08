@@ -59,7 +59,7 @@
         <button class="button-primary button-primary-large" [routerLink]="'/new-offer'">Создать оффер</button>
       </div>
       <div *ngIf="offers.length > 0" class="offers-list">
-        <app-offer-card *ngFor="let offer of offers" [offer]="offer" [editable]="true"></app-offer-card>
+        <app-offer-card *ngFor="let offer of offers" [offer]="offer"></app-offer-card>
       </div>
     </ng-container>
     <ng-template #loading>

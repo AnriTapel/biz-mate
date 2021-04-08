@@ -19,12 +19,13 @@ import {AppService} from "../../services/app/app.service";
 export class OfferCardComponent {
 
   @Input() offer: Offer;
-  @Input() editable: boolean;
 
-  private dialogHandler: any = undefined;
+  public readonly editable: boolean;
+  private dialogHandler: any;
 
   constructor(private router: Router, private dialog: MatDialog, private route: ActivatedRoute,
               private notificationService: NotificationBarService, private databaseService: DatabaseService) {
+    this.editable = this.router.url == '/profile';
   }
 
   /*public getOfferDate(offer: Offer): string {

@@ -67,8 +67,7 @@
 
 
   <div *ngIf="!emptyFilterResult" class="offers-list">
-    <app-offer-card *ngFor="let offer of (filteredOffers$ ? filteredOffers$ : sortedOffers$) | async" [offer]="offer"
-                    [editable]="false"></app-offer-card>
+    <app-offer-card *ngFor="let offer of (filteredOffers$ ? filteredOffers$ : sortedOffers$) | async" [offer]="offer"></app-offer-card>
   </div>
 
   <div *ngIf="emptyFilterResult" class="empty-filter-result">
