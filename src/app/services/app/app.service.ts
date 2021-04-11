@@ -142,6 +142,12 @@ export class AppService {
     };
   }
 
+  public static scrollPageToHeader(): void {
+    document.querySelector('#header').scrollIntoView({
+      behavior: "smooth"
+    });
+  }
+
   public static isMobile(): boolean {
     const toMatch = [
       /Android/i,

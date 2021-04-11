@@ -132,7 +132,10 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
     this.databaseService.getSortedOffersChunk(loadNextChunk)
       .then((res) => this.sortedOffers$ = res)
       .catch(() => this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false))
-      .finally(() => OverlayService.hideOverlay());
+      .finally(() => {
+        OverlayService.hideOverlay();
+        AppService.scrollPageToHeader();
+      });
   }
 
   /***
@@ -176,7 +179,10 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
         ym(65053642,'reachGoal','searchByFilter');
       })
       .catch(() => this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false))
-      .finally(() => OverlayService.hideOverlay())
+      .finally(() => {
+        OverlayService.hideOverlay();
+        AppService.scrollPageToHeader();
+      });
   }
 
   private getSearchFormParams(): FilterField[] {
@@ -248,6 +254,9 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
     const mobileFilter = this.dialog.open(OffersFilterFormComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, data));
     this.mobileFilterDialogHandler = mobileFilter.afterClosed().subscribe((res) => {
       AppService.unsubscribeHandler([this.mobileFilterDialogHandler]);
+      if (res === undefined) {
+        return;
+      }
       if (!res || !Object.values(res).some(x => (x !== null && x !== ''))) {
         this.clearFilterForm();
         return;

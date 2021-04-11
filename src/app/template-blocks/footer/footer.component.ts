@@ -1,4 +1,5 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {AppService} from "../../services/app/app.service";
 
 @Component({
   selector: 'app-footer',
@@ -15,9 +16,7 @@ export class FooterComponent implements OnInit {
   }
 
   public scrollToHeader(): void {
-    document.querySelector('#header').scrollIntoView({
-      behavior: "smooth"
-    });
+    AppService.scrollPageToHeader();
   }
 
   public getCurrentYearString(): string {

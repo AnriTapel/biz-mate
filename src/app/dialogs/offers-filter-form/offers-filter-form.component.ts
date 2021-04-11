@@ -73,6 +73,9 @@ export class OffersFilterFormComponent implements OnInit {
   }
 
   public applyFilter(): void {
+    if (!this.searchForm.valid) {
+      return;
+    }
     this.dialogRef.close(this.searchForm.getRawValue());
   }
 }

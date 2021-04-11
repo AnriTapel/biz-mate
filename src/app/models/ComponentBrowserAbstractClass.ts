@@ -1,6 +1,7 @@
 import {OnDestroy} from "@angular/core";
 import {User} from "./User";
 import AppEventNames from "../events/AppEventNames";
+import {AppService} from "../services/app/app.service";
 
 export abstract class ComponentBrowserAbstractClass implements OnDestroy {
 
@@ -21,9 +22,7 @@ export abstract class ComponentBrowserAbstractClass implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    document.querySelector('#header').scrollIntoView({
-      behavior: "smooth"
-    });
+    AppService.scrollPageToHeader();
 
     for (let [key, handler] of this.authEventListeners) {
       //@ts-ignore
