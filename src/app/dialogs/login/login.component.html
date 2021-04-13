@@ -2,7 +2,7 @@
 
 <p class="error-message" *ngIf="errorMessage">{{errorMessage}}</p>
 
-<a class="non-border-link-button google-login" (click)="loginGoogle()">Вход через&nbsp;&nbsp;
+<a class="non-border-link-button google-login" (click)="loginGoogle()">Войти через&nbsp;&nbsp;
   <img src="/assets/img/socials/google_logo.svg" alt="Google"></a>
 
 <form [formGroup]="loginFormGroup" (keydown.enter)="$event.preventDefault()">

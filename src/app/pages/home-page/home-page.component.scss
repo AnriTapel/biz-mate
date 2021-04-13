@@ -87,6 +87,10 @@
       div > button:nth-of-type(1) {
         margin-right: 0;
       }
+
+      div > button {
+        font-size: 12px;
+      }
     }
 
     .image-block{
@@ -130,8 +134,12 @@
 
 .offers-block {
 
-  h2 {
-    text-align: center;
+  .title {
+    position: relative;
+
+    h2 {
+      text-align: center;
+    }
   }
 
   .more-offers{
