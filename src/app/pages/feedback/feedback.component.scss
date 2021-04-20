@@ -1,5 +1,9 @@
+h2 {
+  text-align: center;
+  margin: 2em auto 3em;
+}
+
 p, form {
-  //width: 50%;
   max-width: 650px;
   min-width: 400px;
 }
@@ -27,6 +31,11 @@ form {
 }
 
 @media screen and (max-width: 770px) {
+  h2 {
+    font-size: 22px;
+    margin: 1em auto 2.5em;
+  }
+
   p {
     width: calc(90% - 3em);
     min-width: unset;

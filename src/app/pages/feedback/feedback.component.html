@@ -1,5 +1,5 @@
 <main>
-  <p>Вы можете задать любой интересующий Вас вопрос, оставить комментарий о работе сервиса или описать возникшую проблему ниже. Наш оператор ознакомится с Вашим письмом и в течение 24-х часов ответит по указанному в форме адресу электронной почты.</p>
+  <h2>{{reportOfferId ? 'Сообщить о проблеме' : 'Форма обратной связи'}}</h2>
 
   <form class="highlight-box" [formGroup]="feedbackForm" (keydown.enter)="$event.preventDefault()">
     <mat-form-field>
@@ -12,8 +12,13 @@
       <input matInput formControlName="email">
     </mat-form-field>
 
+    <mat-form-field *ngIf="reportOfferId">
+      <mat-label>ID проблемного оффера</mat-label>
+      <input matInput [value]="reportOfferId" disabled>
+    </mat-form-field>
+
     <mat-form-field class="full-width-field">
-      <mat-label>Сообщение</mat-label>
+      <mat-label>{{reportOfferId ? 'Опишите возникшую проблему' : 'Текст сообщения'}}</mat-label>
       <textarea matInput rows="6" formControlName="text"></textarea>
     </mat-form-field>
 

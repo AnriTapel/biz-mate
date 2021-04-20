@@ -8,6 +8,7 @@ import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstra
 import {DatabaseService} from "../../services/database/database.service";
 import {Messages} from "../../models/Messages";
 import {OverlayService} from "../../services/overlay/overlay.service";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-feedback',
@@ -15,6 +16,8 @@ import {OverlayService} from "../../services/overlay/overlay.service";
   styleUrls: ['./feedback.component.scss']
 })
 export class FeedbackComponent extends ComponentBrowserAbstractClass implements OnInit{
+
+  public readonly reportOfferId: string;
 
   public feedbackForm: FormGroup;
   private readonly metaTags = {
@@ -24,8 +27,9 @@ export class FeedbackComponent extends ComponentBrowserAbstractClass implements 
   };
 
   constructor(private authService: AuthService, private notificationService: NotificationBarService,
-              private databaseService: DatabaseService, private seoService: SeoService) {
+              private databaseService: DatabaseService, private seoService: SeoService, private route: ActivatedRoute) {
     super();
+    this.reportOfferId = this.route.snapshot.queryParamMap.get('offerId');
   }
 
   ngOnInit(): void {
@@ -44,7 +48,11 @@ export class FeedbackComponent extends ComponentBrowserAbstractClass implements 
 
     OverlayService.showOverlay();
     try {
-      await this.databaseService.sendFeedback(this.feedbackForm.getRawValue() as FeedbackMessage);
+      let data = this.feedbackForm.getRawValue() as FeedbackMessage;
+      if (this.reportOfferId) {
+        data.reportOfferId = this.reportOfferId;
+      }
+      await this.databaseService.sendFeedback(data);
       //@ts-ignore
       ym(65053642,'reachGoal','feedbackSent');
       this.notificationService.showNotificationBar(Messages.FEEDBACK_SUCCESS, true);

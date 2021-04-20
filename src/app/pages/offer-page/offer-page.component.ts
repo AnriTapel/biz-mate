@@ -128,6 +128,10 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
     ym(65053642, 'reachGoal', 'offerContactsClicked');
   }
 
+  public reportOnOffer(): void {
+    this.router.navigate(['/feedback'], {queryParams: {offerId: this.offer.offerId}});
+  }
+
   public openOffersPageByFilter(field: string): void {
     switch (field) {
       case 'city':

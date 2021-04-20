@@ -295,7 +295,7 @@ export class DatabaseService {
   }
 
   public async sendFeedback(message: FeedbackMessage): Promise<void> {
-    await this.db.collection('/messages').add(message);
+    await this.db.collection('/feedbacks').add(message);
   }
 
   public async getUserSubscriptionsByEmail(email: string): Promise<UserSubscriptions> {
