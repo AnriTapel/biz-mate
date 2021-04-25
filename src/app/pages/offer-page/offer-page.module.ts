@@ -4,7 +4,7 @@ import {OfferPageRoutingModule} from './offer-page-routing.module';
 import {OfferPageComponent} from "./offer-page.component";
 import {MaterialModule} from "../../modules/material.module";
 import {ReactiveFormsModule} from "@angular/forms";
-import {ShareButtonsModule} from "../../modules/share-buttons.module";
+import {ShareButtonsModule} from "../../template-blocks/share-buttons/share-buttons.module";
 
 @NgModule({
   declarations: [OfferPageComponent],

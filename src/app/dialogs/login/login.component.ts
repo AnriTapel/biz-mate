@@ -1,12 +1,12 @@
 import {Component, Inject} from '@angular/core';
 import {AuthService} from "../../services/auth/auth.service";
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
-import {SignUpComponent} from "../sign-up/sign-up.component";
-import {MatDialogConfig} from "../mat-dialog-config";
+import {DialogConfigType, MatDialogConfig} from "../mat-dialog-config";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {ResetPasswordComponent} from "../reset-password/reset-password.component";
 import {Messages} from "../../models/Messages";
 import {Router} from "@angular/router";
+import {EmailVerifyComponent} from "../email-verify-message/email-verify.component";
 
 @Component({
   selector: 'app-login',
@@ -15,9 +15,12 @@ import {Router} from "@angular/router";
 })
 export class LoginComponent {
 
-  hidePassword: boolean = true;
-  loginFormGroup: FormGroup;
-  errorMessage: string = null;
+  public loginFormGroup: FormGroup;
+  public signUpFormGroup: FormGroup;
+  public userHasAccount: boolean = true;
+  public hidePassword: boolean = true;
+  public acceptRules: boolean = true;
+  public errorMessage: string = null;
 
   constructor(private auth: AuthService, private dialog: MatDialog, private dialogRef: MatDialogRef<LoginComponent>,
               private router: Router, @Inject(MAT_DIALOG_DATA) public data: any) {
@@ -26,7 +29,14 @@ export class LoginComponent {
       password: new FormControl('', Validators.required)
     });
 
+    this.signUpFormGroup = new FormGroup({
+      name: new FormControl('', Validators.required),
+      email: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', [Validators.required, Validators.minLength(8)])
+    });
+
     this.loginFormGroup.valueChanges.subscribe(() => this.errorMessage = null);
+    this.signUpFormGroup.valueChanges.subscribe(() => this.errorMessage = null);
   }
 
   public logIn() {
@@ -48,25 +58,43 @@ export class LoginComponent {
     this.auth.googleAuth()
       .then(() => {
         //@ts-ignore
-        ym(65053642,'reachGoal','completeSignUp');
+        ym(65053642, 'reachGoal', 'completeSignUp');
         this.onSuccessfulLogin();
       }).catch((err) => this.errorMessage = Messages[err.code] || Messages.DEFAULT_MESSAGE);
   }
 
   private onSuccessfulLogin(): void {
-    this.dialogRef.close(true);
+    this.dialogRef.close();
     if (this.data && this.data.redirectUrl && this.data.redirectUrl.length) {
       setTimeout(() => this.router.navigateByUrl(this.data.redirectUrl), 0);
     }
   }
 
   public signUp() {
-    this.dialogRef.close(false);
-    this.dialog.open(SignUpComponent, MatDialogConfig.narrowDialogWindow);
+    if (!this.signUpFormGroup.valid) {
+      return;
+    }
+
+    const credentials = {
+      email: this.signUpFormGroup.controls.email.value,
+      password: this.signUpFormGroup.controls.password.value,
+      name: this.signUpFormGroup.controls.name.value,
+    };
+
+    this.auth.emailPasswordSignUp(credentials).then(() => {
+      this.onSuccessfulLogin();
+      this.dialog.open(EmailVerifyComponent,
+        MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, {
+          email: credentials.email,
+          alreadySent: true
+        }));
+    }).catch((err) => {
+      this.errorMessage = Messages[err.code] || Messages.DEFAULT_MESSAGE;
+    });
   }
 
   public forgotPassword() {
-    this.dialogRef.close(false);
+    this.dialogRef.close();
     this.dialog.open(ResetPasswordComponent, MatDialogConfig.narrowDialogWindow);
   }
 

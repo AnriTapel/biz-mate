@@ -4,7 +4,7 @@ import {OfferFormRoutingModule} from './offer-form-routing.module';
 import {OfferFormComponent} from "./offer-form.component";
 import {MaterialModule} from "../../modules/material.module";
 import {ReactiveFormsModule} from "@angular/forms";
-import {PhoneMaskModule} from "../../modules/phone-mask.module";
+import {PhoneMaskModule} from "../../directives/phone-mask/phone-mask.module";
 
 
 @NgModule({

@@ -4,7 +4,7 @@ import {OffersPageRoutingModule} from './offers-page-routing.module';
 import {OffersPageComponent} from "./offers-page.component";
 import {MaterialModule} from "../../modules/material.module";
 import {ReactiveFormsModule} from "@angular/forms";
-import {OfferCardModule} from "../../modules/offer-card.module";
+import {OfferCardModule} from "../../template-blocks/offer-card/offer-card.module";
 
 
 @NgModule({

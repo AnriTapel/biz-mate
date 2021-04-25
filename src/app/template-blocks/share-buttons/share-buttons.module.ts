@@ -1,17 +1,17 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {PhoneMaskDirective} from "../directives/phone-mask/phone-mask.directive";
+import {ShareButtonsComponent} from "./share-buttons.component";
 
 
 
 @NgModule({
   declarations: [
-    PhoneMaskDirective
+    ShareButtonsComponent
   ],
   imports: [
     CommonModule
   ], exports: [
-    PhoneMaskDirective
+    ShareButtonsComponent
   ]
 })
-export class PhoneMaskModule { }
+export class ShareButtonsModule { }

@@ -7,7 +7,6 @@ import {Router} from "@angular/router";
 import {OverlayService} from "../../services/overlay/overlay.service";
 import {UserSubscriptionsService} from "../../services/user-subscriptions/user-subscriptions.service";
 import AppEventNames from "../../events/AppEventNames";
-import {User} from "../../models/User";
 
 @Component({
   selector: 'app-header',

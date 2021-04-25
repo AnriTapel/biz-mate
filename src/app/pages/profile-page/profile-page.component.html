@@ -2,8 +2,8 @@
 
   <section class="highlight-box user-info-block" [formGroup]="userDataForm">
     <div class="avatar-container">
-      <img [src]="getUserAuthData().photoURL" (click)="changePhotoURL()" alt="Аватар пользователя"
-           title="{{getUserAuthData().displayName}}" class="user-photo">
+      <img [src]="getUserAuthData()?.photoURL" (click)="changePhotoURL()" alt="Аватар пользователя"
+           title="{{getUserAuthData()?.displayName}}" class="user-photo">
     </div>
     <h2>Мои данные</h2>
     <div class="name">

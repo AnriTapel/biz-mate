@@ -6,8 +6,8 @@ import {CustomImageCropperComponent} from "../../template-blocks/image-cropper/c
 import {ImageCropperModule} from "ngx-image-cropper";
 import {MaterialModule} from "../../modules/material.module";
 import {ReactiveFormsModule} from "@angular/forms";
-import {OfferCardModule} from "../../modules/offer-card.module";
-import {OfferCardSkeletonModule} from "../../modules/offer-card-skeleton.module";
+import {OfferCardModule} from "../../template-blocks/offer-card/offer-card.module";
+import {OfferCardSkeletonModule} from "../../template-blocks/offer-card-skeleton/offer-card-skeleton.module";
 
 
 @NgModule({
