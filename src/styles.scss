@@ -161,6 +161,10 @@ label.mat-form-field-label > span {
   cursor: pointer;
   text-decoration: none;
   border-bottom: .75px solid #2E7990;
+
+  @media screen and (max-width: 770px) {
+    padding: 0 0;
+  }
 }
 
 .non-border-link-button {

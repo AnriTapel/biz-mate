@@ -24,6 +24,8 @@ export class DatabaseService {
   static readonly OFFER_TYPES_COLLECTION_PATH: string = 'offers-types';
   static readonly CITIES_COLLECTION_PATH: string = 'cities';
   static readonly BUSINESS_AREAS_COLLECTION_PATH: string = 'business-areas';
+  static readonly FEEDBACK_COLLECTION_PATH: string = 'feedback';
+  static readonly USER_SUBSCRIPTIONS_COLLECTION_PATH: string = 'user-subscriptions';
 
   private sortedOffers$: Observable<Offer[]> = undefined;
   private filteredOffers$: Observable<Offer[]> = undefined;
@@ -246,7 +248,7 @@ export class DatabaseService {
           batch.commit().catch(err => console.error(err));
         });
 
-      this.db.collection('/offers').doc(offer.offerId).delete()
+      this.db.collection(DatabaseService.OFFERS_COLLECTION_PATH).doc(offer.offerId).delete()
         .then(() => resolve())
         .catch(() => reject());
     });
@@ -295,12 +297,12 @@ export class DatabaseService {
   }
 
   public async sendFeedback(message: FeedbackMessage): Promise<void> {
-    await this.db.collection('/feedbacks').add(message);
+    await this.db.collection(DatabaseService.FEEDBACK_COLLECTION_PATH).add(message);
   }
 
   public async getUserSubscriptionsByEmail(email: string): Promise<UserSubscriptions> {
-    return new Promise<UserSubscriptions>((resolve, reject) => {
-      this.db.collection('user-subscriptions').ref.doc(email).get()
+    return new Promise<UserSubscriptions>((resolve) => {
+      this.db.collection(DatabaseService.USER_SUBSCRIPTIONS_COLLECTION_PATH).ref.doc(email).get()
         .then((doc) => resolve(doc.data() as UserSubscriptions))
         .catch(() => resolve(null));
     });
@@ -308,7 +310,7 @@ export class DatabaseService {
 
   public async setUserSubscriptionsByEmail(params: UserSubscriptions): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      let ref = this.db.collection('user-subscriptions').ref;
+      let ref = this.db.collection(DatabaseService.USER_SUBSCRIPTIONS_COLLECTION_PATH).ref;
       ref.doc(params.email).get().then((res) => {
         if (res.exists) {
           ref.doc(params.email).update({newOfferAreas: params.newOfferAreas});
@@ -325,7 +327,7 @@ export class DatabaseService {
   // field: field name as string from UserSubscriptions
   public async removeUserSubscriptionByField(email: string, fields: string[]): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      let ref = this.db.collection('user-subscriptions').ref;
+      let ref = this.db.collection(DatabaseService.USER_SUBSCRIPTIONS_COLLECTION_PATH).ref;
       ref.doc(email).get().then((res) => {
         if (res.exists) {
           let data = {};

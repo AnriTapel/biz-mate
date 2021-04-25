@@ -121,8 +121,16 @@ $main-theme-color: #2E7990;
     }
   }
 
-  .report-on-offer-block > p {
-    font-size: 14px;
+  .report-on-offer-block {
+    padding: 15px 10px;
+    background: #fdf7f7;
+    border-radius: 5px;
+
+    p {
+      font-size: 14px;
+      margin: 0;
+      line-height: 20px;
+    }
   }
 
   button {
@@ -137,7 +145,7 @@ $main-theme-color: #2E7990;
 }
 
 .comments-block {
-  margin-top: 7em;
+  margin-top: 5em;
 
   .comment {
     margin-top: 1.5em;
@@ -202,9 +210,5 @@ $main-theme-color: #2E7990;
       align-self: flex-start;
       margin-top: 1.5em;
     }
-  }
-
-  @media screen and (max-width: 770px) {
-    margin-top: 5em;
   }
 }
