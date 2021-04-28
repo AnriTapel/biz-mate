@@ -15,9 +15,9 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {DatabaseService} from "../../services/database/database.service";
 import {FilterField, FilterFieldName, FilterFieldOperator} from "../../models/FilterFields";
 import {MatDialog} from "@angular/material/dialog";
-import {OffersFilterFormComponent} from "../../dialogs/offers-filter-form/offers-filter-form.component";
 import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
 import {OfferType} from "../../models/IOfferType";
+import {LazyLoadingService} from "../../services/lazy-loading/lazy-loading.service";
 
 @Component({
   selector: 'app-offers-page',
@@ -50,7 +50,8 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
   public isTouchDevice: boolean = AppService.isTouchableDevice();
 
   constructor(private appService: AppService, private notificationService: NotificationBarService, private seoService: SeoService,
-              private route: ActivatedRoute, private router: Router, private databaseService: DatabaseService, private dialog: MatDialog) {
+              private route: ActivatedRoute, private router: Router, private databaseService: DatabaseService, private dialog: MatDialog,
+              private lazyLoadingService: LazyLoadingService) {
     super();
   }
 
@@ -176,7 +177,7 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
           this.emptyFilterResult = true
         }
         //@ts-ignore
-        ym(65053642,'reachGoal','searchByFilter');
+        ym(65053642, 'reachGoal', 'searchByFilter');
       })
       .catch(() => this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false))
       .finally(() => {
@@ -251,22 +252,25 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
       data[FilterFieldName.CITY] = filterValues[FilterFieldName.CITY];
     }
 
-    const mobileFilter = this.dialog.open(OffersFilterFormComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, data));
-    this.mobileFilterDialogHandler = mobileFilter.afterClosed().subscribe((res) => {
-      AppService.unsubscribeHandler([this.mobileFilterDialogHandler]);
-      if (res === undefined) {
-        return;
-      }
-      if (!res || !Object.values(res).some(x => (x !== null && x !== ''))) {
-        this.clearFilterForm();
-        return;
-      }
+    this.lazyLoadingService.getLazyLoadedComponent(LazyLoadingService.OFFERS_FILTER_FORM_MODULE_NAME)
+      .then(comp => {
+        const mobileFilter = this.dialog.open(comp, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, data));
+        this.mobileFilterDialogHandler = mobileFilter.afterClosed().subscribe((res) => {
+          AppService.unsubscribeHandler([this.mobileFilterDialogHandler]);
+          if (res === undefined) {
+            return;
+          }
+          if (!res || !Object.values(res).some(x => (x !== null && x !== ''))) {
+            this.clearFilterForm();
+            return;
+          }
 
-      for (let key in res) {
-        this.searchForm.controls[key].setValue(res[key]);
-      }
-      this.applyFilter();
-    });
+          for (let key in res) {
+            this.searchForm.controls[key].setValue(res[key]);
+          }
+          this.applyFilter();
+        });
+      }).catch(console.error);
   }
 
   public async getNextOffersChunk(): Promise<void> {

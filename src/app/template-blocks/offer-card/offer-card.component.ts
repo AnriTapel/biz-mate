@@ -2,13 +2,13 @@ import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {Offer} from "../../models/Offer";
 import {ActivatedRoute, Router} from "@angular/router";
 import {MatDialog} from "@angular/material/dialog";
-import {DeleteOfferComponent} from "../../dialogs/delete-offer/delete-offer.component";
 import {MatDialogConfig} from "../../dialogs/mat-dialog-config";
 import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
 import {Messages} from "../../models/Messages";
 import {OverlayService} from "../../services/overlay/overlay.service";
 import {DatabaseService} from "../../services/database/database.service";
 import {AppService} from "../../services/app/app.service";
+import {LazyLoadingService} from "../../services/lazy-loading/lazy-loading.service";
 
 @Component({
   selector: 'app-offer-card',
@@ -23,7 +23,7 @@ export class OfferCardComponent {
   public readonly editable: boolean;
   private dialogHandler: any;
 
-  constructor(private router: Router, private dialog: MatDialog, private route: ActivatedRoute,
+  constructor(private router: Router, private dialog: MatDialog, private route: ActivatedRoute, private lazyLoadingService: LazyLoadingService,
               private notificationService: NotificationBarService, private databaseService: DatabaseService) {
     this.editable = this.router.url == '/profile';
   }
@@ -47,13 +47,15 @@ export class OfferCardComponent {
   }
 
   public onDeleteOfferButtonClick(): void {
-    const dialog = this.dialog.open(DeleteOfferComponent, MatDialogConfig.narrowDialogWindow);
-    this.dialogHandler = dialog.afterClosed().subscribe((res) => {
-      if (res === true) {
-        this.deleteOffer();
-      }
-      AppService.unsubscribeHandler([this.dialogHandler]);
-    });
+    this.lazyLoadingService.getLazyLoadedComponent(LazyLoadingService.DELETE_OFFER_MODULE_NAME).then((comp) => {
+      const dialog = this.dialog.open(comp, MatDialogConfig.narrowDialogWindow);
+      this.dialogHandler = dialog.afterClosed().subscribe((res) => {
+        if (res === true) {
+          this.deleteOffer();
+        }
+        AppService.unsubscribeHandler([this.dialogHandler]);
+      });
+    }).catch(console.error);
   }
 
   private deleteOffer(): void {

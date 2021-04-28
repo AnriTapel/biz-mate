@@ -2,9 +2,9 @@ import {Component} from '@angular/core';
 import {UserSubscriptionsService} from "./services/user-subscriptions/user-subscriptions.service";
 import NotificationDataModel from "./models/NotificationDataModel";
 import {MatDialog} from "@angular/material/dialog";
-import {NotificationComponent} from "./dialogs/notification/notification.component";
 import {DialogConfigType, MatDialogConfig} from "./dialogs/mat-dialog-config";
 import {ActivatedRoute} from "@angular/router";
+import {LazyLoadingService} from "./services/lazy-loading/lazy-loading.service";
 
 @Component({
   selector: 'app-root',
@@ -41,17 +41,18 @@ export class AppComponent {
     }]
   };
 
-  constructor(private route: ActivatedRoute, private userSubscriptionsService: UserSubscriptionsService, private dialog: MatDialog) {
+  constructor(private route: ActivatedRoute, private userSubscriptionsService: UserSubscriptionsService, private dialog: MatDialog,
+              private lazyLoadingServiec: LazyLoadingService) {
     this.route.queryParams.subscribe(params => {
       this.onRouteActivated();
-      if (params['password_reset']) {
-        this.dialog.open(NotificationComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, this.resetPasswordEvent));
-        //@ts-ignore
-        ym(65053642, 'reachGoal', 'resetPassword')
-      } else if (params['email_verify']) {
-        this.dialog.open(NotificationComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, this.emailVerifyEvent));
-        //@ts-ignore
-        ym(65053642, 'reachGoal', 'completeSignUp');
+      if (params['password_reset'] || params['email_verify']) {
+        this.lazyLoadingServiec.getLazyLoadedComponent(LazyLoadingService.NOTIFICATION_MODULE_NAME)
+          .then(comp => {
+            this.dialog.open(comp, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG,
+              params['password_reset'] ? this.resetPasswordEvent : this.emailVerifyEvent));
+            //@ts-ignore
+            ym(65053642, 'reachGoal', params['password_reset'] ? 'resetPassword' : 'completeSignUp');
+          }).catch(console.error);
       } else if (params['event']) {
         if (params['event'] === 'unsubscribe') {
           this.userSubscriptionsService.resolveUnsubscribeQuery(params);

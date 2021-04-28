@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {NotificationBarService} from "../notification-bar/notification-bar.service";
 import {DatabaseService} from "../database/database.service";
 import {MatDialog} from "@angular/material/dialog";
-import {NewOffersSubscriptionComponent} from "../../dialogs/new-offers-subscription/new-offers-subscription.component";
 import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
 import {UserSubscriptions} from "../../models/UserSubscriptions";
 import {Messages} from "../../models/Messages";
@@ -10,6 +9,7 @@ import {OverlayService} from "../overlay/overlay.service";
 import {AppService} from "../app/app.service";
 import AppEventNames from "../../events/AppEventNames";
 import {User} from "../../models/User";
+import {LazyLoadingService} from "../lazy-loading/lazy-loading.service";
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +22,8 @@ export class UserSubscriptionsService {
   static readonly NEW_OFFERS_SUBSCRIPTION_STORAGE_FIELD_NAME: string = 'bm_new_offers_subscription_status';
   static readonly NEW_OFFERS_SUBSCRIPTION_DIALOG_TIMEOUT_MSEC: number = 5000;
 
-  constructor(private notificationService: NotificationBarService, private dbService: DatabaseService, private matDialog: MatDialog) {
+  constructor(private notificationService: NotificationBarService, private dbService: DatabaseService,
+              private matDialog: MatDialog, private lazyLoadingService: LazyLoadingService) {
     document.addEventListener(AppEventNames.AUTH_STATE_RESPONSE, this.onAuthStateInfo.bind(this));
     document.addEventListener(AppEventNames.AUTH_STATE_CHANGED, this.onAuthStateInfo.bind(this));
     this.initService();
@@ -52,26 +53,31 @@ export class UserSubscriptionsService {
   }
 
   public showNewOffersSubscriptionDialog(): void {
-    let dialog = this.matDialog.open(NewOffersSubscriptionComponent, this.userData
-      ? MatDialogConfig.getConfigWithData(DialogConfigType.WIDE_CONFIG, {email: this.userData.email})
-      : MatDialogConfig.wideDialogWindow);
-    this.dialogHandler = dialog.afterClosed().subscribe((res) => {
-      AppService.unsubscribeHandler([this.dialogHandler]);
-      this.dialogHandler = undefined;
-      if (!res && this.userData) {
-        UserSubscriptionsService.setNewOffersSubscriptionStatus(false);
-      } else if (res) {
-        res.email = btoa(res.email);
-        this.dbService.setUserSubscriptionsByEmail(res as UserSubscriptions)
-          .then(() => {
-            UserSubscriptionsService.setNewOffersSubscriptionStatus(true);
-            this.notificationService.showNotificationBar(Messages.SUBSCRIPTION_SUCCESS, true);
-            //@ts-ignore
-            ym(65053642, 'reachGoal', 'newOffersSubscription')
-          })
-          .catch(() => this.notificationService.showNotificationBar(Messages.SUBSCRIPTION_ERROR, false));
-      }
-    });
+    this.lazyLoadingService.getLazyLoadedComponent(LazyLoadingService.NEW_OFFERS_SUBSCRIPTION_MODULE_NAME)
+      .then(comp => {
+        let dialog = this.matDialog.open(comp, this.userData
+          ? MatDialogConfig.getConfigWithData(DialogConfigType.WIDE_CONFIG, {email: this.userData.email})
+          : MatDialogConfig.wideDialogWindow);
+
+        this.dialogHandler = dialog.afterClosed().subscribe((res) => {
+          AppService.unsubscribeHandler([this.dialogHandler]);
+          this.dialogHandler = undefined;
+
+          if (!res && this.userData) {
+            UserSubscriptionsService.setNewOffersSubscriptionStatus(false);
+          } else if (res) {
+            res.email = btoa(res.email);
+            this.dbService.setUserSubscriptionsByEmail(res as UserSubscriptions)
+              .then(() => {
+                UserSubscriptionsService.setNewOffersSubscriptionStatus(true);
+                this.notificationService.showNotificationBar(Messages.SUBSCRIPTION_SUCCESS, true);
+                //@ts-ignore
+                ym(65053642, 'reachGoal', 'newOffersSubscription')
+              })
+              .catch(() => this.notificationService.showNotificationBar(Messages.SUBSCRIPTION_ERROR, false));
+          }
+        });
+      }).catch(console.error);
   }
 
   private setNewOffersSubscriptionTimeout(): void {

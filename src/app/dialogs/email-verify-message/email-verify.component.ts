@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA} from "@angular/material/dialog";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {AuthService} from "../../services/auth/auth.service";
 
 @Component({
@@ -11,7 +11,8 @@ export class EmailVerifyComponent implements OnInit {
 
   resendEnabled: boolean = false;
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any, private authService: AuthService) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any, private authService: AuthService,
+              private matDialogRef: MatDialogRef<EmailVerifyComponent>) {
   }
 
   ngOnInit(): void {
@@ -22,16 +23,20 @@ export class EmailVerifyComponent implements OnInit {
     }
   }
 
-  startTimer(): void {
+  private startTimer(): void {
     this.resendEnabled = false;
     setTimeout(() => {
       this.resendEnabled = true;
     }, 120000);
   }
 
-  sendEmailVerificationEmail(): void {
+  public sendEmailVerificationEmail(): void {
     this.authService.sendEmailVerification();
     this.startTimer();
+  }
+
+  public closeDialog(): void {
+    this.matDialogRef.close();
   }
 
 }

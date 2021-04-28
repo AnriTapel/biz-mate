@@ -10,21 +10,13 @@ import {AngularFirestoreModule} from '@angular/fire/firestore';
 import {AngularFireDatabaseModule} from '@angular/fire/database';
 import {AngularFireAuthModule} from '@angular/fire/auth';
 import {environment} from "../environments/environment";
-import {DeleteOfferComponent} from './dialogs/delete-offer/delete-offer.component';
 import {HeaderComponent} from "./template-blocks/header/header.component";
 import {FooterComponent} from "./template-blocks/footer/footer.component";
-import {LoginComponent} from "./dialogs/login/login.component";
-import {ResetPasswordComponent} from "./dialogs/reset-password/reset-password.component";
-import {EmailVerifyComponent} from "./dialogs/email-verify-message/email-verify.component";
-import {NotificationComponent} from "./dialogs/notification/notification.component";
 import {NotificationBarComponent} from "./template-blocks/notification-bar/notification-bar.component";
 import {OverlayComponent} from "./template-blocks/overlay/overlay.component";
 import {AuthService} from "./services/auth/auth.service";
-import {NewOffersSubscriptionComponent} from './dialogs/new-offers-subscription/new-offers-subscription.component';
 import {AppService} from "./services/app/app.service";
 import {AngularFireAnalyticsModule} from "@angular/fire/analytics";
-import {OfferFormGuardComponent} from './dialogs/offer-form-guard/offer-form-guard.component';
-import {OffersFilterFormComponent} from './dialogs/offers-filter-form/offers-filter-form.component';
 import AppEventNames from "./events/AppEventNames";
 import {MaterialModule} from "./modules/material.module";
 
@@ -61,17 +53,9 @@ export function appInitFactory(auth: AuthService, appService: AppService) {
   declarations: [
     AppComponent,
     HeaderComponent,
-    LoginComponent,
     FooterComponent,
-    ResetPasswordComponent,
-    EmailVerifyComponent,
-    NotificationComponent,
     NotificationBarComponent,
-    DeleteOfferComponent,
-    OverlayComponent,
-    NewOffersSubscriptionComponent,
-    OfferFormGuardComponent,
-    OffersFilterFormComponent
+    OverlayComponent
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebase),

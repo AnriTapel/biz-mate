@@ -6,7 +6,6 @@ import {Offer} from "../../models/Offer";
 import {Observable} from "rxjs";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {MatDialog} from "@angular/material/dialog";
-import {CustomImageCropperComponent} from "../../template-blocks/image-cropper/custom-image-cropper.component";
 import {MatDialogConfig} from "../../dialogs/mat-dialog-config";
 import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
 import {Messages} from "../../models/Messages";
@@ -15,6 +14,7 @@ import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstra
 import {OverlayService} from "../../services/overlay/overlay.service";
 import {StorageService} from "../../services/storage/storage.service";
 import {DatabaseService} from "../../services/database/database.service";
+import {LazyLoadingService} from "../../services/lazy-loading/lazy-loading.service";
 
 @Component({
   selector: 'app-profile-page',
@@ -34,7 +34,8 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
 
   constructor(private appService: AppService, private authService: AuthService, private router: Router,
               private dialog: MatDialog, private storageService: StorageService, private databaseService: DatabaseService,
-              private notificationBarService: NotificationBarService, private seoService: SeoService) {
+              private notificationBarService: NotificationBarService, private seoService: SeoService,
+              private lazyLoadingService: LazyLoadingService) {
     super();
     this.userDataForm = new FormGroup({
       email: new FormControl(this.userAuthData.email || '', [Validators.required]),
@@ -64,19 +65,22 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
   }
 
   public changePhotoURL(): void {
-    const dialogRef = this.dialog.open(CustomImageCropperComponent, MatDialogConfig.narrowDialogWindow);
-    this.dialogHandler = dialogRef.afterClosed().subscribe((res) => {
-      AppService.unsubscribeHandler([this.dialogHandler]);
-      if (res && typeof res === "string") {
-        this.authService.updateUserDisplayNameOrPhotoURL('photoURL', res)
-          .then(() => {
-            this.storageService.deleteUserImage(this.userAuthData.photoURL);
-            this.updateUserData('photoURL', res);
-          })
-          .catch(() => this.notificationBarService.showNotificationBar(Messages.SAVE_ERROR, false))
-          .finally(() => OverlayService.hideOverlay());
-      }
-    });
+    this.lazyLoadingService.getLazyLoadedComponent(LazyLoadingService.CUSTOM_IMAGE_CROPPER_MODULE_NAME)
+      .then(comp => {
+        const dialogRef = this.dialog.open(comp, MatDialogConfig.narrowDialogWindow);
+        this.dialogHandler = dialogRef.afterClosed().subscribe((res) => {
+          AppService.unsubscribeHandler([this.dialogHandler]);
+          if (res && typeof res === "string") {
+            this.authService.updateUserDisplayNameOrPhotoURL('photoURL', res)
+              .then(() => {
+                this.storageService.deleteUserImage(this.userAuthData.photoURL);
+                this.updateUserData('photoURL', res);
+              })
+              .catch(() => this.notificationBarService.showNotificationBar(Messages.SAVE_ERROR, false))
+              .finally(() => OverlayService.hideOverlay());
+          }
+        });
+      }).catch(console.error);
   }
 
   public async editUserData(field: string): Promise<void> {

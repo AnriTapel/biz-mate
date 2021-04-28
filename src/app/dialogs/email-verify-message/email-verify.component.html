@@ -7,5 +7,5 @@
 
 <div class="full-width-action-buttons">
   <button class="button-primary" [disabled]="!resendEnabled" (click)="sendEmailVerificationEmail()">Выслать повторно</button>
-  <button class="button-primary button-white" [mat-dialog-close]>Закрыть</button>
+  <button class="button-primary button-white" (click)="closeDialog()">Закрыть</button>
 </div>

@@ -4,9 +4,9 @@ import {AngularFireAuth} from '@angular/fire/auth';
 import {User} from "../../models/User";
 import {AppService} from "../app/app.service";
 import {MatDialog} from "@angular/material/dialog";
-import {EmailVerifyComponent} from "../../dialogs/email-verify-message/email-verify.component";
 import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
 import AppEventNames from "../../events/AppEventNames";
+import {LazyLoadingService} from "../lazy-loading/lazy-loading.service";
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +20,7 @@ export class AuthService {
   private isInitAuthEventSent: boolean = false;
 
   //TODO: make user private and create getter for other classes
-  constructor(private afAuth: AngularFireAuth, private dialog: MatDialog) {
+  constructor(private afAuth: AngularFireAuth, private dialog: MatDialog, private lazyLoadingService: LazyLoadingService) {
     document.addEventListener(AppEventNames.AUTH_STATE_REQUEST, this.dispatchAuthStateResponse.bind(this));
   }
 
@@ -189,8 +189,10 @@ export class AuthService {
   }
 
   private openEmailVerificationDialog(): void {
-    this.dialog.open(EmailVerifyComponent,
-      MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, {email: this.user.email, alreadySent: false}));
+    this.lazyLoadingService.getLazyLoadedComponent(LazyLoadingService.EMAIL_VERIFY_MESSAGE_MODULE_NAME)
+      .then((comp) =>
+        this.dialog.open(comp, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, {email: this.user.email, alreadySent: false}))
+      ).catch(console.error);
   }
 
   public async signOut(): Promise<void> {

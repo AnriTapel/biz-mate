@@ -1,12 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {MatDialog} from "@angular/material/dialog";
-import {LoginComponent} from "../../dialogs/login/login.component";
-import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
 import {AuthService} from "../../services/auth/auth.service";
 import {Router} from "@angular/router";
 import {OverlayService} from "../../services/overlay/overlay.service";
 import {UserSubscriptionsService} from "../../services/user-subscriptions/user-subscriptions.service";
 import AppEventNames from "../../events/AppEventNames";
+import {LazyLoadingService} from "../../services/lazy-loading/lazy-loading.service";
+import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
 
 @Component({
   selector: 'app-header',
@@ -19,7 +19,7 @@ export class HeaderComponent implements OnInit {
   public userName: string;
 
   constructor(private dialog: MatDialog, private auth: AuthService, private router: Router,
-              private userSubscriptionsService: UserSubscriptionsService) {
+              private userSubscriptionsService: UserSubscriptionsService, private lazyLoadingService: LazyLoadingService) {
 
     document.addEventListener(AppEventNames.AUTH_STATE_RESPONSE, this.onAuthStateChange.bind(this));
     document.addEventListener(AppEventNames.AUTH_STATE_CHANGED, this.onAuthStateChange.bind(this));
@@ -45,8 +45,11 @@ export class HeaderComponent implements OnInit {
   }
 
   public openLoginDialog(): void {
-    this.dialog.open(LoginComponent, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, {redirectUrl: '/profile'}));
-    this.hideMobileMenu();
+    this.lazyLoadingService.getLazyLoadedComponent(LazyLoadingService.LOGIN_MODULE_NAME)
+      .then((comp) => {
+        this.dialog.open(comp, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, {redirectUrl: '/profile'}));
+        this.hideMobileMenu();
+      }).catch(console.error);
   }
 
   public onNotificationButtonClick(): void {

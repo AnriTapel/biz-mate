@@ -3,10 +3,9 @@ import {AuthService} from "../../services/auth/auth.service";
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {DialogConfigType, MatDialogConfig} from "../mat-dialog-config";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {ResetPasswordComponent} from "../reset-password/reset-password.component";
 import {Messages} from "../../models/Messages";
 import {Router} from "@angular/router";
-import {EmailVerifyComponent} from "../email-verify-message/email-verify.component";
+import {LazyLoadingService} from "../../services/lazy-loading/lazy-loading.service";
 
 @Component({
   selector: 'app-login',
@@ -23,7 +22,7 @@ export class LoginComponent {
   public errorMessage: string = null;
 
   constructor(private auth: AuthService, private dialog: MatDialog, private dialogRef: MatDialogRef<LoginComponent>,
-              private router: Router, @Inject(MAT_DIALOG_DATA) public data: any) {
+              private router: Router, @Inject(MAT_DIALOG_DATA) public data: any, private lazyLoadingService: LazyLoadingService) {
     this.loginFormGroup = new FormGroup({
       login: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', Validators.required)
@@ -83,11 +82,13 @@ export class LoginComponent {
 
     this.auth.emailPasswordSignUp(credentials).then(() => {
       this.onSuccessfulLogin();
-      this.dialog.open(EmailVerifyComponent,
-        MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, {
-          email: credentials.email,
-          alreadySent: true
-        }));
+      this.lazyLoadingService.getLazyLoadedComponent(LazyLoadingService.EMAIL_VERIFY_MESSAGE_MODULE_NAME)
+        .then((comp) => {
+          this.dialog.open(comp, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, {
+            email: credentials.email,
+            alreadySent: true
+          }));
+        }).catch(console.error);
     }).catch((err) => {
       this.errorMessage = Messages[err.code] || Messages.DEFAULT_MESSAGE;
     });
@@ -95,7 +96,9 @@ export class LoginComponent {
 
   public forgotPassword() {
     this.dialogRef.close();
-    this.dialog.open(ResetPasswordComponent, MatDialogConfig.narrowDialogWindow);
+    this.lazyLoadingService.getLazyLoadedComponent(LazyLoadingService.RESET_PASSWORD_MODULE_NAME)
+      .then(comp => this.dialog.open(comp, MatDialogConfig.narrowDialogWindow))
+      .catch(console.error);
   }
 
 }
