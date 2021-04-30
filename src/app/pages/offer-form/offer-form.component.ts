@@ -181,6 +181,13 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
 
   public async getOfferData(): Promise<any> {
     let offerData = {};
+
+    const offerTypeId = this.activeRoute.snapshot.queryParamMap.get('offerTypeId');
+    if (offerTypeId) {
+      offerData['type'] = parseInt(offerTypeId);
+      return offerData;
+    }
+
     if (this.activeRoute.snapshot.params && this.activeRoute.snapshot.params.offerId) {
       OverlayService.showOverlay();
       this.editOffer = true;

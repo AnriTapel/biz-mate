@@ -40,7 +40,7 @@
 
     <div class="offer-types-list">
       <div *ngFor="let offerTypeData of offerTypesBlockData">
-        <p class="title">{{offerTypeData.title}}</p>
+        <p class="title" (click)="openOfferFormWithSelectedType(offerTypeData.id)">{{offerTypeData.title}}</p>
         <p class="desc">{{offerTypeData.desc}}</p>
       </div>
     </div>
