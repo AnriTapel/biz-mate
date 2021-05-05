@@ -11,12 +11,11 @@ import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstra
 })
 export class NotFoundComponent extends ComponentBrowserAbstractClass implements OnInit {
 
-  private readonly metaTags = {
-    title: '404 - Ничего не найдено...'
-  };
-
   constructor(private router: Router, private seoService: SeoService) {
     super();
+    this.metaTags = {
+      title: '404 - Ничего не найдено...'
+    };
   }
 
   ngOnInit(): void {

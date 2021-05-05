@@ -17,13 +17,6 @@ export class HomePageComponent extends ComponentBrowserAbstractClass implements 
 
   public latestOffers$: Observable<Offer[]>;
 
-  private readonly metaTags = {
-    title: 'BizMate - поиск партнеров и инвестиций для бизнеса',
-    description: 'Сервис BizMate помогает найти партнёра по бизнесу, привлечь или предложить инвестиции, а также продать работающий бизнес. И все это абсолютно бесплатно!',
-    keywords: 'бизнес инвестор, партнер по бизнесу, инвестор искать, куда вклыдвать деньги, вложить в бизнес, купить бизнес, купить готовый бизнес, начинающий бизнес, бизнес партнер, частный инвестор',
-    site: '',
-  };
-
   public readonly offerTypesBlockData = [
     {
       id: OfferTypesEnum.NEED_INVESTMENTS,
@@ -55,6 +48,12 @@ export class HomePageComponent extends ComponentBrowserAbstractClass implements 
   constructor(private databaseService: DatabaseService, private seoService: SeoService, private appService: AppService,
               private router: Router) {
     super();
+    this.metaTags = {
+      title: 'BizMate - поиск партнеров и инвестиций для бизнеса',
+      description: 'Сервис BizMate помогает найти партнёра по бизнесу, привлечь или предложить инвестиции, а также продать работающий бизнес. И все это абсолютно бесплатно!',
+      keywords: 'бизнес инвестор, партнер по бизнесу, инвестор искать, куда вклыдвать деньги, вложить в бизнес, купить бизнес, купить готовый бизнес, начинающий бизнес, бизнес партнер, частный инвестор',
+      site: '',
+    };
   }
 
   ngOnInit(): void {

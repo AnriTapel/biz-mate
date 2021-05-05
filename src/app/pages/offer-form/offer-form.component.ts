@@ -59,17 +59,16 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
   public isExtraBusinessAreaFieldAvail: boolean = false;
   private offerType = OfferTypesEnum;
 
-  private readonly metaTags = {
-    title: 'Разместить предложение | BizMate',
-    description: 'Составьте и разместите в сервисе BizMate предложение о поиске партнера по бизнесу, поиску и предложения инвестиций, а также покупке или продаже бизнеса.',
-    keywords: 'бизнес инвестор, партнер по бизнесу, инвестор искать, куда вклыдвать деньги, вложить в бизнес, купить бизнес, купить готовый бизнес, начинающий бизнес, бизнес партнер, частный инвестор',
-    site: '/new-offer'
-  };
-
   constructor(private activeRoute: ActivatedRoute, private storageService: StorageService, private router: Router,
               private notificationBarService: NotificationBarService, private seoService: SeoService,
               private databaseService: DatabaseService, private appService: AppService) {
     super();
+    this.metaTags = {
+      title: 'Разместить предложение | BizMate',
+      description: 'Составьте и разместите в сервисе BizMate предложение о поиске партнера по бизнесу, поиску и предложения инвестиций, а также покупке или продаже бизнеса.',
+      keywords: 'бизнес инвестор, партнер по бизнесу, инвестор искать, куда вклыдвать деньги, вложить в бизнес, купить бизнес, купить готовый бизнес, начинающий бизнес, бизнес партнер, частный инвестор',
+      site: '/new-offer'
+    };
   }
 
   async ngOnInit(): Promise<void> {

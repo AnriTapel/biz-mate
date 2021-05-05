@@ -5,6 +5,7 @@ import {AppService} from "../services/app/app.service";
 
 export abstract class ComponentBrowserAbstractClass implements OnDestroy {
 
+  protected metaTags: any;
   protected userAuthData: User = undefined;
   protected authEventListeners: Map<string, Function> = new Map([
     [AppEventNames.AUTH_STATE_RESPONSE, this.onAuthStateEvent.bind(this)],

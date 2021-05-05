@@ -12,9 +12,10 @@ export class RulesComponent extends ComponentBrowserAbstractClass implements OnI
 
   constructor(private seoService: SeoService) {
     super();
+    this.metaTags = {title: 'Правила размещения предложений | BizMate'}
   }
 
   ngOnInit(): void {
-    this.seoService.updateRouteMetaTagsByData({title: 'Правила размещения предложений | BizMate'});
+    this.seoService.updateRouteMetaTagsByData(this.metaTags);
   }
 }

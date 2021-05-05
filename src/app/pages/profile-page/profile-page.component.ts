@@ -37,15 +37,15 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
               private notificationBarService: NotificationBarService, private seoService: SeoService,
               private lazyLoadingService: LazyLoadingService) {
     super();
+    this.metaTags = {title: 'Мой профиль | BizMate'};
     this.userDataForm = new FormGroup({
       email: new FormControl(this.userAuthData.email || '', [Validators.required]),
       displayName: new FormControl(this.userAuthData.displayName || '', [Validators.required])
     });
-
   }
 
   ngOnInit(): void {
-    this.seoService.updateRouteMetaTagsByData({title: 'Мой профиль | BizMate'});
+    this.seoService.updateRouteMetaTagsByData(this.metaTags);
     this.getUserOffers();
   }
 

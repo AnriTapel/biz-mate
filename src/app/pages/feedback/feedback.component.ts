@@ -20,16 +20,16 @@ export class FeedbackComponent extends ComponentBrowserAbstractClass implements 
   public readonly reportOfferId: string;
 
   public feedbackForm: FormGroup;
-  private readonly metaTags = {
-    title: 'Обратная связь | BizMate',
-    description: 'Форма обратной связи, где Вы можете оставить свой отзыв по использованию сервиса, внести предложения по улучшению его работы и задать возникшие вопросы.',
-    site: '/feedback'
-  };
 
   constructor(private authService: AuthService, private notificationService: NotificationBarService,
               private databaseService: DatabaseService, private seoService: SeoService, private route: ActivatedRoute) {
     super();
     this.reportOfferId = this.route.snapshot.queryParamMap.get('offerId');
+    this.metaTags = {
+      title: 'Обратная связь | BizMate',
+      description: 'Форма обратной связи, где Вы можете оставить свой отзыв по использованию сервиса, внести предложения по улучшению его работы и задать возникшие вопросы.',
+      site: '/feedback'
+    };
   }
 
   ngOnInit(): void {

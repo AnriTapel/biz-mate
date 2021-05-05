@@ -25,14 +25,6 @@ import {LazyLoadingService} from "../../services/lazy-loading/lazy-loading.servi
   styleUrls: ['./offers-page.component.scss']
 })
 export class OffersPageComponent extends ComponentBrowserAbstractClass implements OnInit, OnDestroy {
-
-  private readonly metaTags = {
-    title: 'Доска предложений | BizMate',
-    description: 'Здесь Вы найдете подходящее бизнес-предложение по партнерсту, инвестициям или покупке/продаже готового проекта, используя фильтры по регионам, сферам бизнеса и типам предложений.',
-    keywords: 'бизнес инвестор, партнер по бизнесу, инвестор искать, куда вклыдвать деньги, вложить в бизнес, купить бизнес, купить готовый бизнес, начинающий бизнес, бизнес партнер, частный инвестор',
-    site: '/offers-page'
-  };
-
   private areQueryParamsInitialyResolved: boolean = false;
   private mobileFilterParamsText: string = '';
   private queryParamsHandler: any = undefined;
@@ -53,6 +45,12 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
               private route: ActivatedRoute, private router: Router, private databaseService: DatabaseService, private dialog: MatDialog,
               private lazyLoadingService: LazyLoadingService) {
     super();
+    this.metaTags = {
+      title: 'Доска предложений | BizMate',
+      description: 'Здесь Вы найдете подходящее бизнес-предложение по партнерсту, инвестициям или покупке/продаже готового проекта, используя фильтры по регионам, сферам бизнеса и типам предложений.',
+      keywords: 'бизнес инвестор, партнер по бизнесу, инвестор искать, куда вклыдвать деньги, вложить в бизнес, купить бизнес, купить готовый бизнес, начинающий бизнес, бизнес партнер, частный инвестор',
+      site: '/offers-page'
+    };
   }
 
   async ngOnInit(): Promise<void> {
