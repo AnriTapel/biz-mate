@@ -7,6 +7,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
 import AppEventNames from "../../events/AppEventNames";
 import {LazyLoadingService} from "../lazy-loading/lazy-loading.service";
+import {ErrorsService} from "../errors/errors.service";
 
 @Injectable({
   providedIn: 'root'
@@ -53,6 +54,8 @@ export class AuthService {
           this.dispatchAuthStateResponse();
         });
       }
+    }, (err) => {
+      ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.observeAuthState', error: err});
     });
   }
 
@@ -78,7 +81,8 @@ export class AuthService {
       await this.afAuth.signInAnonymously();
       this.user = null;
     } catch (e) {
-      this.signInAnonymously();
+      ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.signInAnonymously', error: e});
+      setTimeout(this.signInAnonymously.bind(this), 1000)
     }
   }
 
@@ -88,6 +92,7 @@ export class AuthService {
         await this.afAuth.signInWithEmailAndPassword(credentials.login, credentials.password);
         resolve();
       } catch (e) {
+        ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.emailAndPasswordLogin', error: e});
         reject(e);
       }
     });
@@ -108,7 +113,7 @@ export class AuthService {
     } catch (e) {
       this.firstUserSession = undefined;
       this.signOut();
-      console.error(e);
+      ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.emailPasswordSignUp', error: e});
     }
   }
 
@@ -119,7 +124,10 @@ export class AuthService {
           user.sendEmailVerification();
           this.updateCurrentUserData();
           resolve();
-        }).catch(() => reject());
+        }).catch((e) => {
+          ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.updateUserEmail', error: e});
+          reject();
+        });
       });
     });
   }
@@ -130,9 +138,9 @@ export class AuthService {
         url: 'https://biz-mate.ru/?password_reset=true'
       })
         .then((res) => resolve(res))
-        .catch((error) => {
-          console.log(error);
-          reject(error);
+        .catch((e) => {
+          ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.resetPasswordByEmail', error: e});
+          reject(e);
         });
     });
   }
@@ -145,7 +153,10 @@ export class AuthService {
             this.updateCurrentUserData();
             resolve();
           })
-          .catch(() => reject());
+          .catch((e) => {
+            ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.updateUserDisplayNameOrPhotoURL', error: e});
+            reject(e);
+          });
       });
     });
   }
@@ -175,6 +186,7 @@ export class AuthService {
         await this.afAuth.signInWithPopup(provider);
         resolve();
       } catch (e) {
+        ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.googleAuth', error: e});
         reject(e);
       }
     });
@@ -196,7 +208,11 @@ export class AuthService {
   }
 
   public async signOut(): Promise<void> {
+    try {
     await this.afAuth.signOut();
     await this.signInAnonymously();
+    } catch (e) {
+      ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.signOut', error: e});
+    }
   }
 }

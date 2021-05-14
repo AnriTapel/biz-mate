@@ -11,6 +11,8 @@ import {UserSubscriptions} from "../../models/UserSubscriptions";
 import {City} from "../../models/City";
 import {BusinessArea} from "../../models/BusinessArea";
 import {OfferType} from "../../models/IOfferType";
+import {ErrorsService} from "../errors/errors.service";
+import AppEventNames from "../../events/AppEventNames";
 
 @Injectable({
   providedIn: 'root'
@@ -54,7 +56,11 @@ export class DatabaseService {
           res.forEach(it => cities.push(it.data() as City));
           cities.sort((a, b) => a.name.localeCompare(b.name));
           resolve(cities);
-        }).catch(() => reject(null));
+        })
+        .catch((e) => {
+          ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'DatabaseService.getCitiesCollection', error: e});
+          reject(e);
+        });
     });
   }
 
@@ -67,7 +73,11 @@ export class DatabaseService {
           let anyArea = businessAreas.shift();
           businessAreas.sort((a, b) => a.name.localeCompare(b.name)).unshift(anyArea);
           resolve(businessAreas);
-        }).catch(() => reject(null));
+        })
+        .catch((e) => {
+          ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'DatabaseService.getBusinessAreasCollection', error: e});
+          reject(e);
+        });
     });
   }
 
@@ -78,13 +88,21 @@ export class DatabaseService {
           const offerTypes: OfferType[] = [];
           res.forEach(it => offerTypes.push(it.data() as OfferType));
           resolve(offerTypes);
-        }).catch(() => reject(null));
+        })
+        .catch((e) => {
+          ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'DatabaseService.getOfferTypesCollection', error: e});
+          reject(e);
+        });
     });
   }
 
   public async getOfferByOfferId(id: string): Promise<Offer> {
-    const offer = await this.offersCollectionRef.doc(id).get();
-    return offer.data() as Offer;
+    try {
+      const offer = await this.offersCollectionRef.doc(id).get();
+      return offer.data() as Offer;
+    } catch (e) {
+      ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'DatabaseService.getOfferByOfferId', error: e});
+    }
   }
 
   public getUserOffersByUserId(id: string): Observable<Offer[]> {
@@ -135,10 +153,11 @@ export class DatabaseService {
         }
         resolve(this.sortedOffers$);
       } catch (e) {
+        ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'DatabaseService.getSortedOffersChunk', error: e});
         this.sortedOffers$ = undefined;
         this.lastLoadedSortedOffer = undefined;
         this.allSortedOffersLoaded = false;
-        reject();
+        reject(e);
       }
     });
   }
@@ -181,10 +200,11 @@ export class DatabaseService {
 
         this.resolveFilterQuery(resp, nextChunk) ? resolve(this.filteredOffers$) : resolve(null);
       } catch (e) {
+        ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'DatabaseService.getFilteredOffersChunk', error: e});
         this.filteredOffers$ = null;
         this.lastLoadedFilteredOffer = null;
         this.allFilteredOffersLoaded = false;
-        reject();
+        reject(e);
       }
     });
   }
@@ -278,6 +298,7 @@ export class DatabaseService {
 
       commentsBatch.commit();
     } catch (e) {
+      ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'DatabaseService.updateUserDataInOffers', error: e});
       console.error(e);
     }
 
@@ -304,7 +325,10 @@ export class DatabaseService {
     return new Promise<UserSubscriptions>((resolve) => {
       this.db.collection(DatabaseService.USER_SUBSCRIPTIONS_COLLECTION_PATH).ref.doc(email).get()
         .then((doc) => resolve(doc.data() as UserSubscriptions))
-        .catch(() => resolve(null));
+        .catch((e) => {
+          ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'DatabaseService.getUserSubscriptionsByEmail', error: e});
+          resolve(e);
+        });
     });
   }
 
@@ -318,8 +342,9 @@ export class DatabaseService {
           ref.doc(params.email).set({email: params.email, newOfferAreas: params.newOfferAreas});
         }
         resolve();
-      }).catch((err) => {
-        reject(err);
+      }).catch((e) => {
+        ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'DatabaseService.setUserSubscriptionsByEmail', error: e});
+        reject(e);
       });
     });
   }
@@ -335,8 +360,9 @@ export class DatabaseService {
           ref.doc(email).update(data);
         }
         resolve();
-      }).catch((err) => {
-        reject(err);
+      }).catch((e) => {
+        ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'DatabaseService.removeUserSubscriptionByField', error: e});
+        reject(e);
       });
     });
   }

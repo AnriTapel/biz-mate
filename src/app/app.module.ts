@@ -19,6 +19,8 @@ import {AppService} from "./services/app/app.service";
 import {AngularFireAnalyticsModule} from "@angular/fire/analytics";
 import AppEventNames from "./events/AppEventNames";
 import {MaterialModule} from "./modules/material.module";
+import {AngularFireFunctionsModule} from "@angular/fire/functions";
+import {ErrorsService} from "./services/errors/errors.service";
 
 
 /***
@@ -63,13 +65,14 @@ export function appInitFactory(auth: AuthService, appService: AppService) {
     AngularFirestoreModule,
     AngularFireAuthModule,
     AngularFireAnalyticsModule,
+    AngularFireFunctionsModule,
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
     MaterialModule
   ], providers: [
-    {provide: APP_INITIALIZER, useFactory: appInitFactory, deps: [AuthService, AppService], multi: true}
+    {provide: APP_INITIALIZER, useFactory: appInitFactory, deps: [AuthService, AppService, ErrorsService], multi: true}
   ],
   bootstrap: [AppComponent]
 })

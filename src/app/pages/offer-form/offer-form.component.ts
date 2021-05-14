@@ -15,6 +15,8 @@ import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstra
 import {OverlayService} from "../../services/overlay/overlay.service";
 import {StorageService} from "../../services/storage/storage.service";
 import {DatabaseService} from "../../services/database/database.service";
+import {ErrorsService} from "../../services/errors/errors.service";
+import AppEventNames from "../../events/AppEventNames";
 
 @Component({
   selector: 'app-offer-form',
@@ -278,7 +280,10 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
         }
         this.router.navigateByUrl(`/offer/${offerData.offerId}`);
       })
-      .catch(() => this.notificationBarService.showNotificationBar(this.editOffer ? Messages.SAVE_ERROR : Messages.OFFER_ERROR, false))
+      .catch((e) => {
+        ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'OfferFormComponent.sendOffer', error: e});
+        this.notificationBarService.showNotificationBar(this.editOffer ? Messages.SAVE_ERROR : Messages.OFFER_ERROR, false)
+      })
       .finally(() => OverlayService.hideOverlay());
   }
 
