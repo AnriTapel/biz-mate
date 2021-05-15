@@ -32,7 +32,7 @@ export class AppComponent {
     mainText: 'Вы успешно подтвердили свой адрес электронной почты! Теперь Вы можете отредактировать информацию о себе и перейти к созданию своего первого оффера.',
     extraButton: [{
       route: '/new-offer',
-      buttonText: 'Создать оффер',
+      buttonText: 'Разместить оффер',
       buttonClass: 'button-primary'
     }, {
       route: '/profile',

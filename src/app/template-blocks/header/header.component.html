@@ -36,7 +36,7 @@
         </div>
         <div class="mobile-menu-nav">
           <a [routerLink]="'/'" (click)="hideMobileMenu()">Главная</a>
-          <a *ngIf="loggedIn" [routerLink]="'/new-offer'" (click)="hideMobileMenu()">Создать оффер</a>
+          <a *ngIf="loggedIn" [routerLink]="'/new-offer'" (click)="hideMobileMenu()">Разместить оффер</a>
           <a *ngIf="loggedIn" [routerLink]="'/profile'" (click)="hideMobileMenu()">Мой кабинет</a>
           <a [routerLink]="'/offers-page'" (click)="hideMobileMenu()">Офферы</a>
           <a [routerLink]="'/feedback'" (click)="hideMobileMenu()">Помощь</a>

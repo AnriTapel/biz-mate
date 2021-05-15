@@ -51,12 +51,12 @@
   <section id="user-offers">
     <div class="title-block">
       <h2>Мои офферы</h2>
-      <button class="button-primary" [routerLink]="'/new-offer'">Создать оффер</button>
+      <button class="button-primary" [routerLink]="'/new-offer'">Разместить оффер</button>
     </div>
     <ng-container *ngIf="userOffers$ | async as offers; else loading">
       <div *ngIf="offers.length === 0" class="no-offers-block">
         <p>Размещенных офферов нет</p>
-        <button class="button-primary button-primary-large" [routerLink]="'/new-offer'">Создать оффер</button>
+        <button class="button-primary button-primary-large" [routerLink]="'/new-offer'">Разместить оффер</button>
       </div>
       <div *ngIf="offers.length > 0" class="offers-list">
         <app-offer-card *ngFor="let offer of offers" [offer]="offer"></app-offer-card>
