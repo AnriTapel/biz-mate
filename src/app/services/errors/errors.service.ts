@@ -21,8 +21,8 @@ export class ErrorsService {
     }
 
     try {
-      let func = this.functions.httpsCallable('logError');
-      func({anchor: evt.detail.anchor || '', error: evt.detail.error || ''});
+      // toPromise().then() is for callable function to work \_O_/
+      this.functions.httpsCallable('logError')({anchor: evt.detail.anchor || '', error: evt.detail.error || ''}).toPromise().then(console.log);
     } catch (e) {
       console.error('ErrorService.sendError error', e);
     }
