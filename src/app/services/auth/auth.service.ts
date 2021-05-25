@@ -16,7 +16,7 @@ export class AuthService {
 
   static readonly EMAIL_VERIFICATION_DIALOG_TIMEOUT_SEC: number = 5;
 
-  public user: User;
+  public user: User = undefined;
   private firstUserSession: boolean = undefined;
   private isInitAuthEventSent: boolean = false;
 
@@ -31,8 +31,8 @@ export class AuthService {
   }
 
   private observeAuthState(): void {
-    this.afAuth.onAuthStateChanged((user) => {
-      if (user && !user.isAnonymous) {
+    this.afAuth.onAuthStateChanged(async (user) => {
+      if (user && user.isAnonymous === false) {
         this.user = {
           displayName: user.displayName, uid: user.uid,
           email: user.email, photoURL: user.photoURL,
@@ -42,18 +42,19 @@ export class AuthService {
           setTimeout(this.openEmailVerificationDialog.bind(this),
             AuthService.EMAIL_VERIFICATION_DIALOG_TIMEOUT_SEC * 1000);
         }
-        this.sendInitialAuthEvent();
-        this.dispatchAuthStateResponse();
-      } else if (user && user.isAnonymous) {
+      } else if (user && user.isAnonymous === true) {
         this.user = null;
-        this.sendInitialAuthEvent();
-        this.dispatchAuthStateResponse();
       } else {
-        this.signInAnonymously().finally(() => {
-          this.sendInitialAuthEvent();
-          this.dispatchAuthStateResponse();
-        });
+        try {
+          await this.signInAnonymously();
+        } catch (e) {
+          ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.observeAuthState signInAnonymously', error: e});
+          this.observeAuthState();
+          return;
+        }
       }
+      this.sendInitialAuthEvent();
+      this.dispatchAuthStateResponse();
     }, (err) => {
       ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.observeAuthState', error: err});
     });
@@ -82,7 +83,6 @@ export class AuthService {
       this.user = null;
     } catch (e) {
       ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.signInAnonymously', error: e});
-      setTimeout(this.signInAnonymously.bind(this), 1000)
     }
   }
 
@@ -154,7 +154,10 @@ export class AuthService {
             resolve();
           })
           .catch((e) => {
-            ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.updateUserDisplayNameOrPhotoURL', error: e});
+            ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {
+              anchor: 'AuthService.updateUserDisplayNameOrPhotoURL',
+              error: e
+            });
             reject(e);
           });
       });
@@ -203,14 +206,16 @@ export class AuthService {
   private openEmailVerificationDialog(): void {
     this.lazyLoadingService.getLazyLoadedComponent(LazyLoadingService.EMAIL_VERIFY_MESSAGE_MODULE_NAME)
       .then((comp) =>
-        this.dialog.open(comp, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, {email: this.user.email, alreadySent: false}))
+        this.dialog.open(comp, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, {
+          email: this.user.email,
+          alreadySent: false
+        }))
       ).catch(console.error);
   }
 
   public async signOut(): Promise<void> {
     try {
-    await this.afAuth.signOut();
-    await this.signInAnonymously();
+      await this.afAuth.signOut();
     } catch (e) {
       ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.signOut', error: e});
     }
