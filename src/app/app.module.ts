@@ -1,13 +1,11 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {APP_INITIALIZER, NgModule} from '@angular/core';
-
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ReactiveFormsModule} from "@angular/forms";
 import {AngularFireModule} from '@angular/fire';
 import {AngularFirestoreModule} from '@angular/fire/firestore';
-import {AngularFireDatabaseModule} from '@angular/fire/database';
 import {AngularFireAuthModule} from '@angular/fire/auth';
 import {environment} from "../environments/environment";
 import {HeaderComponent} from "./template-blocks/header/header.component";
@@ -21,6 +19,7 @@ import AppEventNames from "./events/AppEventNames";
 import {MaterialModule} from "./modules/material.module";
 import {AngularFireFunctionsModule} from "@angular/fire/functions";
 import {ErrorsService} from "./services/errors/errors.service";
+import {AngularFireStorageModule} from "@angular/fire/storage";
 
 
 /***
@@ -30,24 +29,30 @@ import {ErrorsService} from "./services/errors/errors.service";
  */
 export function appInitFactory(auth: AuthService, appService: AppService) {
   return (): Promise<any> => {
-    return new Promise<any>((resolve) => {
-      let status = {app: false, auth: false};
-      document.addEventListener(AppEventNames.INIT_AUTH_SUCCESS, () => {
-        status.auth = true;
-        if (status.app) {
-          resolve();
-        }
+    return new Promise<any>((resolve, reject) => {
+      auth.appInitAuth()
+        .then(() => {
+            document.addEventListener(AppEventNames.INIT_APP_DATA_SUCCESS, resolve);
+            try {
+              appService.appInit();
+            } catch (e) {
+              ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'appInitFactory.app', error: e});
+              showGlobalError(reject);
+              return;
+            }
+          }
+        ).catch((e) => {
+          ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'appInitFactory.auth', error: e});
+          showGlobalError(reject);
+          return;
       });
-
-      document.addEventListener(AppEventNames.INIT_APP_DATA_SUCCESS, () => {
-        status.app = true;
-        if (status.auth) {
-          resolve();
-        }
-      });
-      auth.appInitAuth();
-      appService.appInit();
     });
+  };
+
+  function showGlobalError(reject: Function){
+    document.getElementById('initial_spinner').style.display = 'none';
+    document.getElementById('init_error_message').removeAttribute('style');
+    reject();
   }
 }
 
@@ -61,11 +66,11 @@ export function appInitFactory(auth: AuthService, appService: AppService) {
   ],
   imports: [
     AngularFireModule.initializeApp(environment.firebase),
-    AngularFireDatabaseModule,
-    AngularFirestoreModule,
     AngularFireAuthModule,
-    AngularFireAnalyticsModule,
+    AngularFirestoreModule,
+    AngularFireStorageModule,
     AngularFireFunctionsModule,
+    AngularFireAnalyticsModule,
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,

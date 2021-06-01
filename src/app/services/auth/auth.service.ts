@@ -18,7 +18,6 @@ export class AuthService {
 
   public user: User = undefined;
   private firstUserSession: boolean = undefined;
-  private isInitAuthEventSent: boolean = false;
 
   //TODO: make user private and create getter for other classes
   constructor(private afAuth: AngularFireAuth, private dialog: MatDialog, private lazyLoadingService: LazyLoadingService) {
@@ -26,37 +25,51 @@ export class AuthService {
   }
 
   public async appInitAuth(): Promise<void> {
-    await this.afAuth.useDeviceLanguage();
-    this.observeAuthState();
+    return new Promise<void>((resolve, reject) => {
+      try {
+        this.afAuth.useDeviceLanguage();
+        this.observeAuthState()
+          .then(resolve)
+          .catch((e) => reject(e));
+      } catch (e) {
+        reject(e);
+      }
+    });
+
   }
 
-  private observeAuthState(): void {
-    this.afAuth.onAuthStateChanged(async (user) => {
-      if (user && user.isAnonymous === false) {
-        this.user = {
-          displayName: user.displayName, uid: user.uid,
-          email: user.email, photoURL: user.photoURL,
-          emailVerified: user.emailVerified
-        };
-        if (!this.user.emailVerified && !this.firstUserSession) {
-          setTimeout(this.openEmailVerificationDialog.bind(this),
-            AuthService.EMAIL_VERIFICATION_DIALOG_TIMEOUT_SEC * 1000);
+  private observeAuthState(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.afAuth.onAuthStateChanged(async (user) => {
+        if (user && user.isAnonymous === false) {
+          this.user = {
+            displayName: user.displayName, uid: user.uid,
+            email: user.email, photoURL: user.photoURL,
+            emailVerified: user.emailVerified
+          };
+          if (!this.user.emailVerified && !this.firstUserSession) {
+            setTimeout(this.openEmailVerificationDialog.bind(this),
+              AuthService.EMAIL_VERIFICATION_DIALOG_TIMEOUT_SEC * 1000);
+          }
+          resolve();
+        } else if (user && user.isAnonymous === true) {
+          this.user = null;
+          resolve();
+        } else {
+          try {
+            await this.signInAnonymously();
+            resolve();
+          } catch (e) {
+            ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.observeAuthState signInAnonymously', error: e});
+            reject(e);
+            return;
+          }
         }
-      } else if (user && user.isAnonymous === true) {
-        this.user = null;
-      } else {
-        try {
-          await this.signInAnonymously();
-        } catch (e) {
-          ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.observeAuthState signInAnonymously', error: e});
-          this.observeAuthState();
-          return;
-        }
-      }
-      this.sendInitialAuthEvent();
-      this.dispatchAuthStateResponse();
-    }, (err) => {
-      ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.observeAuthState', error: err});
+        this.dispatchAuthStateResponse();
+      }, (err) => {
+        ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.observeAuthState', error: err});
+        reject(err);
+      });
     });
   }
 
@@ -68,22 +81,9 @@ export class AuthService {
     document.dispatchEvent(new CustomEvent(AppEventNames.AUTH_STATE_CHANGED, {detail: this.user}));
   }
 
-  private sendInitialAuthEvent(): void {
-    if (this.isInitAuthEventSent) {
-      return;
-    }
-
-    document.dispatchEvent(new Event(AppEventNames.INIT_AUTH_SUCCESS));
-    this.isInitAuthEventSent = true;
-  }
-
   private async signInAnonymously(): Promise<void> {
-    try {
-      await this.afAuth.signInAnonymously();
-      this.user = null;
-    } catch (e) {
-      ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.signInAnonymously', error: e});
-    }
+    await this.afAuth.signInAnonymously();
+    this.user = null;
   }
 
   public emailAndPasswordLogin(credentials: any): Promise<void> {
