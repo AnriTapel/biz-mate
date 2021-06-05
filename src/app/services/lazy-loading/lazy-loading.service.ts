@@ -1,4 +1,6 @@
 import {Compiler, Injectable, Injector} from '@angular/core';
+import AppEventNames from "../../events/AppEventNames";
+import {ErrorsService} from "../errors/errors.service";
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +24,7 @@ export class LazyLoadingService {
       let importModule = LazyLoadingService.getDialogModuleImportPath(moduleName);
       if (!importModule) {
         reject(new Error("LazyLoadingService:getLazyLoadedComponent - module with provided name is not found"));
+        ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'LazyLoadingService:getLazyLoadedComponent', error: moduleName + 'module is not found'});
         return;
       }
       let component;

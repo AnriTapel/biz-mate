@@ -9,9 +9,7 @@ if (environment.production) {
 }
 
 platformBrowserDynamic().bootstrapModule(AppModule)
-  .catch(err => {
-    console.error(err);
-
+  .catch(() => {
     const errorMsgElement = document.getElementById('init_error_message');
     errorMsgElement.removeAttribute('style');
 
