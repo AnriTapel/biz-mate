@@ -5,6 +5,11 @@ import {MatDialog} from "@angular/material/dialog";
 import {DialogConfigType, MatDialogConfig} from "./dialogs/mat-dialog-config";
 import {ActivatedRoute} from "@angular/router";
 import {LazyLoadingService} from "./services/lazy-loading/lazy-loading.service";
+import {AuthService} from "./services/auth/auth.service";
+import {AppService} from "./services/app/app.service";
+import {Observable} from "rxjs";
+import {User} from "./models/User";
+import AppEventNames from "./events/AppEventNames";
 
 @Component({
   selector: 'app-root',
@@ -13,9 +18,9 @@ import {LazyLoadingService} from "./services/lazy-loading/lazy-loading.service";
 })
 export class AppComponent {
 
+  public authCredentials$: Observable<User>;
+
   static readonly ROUTES_FOR_NOTIFICATION_BUTTON: string[] = ['/offer/', '/offers-page'];
-  private INITIAL_SPINNER_ELEMENT_ID = 'initial_spinner';
-  private isInitialRouteActivated: boolean = false;
 
   private readonly resetPasswordEvent: NotificationDataModel = {
     title: 'Пароль изменен',
@@ -42,11 +47,27 @@ export class AppComponent {
   };
 
   constructor(private route: ActivatedRoute, private userSubscriptionsService: UserSubscriptionsService, private dialog: MatDialog,
-              private lazyLoadingServiec: LazyLoadingService) {
+              private lazyLoadingService: LazyLoadingService, private authService: AuthService, private appService: AppService) {
+
+    document.addEventListener(AppEventNames.INIT_AUTH_SUCCESS, this.onInitAuthSuccess.bind(this));
+    document.addEventListener(AppEventNames.INIT_APP_DATA_SUCCESS, this.onInitAppDataSuccess.bind(this));
+    this.authService.initAuth();
+  }
+
+  private onInitAuthSuccess(): void {
+    this.appService.appInit();
+  }
+
+  private onInitAppDataSuccess(): void {
+    this.manageRouteParams();
+    this.authCredentials$ = this.authService.credentials$;
+    AppService.hideInitialSpinner();
+  }
+
+  private manageRouteParams(): void {
     this.route.queryParams.subscribe(params => {
-      this.onRouteActivated();
       if (params['password_reset'] || params['email_verify']) {
-        this.lazyLoadingServiec.getLazyLoadedComponent(LazyLoadingService.NOTIFICATION_MODULE_NAME)
+        this.lazyLoadingService.getLazyLoadedComponent(LazyLoadingService.NOTIFICATION_MODULE_NAME)
           .then(comp => {
             this.dialog.open(comp, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG,
               params['password_reset'] ? this.resetPasswordEvent : this.emailVerifyEvent));
@@ -59,15 +80,6 @@ export class AppComponent {
         }
       }
     });
-  }
-
-  public onRouteActivated(): void {
-    if (this.isInitialRouteActivated) {
-      return;
-    }
-
-    document.getElementById(this.INITIAL_SPINNER_ELEMENT_ID).style.display = 'none';
-    this.isInitialRouteActivated = true;
   }
 
   public onNotificationButtonClick(): void {

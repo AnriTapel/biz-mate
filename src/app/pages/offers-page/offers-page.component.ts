@@ -18,6 +18,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
 import {OfferType} from "../../models/IOfferType";
 import {LazyLoadingService} from "../../services/lazy-loading/lazy-loading.service";
+import {AuthService} from "../../services/auth/auth.service";
 
 @Component({
   selector: 'app-offers-page',
@@ -43,8 +44,8 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
 
   constructor(private appService: AppService, private notificationService: NotificationBarService, private seoService: SeoService,
               private route: ActivatedRoute, private router: Router, private databaseService: DatabaseService, private dialog: MatDialog,
-              private lazyLoadingService: LazyLoadingService) {
-    super();
+              private lazyLoadingService: LazyLoadingService, protected authService: AuthService) {
+    super(authService);
     this.metaTags = {
       title: 'Доска предложений | BizMate',
       description: 'Здесь Вы найдете подходящее бизнес-предложение по партнерсту, инвестициям или покупке/продаже готового проекта, используя фильтры по регионам, сферам бизнеса и типам предложений.',
@@ -133,7 +134,6 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
       .catch(() => this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false))
       .finally(() => {
         OverlayService.hideOverlay();
-        AppService.scrollPageToHeader();
       });
   }
 

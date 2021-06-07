@@ -5,6 +5,7 @@ import {AbstractControl, ValidatorFn} from "@angular/forms";
 import {DatabaseService} from "../database/database.service";
 import {OfferType} from "../../models/IOfferType";
 import AppEventNames from "../../events/AppEventNames";
+import {ErrorsService} from "../errors/errors.service";
 
 @Injectable({
   providedIn: 'root'
@@ -44,7 +45,7 @@ export class AppService {
       .then((res) => {
         this._cities = res;
         this.checkAppInitStatus();
-      }).catch(this.initCitiesCollection.bind(this));
+      }).catch(e => ErrorsService.appInitProcessError({anchor: 'AppService.initCitiesCollection', error: e}));
   }
 
   private initOfferTypesCollection(): void {
@@ -52,7 +53,7 @@ export class AppService {
       .then((res) => {
         this._offerTypes = res;
         this.checkAppInitStatus();
-      }).catch(this.initOfferTypesCollection.bind(this));
+      }).catch(e => ErrorsService.appInitProcessError({anchor: 'AppService.initOfferTypesCollection', error: e}));
   }
 
   private initBusinessAreasCollection(): void {
@@ -60,13 +61,23 @@ export class AppService {
       .then((res) => {
         this._businessAreas = res;
         this.checkAppInitStatus();
-      }).catch(this.initBusinessAreasCollection.bind(this));
+      }).catch(e => ErrorsService.appInitProcessError({anchor: 'AppService.initBusinessAreasCollection', error: e}));
   }
 
   private checkAppInitStatus(): void {
     if (this.cities && this.offerTypes && this.businessAreas) {
       document.dispatchEvent(new Event(AppEventNames.INIT_APP_DATA_SUCCESS));
     }
+  }
+
+  public static hideInitialSpinner(): void {
+    const initialSpinnerElement = document.getElementById('initial_spinner');
+    initialSpinnerElement.style.display = 'none';
+  }
+
+  public static showGlobalError(): void {
+    const errorMsgElement = document.getElementById('init_error_message');
+    errorMsgElement.removeAttribute('style');
   }
 
   public static getDefaultAvatar(): string {

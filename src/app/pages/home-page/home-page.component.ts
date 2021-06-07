@@ -7,6 +7,7 @@ import {OfferTypesEnum} from "../../models/IOfferType";
 import {AppService} from "../../services/app/app.service";
 import {DatabaseService} from "../../services/database/database.service";
 import {Router} from "@angular/router";
+import {AuthService} from "../../services/auth/auth.service";
 
 @Component({
   selector: 'app-home-page',
@@ -46,8 +47,8 @@ export class HomePageComponent extends ComponentBrowserAbstractClass implements 
   ];
 
   constructor(private databaseService: DatabaseService, private seoService: SeoService, private appService: AppService,
-              private router: Router) {
-    super();
+              private router: Router, protected authService: AuthService) {
+    super(authService);
     this.metaTags = {
       title: 'BizMate - поиск партнеров и инвестиций для бизнеса',
       description: 'Сервис BizMate помогает найти партнёра по бизнесу, привлечь или предложить инвестиции, а также продать работающий бизнес. И все это абсолютно бесплатно!',

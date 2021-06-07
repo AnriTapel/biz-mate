@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import AppEventNames from "../../events/AppEventNames";
 import {AngularFireFunctions} from "@angular/fire/functions";
+import {AppService} from "../app/app.service";
 
 @Injectable({
   providedIn: 'root'
@@ -26,5 +27,11 @@ export class ErrorsService {
     } catch (e) {
       console.error('ErrorService.sendError error', e);
     }
+  }
+
+  public static appInitProcessError(detail: any): void {
+    ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, detail);
+    AppService.hideInitialSpinner();
+    AppService.showGlobalError();
   }
 }

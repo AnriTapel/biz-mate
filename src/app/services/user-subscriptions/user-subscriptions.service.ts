@@ -10,6 +10,7 @@ import {AppService} from "../app/app.service";
 import AppEventNames from "../../events/AppEventNames";
 import {User} from "../../models/User";
 import {LazyLoadingService} from "../lazy-loading/lazy-loading.service";
+import {AuthService} from "../auth/auth.service";
 
 @Injectable({
   providedIn: 'root'
@@ -23,14 +24,12 @@ export class UserSubscriptionsService {
   static readonly NEW_OFFERS_SUBSCRIPTION_DIALOG_TIMEOUT_MSEC: number = 5000;
 
   constructor(private notificationService: NotificationBarService, private dbService: DatabaseService,
-              private matDialog: MatDialog, private lazyLoadingService: LazyLoadingService) {
-    document.addEventListener(AppEventNames.AUTH_STATE_RESPONSE, this.onAuthStateInfo.bind(this));
-    document.addEventListener(AppEventNames.AUTH_STATE_CHANGED, this.onAuthStateInfo.bind(this));
+              private matDialog: MatDialog, private lazyLoadingService: LazyLoadingService, private authService: AuthService) {
     this.initService();
   }
 
   private async initService(): Promise<void> {
-    document.dispatchEvent(new Event(AppEventNames.AUTH_STATE_REQUEST));
+    this.userData = this.authService.credentials;
     const newOffersSubStatus = UserSubscriptionsService.getNewOffersSubscriptionStatus();
     if (newOffersSubStatus === true) {
       return;
@@ -38,7 +37,7 @@ export class UserSubscriptionsService {
       this.setNewOffersSubscriptionTimeout();
       return;
     }
-    if (this.userData) {
+    if (this.userData.email) {
       const userSubscriptionData = await this.dbService.getUserSubscriptionsByEmail(btoa(this.userData.email));
       if (userSubscriptionData) {
         UserSubscriptionsService.setNewOffersSubscriptionStatus(true);
@@ -48,14 +47,10 @@ export class UserSubscriptionsService {
     this.setNewOffersSubscriptionTimeout();
   }
 
-  private onAuthStateInfo(event: CustomEvent): void {
-    this.userData = event.detail;
-  }
-
   public showNewOffersSubscriptionDialog(): void {
     this.lazyLoadingService.getLazyLoadedComponent(LazyLoadingService.NEW_OFFERS_SUBSCRIPTION_MODULE_NAME)
       .then(comp => {
-        let dialog = this.matDialog.open(comp, this.userData
+        let dialog = this.matDialog.open(comp, this.userData.email
           ? MatDialogConfig.getConfigWithData(DialogConfigType.WIDE_CONFIG, {email: this.userData.email})
           : MatDialogConfig.wideDialogWindow);
 
@@ -63,7 +58,7 @@ export class UserSubscriptionsService {
           AppService.unsubscribeHandler([this.dialogHandler]);
           this.dialogHandler = undefined;
 
-          if (!res && this.userData) {
+          if (!res && !this.userData.isAnonymous) {
             UserSubscriptionsService.setNewOffersSubscriptionStatus(false);
           } else if (res) {
             res.email = btoa(res.email);

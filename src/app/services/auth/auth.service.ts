@@ -8,6 +8,7 @@ import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config
 import AppEventNames from "../../events/AppEventNames";
 import {LazyLoadingService} from "../lazy-loading/lazy-loading.service";
 import {ErrorsService} from "../errors/errors.service";
+import {BehaviorSubject, Observable} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -16,74 +17,54 @@ export class AuthService {
 
   static readonly EMAIL_VERIFICATION_DIALOG_TIMEOUT_SEC: number = 5;
 
-  public user: User = undefined;
+  private _credentials: BehaviorSubject<User> = new BehaviorSubject<User>({isAnonymous: true, uid: null});
   private firstUserSession: boolean = undefined;
+  private initialAuthCompleted: boolean = false;
+  public readonly credentials$: Observable<User> = this._credentials.asObservable();
 
-  //TODO: make user private and create getter for other classes
   constructor(private afAuth: AngularFireAuth, private dialog: MatDialog, private lazyLoadingService: LazyLoadingService) {
-    document.addEventListener(AppEventNames.AUTH_STATE_REQUEST, this.dispatchAuthStateResponse.bind(this));
   }
 
-  public async appInitAuth(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
+  public initAuth(): void {
+    this.afAuth.useDeviceLanguage();
+    this.afAuth.authState.subscribe(async (user) => {
       try {
-        this.afAuth.useDeviceLanguage();
-        this.observeAuthState()
-          .then(resolve)
-          .catch((e) => reject(e));
-      } catch (e) {
-        reject(e);
-      }
-    });
-
-  }
-
-  private observeAuthState(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      this.afAuth.onAuthStateChanged(async (user) => {
         if (user && user.isAnonymous === false) {
-          this.user = {
+          this._credentials.next({
             displayName: user.displayName, uid: user.uid,
             email: user.email, photoURL: user.photoURL,
-            emailVerified: user.emailVerified
-          };
-          if (!this.user.emailVerified && !this.firstUserSession) {
+            emailVerified: user.emailVerified, isAnonymous: false
+          });
+          if (!user.emailVerified && !this.firstUserSession) {
             setTimeout(this.openEmailVerificationDialog.bind(this),
               AuthService.EMAIL_VERIFICATION_DIALOG_TIMEOUT_SEC * 1000);
           }
-          resolve();
         } else if (user && user.isAnonymous === true) {
-          this.user = null;
-          resolve();
+          this._credentials.next({uid: user.uid, isAnonymous: true});
         } else {
-          try {
-            await this.signInAnonymously();
-            resolve();
-          } catch (e) {
-            ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.observeAuthState signInAnonymously', error: e});
-            reject(e);
-            return;
-          }
+          await this.signInAnonymously();
         }
-        this.dispatchAuthStateResponse();
-      }, (err) => {
-        ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.observeAuthState', error: err});
-        reject(err);
-      });
+        this.dispatchInitAuthCompleteEvent();
+      } catch (e) {
+        if (!this.initialAuthCompleted) {
+          ErrorsService.appInitProcessError({anchor: 'AuthService.initAuth', error: e});
+          return;
+        }
+      }
     });
   }
 
-  private dispatchAuthStateResponse(): void {
-    document.dispatchEvent(new CustomEvent(AppEventNames.AUTH_STATE_RESPONSE, {detail: this.user}));
-  }
+  private dispatchInitAuthCompleteEvent(): void {
+    if (this.initialAuthCompleted) {
+      return;
+    }
 
-  private dispatchAuthStateChange(): void {
-    document.dispatchEvent(new CustomEvent(AppEventNames.AUTH_STATE_CHANGED, {detail: this.user}));
+    document.dispatchEvent(new Event(AppEventNames.INIT_AUTH_SUCCESS));
+    this.initialAuthCompleted = true;
   }
 
   private async signInAnonymously(): Promise<void> {
     await this.afAuth.signInAnonymously();
-    this.user = null;
   }
 
   public emailAndPasswordLogin(credentials: any): Promise<void> {
@@ -167,19 +148,22 @@ export class AuthService {
   // Update this.user when firebaseUser data is changed
   public async updateCurrentUserData(): Promise<User> {
     const user = await this.afAuth.currentUser;
-    if (user) {
-      this.user = {
+    if (!user.isAnonymous) {
+      this._credentials.next({
         displayName: user.displayName,
         uid: user.uid,
         email: user.email,
         emailVerified: user.emailVerified,
-        photoURL: user.photoURL
-      };
+        photoURL: user.photoURL,
+        isAnonymous: false
+      });
     } else {
-      this.user = null;
+      this._credentials.next({
+        uid: user.uid,
+        isAnonymous: true
+      });
     }
-    this.dispatchAuthStateChange();
-    return this.user;
+    return this.credentials;
   }
 
   public googleAuth(): Promise<void> {
@@ -207,7 +191,7 @@ export class AuthService {
     this.lazyLoadingService.getLazyLoadedComponent(LazyLoadingService.EMAIL_VERIFY_MESSAGE_MODULE_NAME)
       .then((comp) =>
         this.dialog.open(comp, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, {
-          email: this.user.email,
+          email: this.credentials.email,
           alreadySent: false
         }))
       ).catch(console.error);
@@ -219,5 +203,9 @@ export class AuthService {
     } catch (e) {
       ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.signOut', error: e});
     }
+  }
+
+  get credentials(): User {
+    return this._credentials.value;
   }
 }

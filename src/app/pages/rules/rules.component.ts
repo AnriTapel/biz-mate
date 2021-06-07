@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {SeoService} from "../../services/seo/seo.service";
 import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
+import {AuthService} from "../../services/auth/auth.service";
 
 @Component({
   selector: 'app-rules',
@@ -10,8 +11,8 @@ import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstra
 })
 export class RulesComponent extends ComponentBrowserAbstractClass implements OnInit {
 
-  constructor(private seoService: SeoService) {
-    super();
+  constructor(private seoService: SeoService, protected authService: AuthService) {
+    super(authService);
     this.metaTags = {title: 'Правила размещения предложений | BizMate'}
   }
 

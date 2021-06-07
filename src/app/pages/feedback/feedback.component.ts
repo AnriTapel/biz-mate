@@ -21,9 +21,9 @@ export class FeedbackComponent extends ComponentBrowserAbstractClass implements 
 
   public feedbackForm: FormGroup;
 
-  constructor(private authService: AuthService, private notificationService: NotificationBarService,
+  constructor(protected authService: AuthService, private notificationService: NotificationBarService,
               private databaseService: DatabaseService, private seoService: SeoService, private route: ActivatedRoute) {
-    super();
+    super(authService);
     this.reportOfferId = this.route.snapshot.queryParamMap.get('offerId');
     this.metaTags = {
       title: 'Обратная связь | BizMate',

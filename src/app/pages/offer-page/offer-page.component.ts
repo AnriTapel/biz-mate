@@ -12,6 +12,7 @@ import {NotificationBarService} from "../../services/notification-bar/notificati
 import {Messages} from "../../models/Messages";
 import {DatabaseService} from "../../services/database/database.service";
 import {FilterFieldName} from "../../models/FilterFields";
+import {AuthService} from "../../services/auth/auth.service";
 
 @Component({
   selector: 'app-offer-page',
@@ -30,8 +31,8 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
 
   constructor(private route: ActivatedRoute, private seoService: SeoService, private databaseService: DatabaseService,
               private router: Router, private notificationService: NotificationBarService,
-              private appService: AppService) {
-    super();
+              private appService: AppService, protected authService: AuthService) {
+    super(authService);
     OverlayService.showOverlay();
     this.commentInput = new FormControl('', [Validators.required, Validators.maxLength(this.COMMENT_TEXT_MAX_LENGTH)]);
     this.databaseService.getOfferByOfferId(route.snapshot.paramMap.get("id").toString())

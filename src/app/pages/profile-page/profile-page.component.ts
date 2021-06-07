@@ -32,11 +32,11 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
 
   private dialogHandler: any = undefined;
 
-  constructor(private appService: AppService, private authService: AuthService, private router: Router,
+  constructor(private appService: AppService, protected authService: AuthService, private router: Router,
               private dialog: MatDialog, private storageService: StorageService, private databaseService: DatabaseService,
               private notificationBarService: NotificationBarService, private seoService: SeoService,
               private lazyLoadingService: LazyLoadingService) {
-    super();
+    super(authService);
     this.metaTags = {title: 'Мой профиль | BizMate'};
     this.userDataForm = new FormGroup({
       email: new FormControl(this.userAuthData.email || '', [Validators.required]),

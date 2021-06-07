@@ -2,9 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {MatDialog} from "@angular/material/dialog";
 import {AuthService} from "../../services/auth/auth.service";
 import {Router} from "@angular/router";
-import {OverlayService} from "../../services/overlay/overlay.service";
 import {UserSubscriptionsService} from "../../services/user-subscriptions/user-subscriptions.service";
-import AppEventNames from "../../events/AppEventNames";
 import {LazyLoadingService} from "../../services/lazy-loading/lazy-loading.service";
 import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
 
@@ -20,14 +18,16 @@ export class HeaderComponent implements OnInit {
 
   constructor(private dialog: MatDialog, private auth: AuthService, private router: Router,
               private userSubscriptionsService: UserSubscriptionsService, private lazyLoadingService: LazyLoadingService) {
-
-    document.addEventListener(AppEventNames.AUTH_STATE_RESPONSE, this.onAuthStateChange.bind(this));
-    document.addEventListener(AppEventNames.AUTH_STATE_CHANGED, this.onAuthStateChange.bind(this));
   }
 
   ngOnInit(): void {
     this.hideMobileMenu();
-    document.dispatchEvent(new Event(AppEventNames.AUTH_STATE_REQUEST));
+    this.auth.credentials$.subscribe((user) => {
+      this.loggedIn = user && !user.isAnonymous;
+      if (this.loggedIn) {
+        this.userName = user.displayName;
+      }
+    });
   }
 
   public onAuthButtonClick(): void {
@@ -36,12 +36,6 @@ export class HeaderComponent implements OnInit {
     } else {
       this.openLoginDialog();
     }
-  }
-
-  private onAuthStateChange(info: CustomEvent): void {
-    let user = info.detail;
-    this.loggedIn = !!user;
-    this.userName = user ? user.displayName : undefined;
   }
 
   public openLoginDialog(): void {
@@ -67,10 +61,9 @@ export class HeaderComponent implements OnInit {
   }
 
   public logOut(): void {
-    OverlayService.showOverlay();
     this.auth.signOut().then(() => {
       this.router.navigateByUrl("/");
       this.hideMobileMenu();
-    }).finally(() => OverlayService.hideOverlay());
+    });
   }
 }

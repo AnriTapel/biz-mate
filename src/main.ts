@@ -3,6 +3,7 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
+import {AppService} from "./app/services/app/app.service";
 
 if (environment.production) {
   enableProdMode();
@@ -10,9 +11,6 @@ if (environment.production) {
 
 platformBrowserDynamic().bootstrapModule(AppModule)
   .catch(() => {
-    const errorMsgElement = document.getElementById('init_error_message');
-    errorMsgElement.removeAttribute('style');
-
-    const initialSpinnerElement = document.getElementById('initial_spinner');
-    initialSpinnerElement.style.display = 'none';
+    AppService.hideInitialSpinner();
+    AppService.showGlobalError();
   });

@@ -2,6 +2,7 @@ import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {SeoService} from "../../services/seo/seo.service";
 import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
+import {AuthService} from "../../services/auth/auth.service";
 
 @Component({
   selector: 'app-not-found',
@@ -11,8 +12,8 @@ import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstra
 })
 export class NotFoundComponent extends ComponentBrowserAbstractClass implements OnInit {
 
-  constructor(private router: Router, private seoService: SeoService) {
-    super();
+  constructor(private router: Router, private seoService: SeoService, protected authService: AuthService) {
+    super(authService);
     this.metaTags = {
       title: '404 - Ничего не найдено...'
     };

@@ -17,6 +17,7 @@ import {StorageService} from "../../services/storage/storage.service";
 import {DatabaseService} from "../../services/database/database.service";
 import {ErrorsService} from "../../services/errors/errors.service";
 import AppEventNames from "../../events/AppEventNames";
+import {AuthService} from "../../services/auth/auth.service";
 
 @Component({
   selector: 'app-offer-form',
@@ -63,8 +64,8 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
 
   constructor(private activeRoute: ActivatedRoute, private storageService: StorageService, private router: Router,
               private notificationBarService: NotificationBarService, private seoService: SeoService,
-              private databaseService: DatabaseService, private appService: AppService) {
-    super();
+              private databaseService: DatabaseService, private appService: AppService, protected authService: AuthService) {
+    super(authService);
     this.metaTags = {
       title: 'Разместить предложение | BizMate',
       description: 'Составьте и разместите в сервисе BizMate предложение о поиске партнера по бизнесу, поиску и предложения инвестиций, а также покупке или продаже бизнеса.',
