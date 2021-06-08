@@ -9,6 +9,7 @@ import {OverlayService} from "../../services/overlay/overlay.service";
 import {DatabaseService} from "../../services/database/database.service";
 import {AppService} from "../../services/app/app.service";
 import {LazyLoadingService} from "../../services/lazy-loading/lazy-loading.service";
+import {StorageService} from "../../services/storage/storage.service";
 
 @Component({
   selector: 'app-offer-card',
@@ -24,7 +25,7 @@ export class OfferCardComponent {
   private dialogHandler: any;
 
   constructor(private router: Router, private dialog: MatDialog, private route: ActivatedRoute, private lazyLoadingService: LazyLoadingService,
-              private notificationService: NotificationBarService, private databaseService: DatabaseService) {
+              private notificationService: NotificationBarService, private databaseService: DatabaseService, private storageService: StorageService) {
     this.editable = this.router.url == '/profile';
   }
 
@@ -60,6 +61,9 @@ export class OfferCardComponent {
 
   private deleteOffer(): void {
     OverlayService.showOverlay();
+    if (this.offer.imagesURL && this.offer.imagesURL.length) {
+      this.offer.imagesURL.forEach(it => this.storageService.deleteUserImage(it));
+    }
     this.databaseService.deleteOffer(this.offer)
       .then(() => {
         this.notificationService.showNotificationBar(Messages.DELETE_OFFER_SUCCESS, true);

@@ -267,9 +267,13 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     offerData.imagesURL = this.offerImages;
     offerData.contactMethods = offerData.phone ? this.contactMethods : null;
 
-    this.databaseService.sendOffer(offerData, this.removedImages, this.editOffer)
+    for (let img of this.removedImages) {
+      this.storageService.deleteUserImage(img);
+    }
+    this.removedImages = [];
+
+    this.databaseService.sendOffer(offerData, this.editOffer)
       .then(() => {
-        this.removedImages = [];
         this.areChangesSaved = true;
         this.notificationBarService.showNotificationBar(this.editOffer ? Messages.SAVE_SUCCESS : Messages.OFFER_CREATED, true);
         if (this.editOffer) {

@@ -47,7 +47,7 @@ export class AuthService {
         this.dispatchInitAuthCompleteEvent();
       } catch (e) {
         if (!this.initialAuthCompleted) {
-          ErrorsService.appInitProcessError({anchor: 'AuthService.initAuth', error: e});
+          AppService.dispatchAppInitError({anchor: 'AuthService.initAuth', error: e});
           return;
         }
       }

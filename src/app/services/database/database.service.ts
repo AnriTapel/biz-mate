@@ -4,7 +4,6 @@ import {Offer} from "../../models/Offer";
 import {Observable, of, zip} from "rxjs";
 import {map} from "rxjs/operators";
 import {FeedbackMessage} from "../../models/FeedbackMessage";
-import {StorageService} from "../storage/storage.service";
 import {OfferComment} from "../../models/OfferComment";
 import {FilterField} from "../../models/FilterFields";
 import {UserSubscriptions} from "../../models/UserSubscriptions";
@@ -39,7 +38,7 @@ export class DatabaseService {
   private offersCollectionRef: any = undefined;
   private commentsCollectionRef: any = undefined;
 
-  constructor(private db: AngularFirestore, private storageService: StorageService) {
+  constructor(private db: AngularFirestore) {
     this.offersCollectionRef = this.db.collection(DatabaseService.OFFERS_COLLECTION_PATH).ref;
     this.commentsCollectionRef = this.db.collection(DatabaseService.COMMENTS_COLLECTION_PATH).ref;
   }
@@ -241,22 +240,13 @@ export class DatabaseService {
     return this.allFilteredOffersLoaded;
   }
 
-  public sendOffer(offer: Offer, removeImages: string[], editOffer: boolean): Promise<void> {
-    for (const img of removeImages) {
-      this.storageService.deleteUserImage(img);
-    }
+  public sendOffer(offer: Offer, editOffer: boolean): Promise<void> {
     return editOffer ? this.offersCollectionRef.doc(offer.offerId).update(offer) :
       this.offersCollectionRef.doc(offer.offerId).set(offer);
   }
 
   public deleteOffer(offer: Offer): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      if (offer.imagesURL && offer.imagesURL.length) {
-        for (const img of offer.imagesURL) {
-          this.storageService.deleteUserImage(img);
-        }
-      }
-
       this.commentsCollectionRef.where('offerId', '==', offer.offerId).get()
         .then((resp) => {
           const batch = this.db.firestore.batch();

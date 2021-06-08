@@ -45,7 +45,7 @@ export class AppService {
       .then((res) => {
         this._cities = res;
         this.checkAppInitStatus();
-      }).catch(e => ErrorsService.appInitProcessError({anchor: 'AppService.initCitiesCollection', error: e}));
+      }).catch(e => AppService.dispatchAppInitError({anchor: 'AppService.initCitiesCollection', error: e}));
   }
 
   private initOfferTypesCollection(): void {
@@ -53,7 +53,7 @@ export class AppService {
       .then((res) => {
         this._offerTypes = res;
         this.checkAppInitStatus();
-      }).catch(e => ErrorsService.appInitProcessError({anchor: 'AppService.initOfferTypesCollection', error: e}));
+      }).catch(e => AppService.dispatchAppInitError({anchor: 'AppService.initOfferTypesCollection', error: e}));
   }
 
   private initBusinessAreasCollection(): void {
@@ -61,13 +61,19 @@ export class AppService {
       .then((res) => {
         this._businessAreas = res;
         this.checkAppInitStatus();
-      }).catch(e => ErrorsService.appInitProcessError({anchor: 'AppService.initBusinessAreasCollection', error: e}));
+      }).catch(e => AppService.dispatchAppInitError({anchor: 'AppService.initBusinessAreasCollection', error: e}));
   }
 
   private checkAppInitStatus(): void {
     if (this.cities && this.offerTypes && this.businessAreas) {
       document.dispatchEvent(new Event(AppEventNames.INIT_APP_DATA_SUCCESS));
     }
+  }
+
+  public static dispatchAppInitError(detail: {}): void {
+    ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, detail);
+    AppService.hideInitialSpinner();
+    AppService.showGlobalError();
   }
 
   public static hideInitialSpinner(): void {
