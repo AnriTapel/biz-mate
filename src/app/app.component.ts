@@ -10,6 +10,7 @@ import {AppService} from "./services/app/app.service";
 import {Observable} from "rxjs";
 import {User} from "./models/User";
 import AppEventNames from "./events/AppEventNames";
+import {ErrorsService} from "./services/errors/errors.service";
 
 @Component({
   selector: 'app-root',
@@ -46,9 +47,9 @@ export class AppComponent {
     }]
   };
 
+  // ErrorsService is imported to being initialized
   constructor(private route: ActivatedRoute, private userSubscriptionsService: UserSubscriptionsService, private dialog: MatDialog,
-              private lazyLoadingService: LazyLoadingService, private authService: AuthService, private appService: AppService) {
-
+              private lazyLoadingService: LazyLoadingService, private authService: AuthService, private appService: AppService, private errorsService: ErrorsService) {
     document.addEventListener(AppEventNames.INIT_AUTH_SUCCESS, this.onInitAuthSuccess.bind(this));
     document.addEventListener(AppEventNames.INIT_APP_DATA_SUCCESS, this.onInitAppDataSuccess.bind(this));
     this.authService.initAuth();

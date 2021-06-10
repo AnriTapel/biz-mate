@@ -48,8 +48,8 @@ export class AuthService {
       } catch (e) {
         if (!this.initialAuthCompleted) {
           AppService.dispatchAppInitError({anchor: 'AuthService.initAuth', error: e});
-          return;
         }
+        await this.signOut();
       }
     });
   }
