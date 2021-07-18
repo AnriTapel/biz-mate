@@ -25,7 +25,7 @@ export class UserSubscriptionsService {
 
   constructor(private notificationService: NotificationBarService, private dbService: DatabaseService,
               private matDialog: MatDialog, private lazyLoadingService: LazyLoadingService, private authService: AuthService) {
-    this.initService();
+    document.addEventListener(AppEventNames.INIT_APP_DATA_SUCCESS, this.initService.bind(this));
   }
 
   private async initService(): Promise<void> {

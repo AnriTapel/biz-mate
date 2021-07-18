@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {MatDialog} from "@angular/material/dialog";
 import {AuthService} from "../../services/auth/auth.service";
 import {Router} from "@angular/router";
@@ -13,6 +13,8 @@ import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config
 })
 export class HeaderComponent implements OnInit {
 
+  @ViewChild('mobileMenuWrapper') mobileMenuWrapper: ElementRef;
+
   public loggedIn: boolean;
   public userName: string;
 
@@ -21,13 +23,16 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.hideMobileMenu();
     this.auth.credentials$.subscribe((user) => {
       this.loggedIn = user && !user.isAnonymous;
       if (this.loggedIn) {
         this.userName = user.displayName;
       }
     });
+  }
+
+  ngAfterViewInit(): void {
+    this.hideMobileMenu();
   }
 
   public onAuthButtonClick(): void {
@@ -51,13 +56,19 @@ export class HeaderComponent implements OnInit {
   }
 
   public showMobileMenu(): void {
-    document.getElementById('mobileMenuWrapper').style.visibility = 'visible';
-    document.getElementById('mobileMenuWrapper').style.opacity = '1';
+    if (!this.mobileMenuWrapper) {
+      return;
+    }
+    this.mobileMenuWrapper.nativeElement.style.visibility = 'visible';
+    this.mobileMenuWrapper.nativeElement.style.opacity = '1';
   }
 
   public hideMobileMenu(): void {
-    document.getElementById('mobileMenuWrapper').style.visibility = 'hidden';
-    document.getElementById('mobileMenuWrapper').style.opacity = '0';
+    if (!this.mobileMenuWrapper) {
+      return;
+    }
+    this.mobileMenuWrapper.nativeElement.style.visibility = 'hidden';
+    this.mobileMenuWrapper.nativeElement.style.opacity = '0';
   }
 
   public logOut(): void {

@@ -78,12 +78,16 @@ export class AppService {
 
   public static hideInitialSpinner(): void {
     const initialSpinnerElement = document.getElementById('initial_spinner');
-    initialSpinnerElement.style.display = 'none';
+    if (initialSpinnerElement) {
+      initialSpinnerElement.style.display = 'none';
+    }
   }
 
   public static showGlobalError(): void {
     const errorMsgElement = document.getElementById('init_error_message');
-    errorMsgElement.removeAttribute('style');
+    if (errorMsgElement) {
+      errorMsgElement.removeAttribute('style');
+    }
   }
 
   public static getDefaultAvatar(): string {
@@ -160,9 +164,10 @@ export class AppService {
   }
 
   public static scrollPageToHeader(): void {
-    document.querySelector('#header').scrollIntoView({
-      behavior: "smooth"
-    });
+    const headerEl = document.getElementById('header');
+    if (headerEl) {
+      headerEl.scrollIntoView({behavior: "smooth"});
+    }
   }
 
   public static isMobile(): boolean {
