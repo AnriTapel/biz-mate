@@ -22,7 +22,7 @@ export class NotificationBarService {
       scroll(0,0);
     }
 
-    this.timer = setTimeout(() => {
+    this.timer = <any>setTimeout(() => {
       this.hideNotificationBar();
     }, NotificationBarService.NOTIFICATION_BAR_TIMEOUT_MSEC);
   }

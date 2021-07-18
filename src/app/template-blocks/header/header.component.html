@@ -26,8 +26,7 @@
       <img src="/assets/img/icons/hamburger_menu.svg" alt="Меню" (click)="showMobileMenu()"/>
     </div>
 
-    <div class="mobile-menu-wrapper" id="mobileMenuWrapper" (click)="hideMobileMenu()" (scroll)="$event.stopImmediatePropagation()">
-      <div class="mobile-menu-container" (click)="$event.stopImmediatePropagation()">
+    <div class="mobile-menu-wrapper" #mobileMenuWrapper (click)="hideMobileMenu()" (scroll)="$event.stopImmediatePropagation()">      <div class="mobile-menu-container" (click)="$event.stopImmediatePropagation()">
         <div class="user-info">
           <span *ngIf="loggedIn">{{userName}}</span>
           <button class="button-primary login-button" (click)="onAuthButtonClick()">{{loggedIn ? 'Выйти' : 'Войти'}}
