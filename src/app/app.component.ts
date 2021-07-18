@@ -20,6 +20,7 @@ import {ErrorsService} from "./services/errors/errors.service";
 export class AppComponent {
 
   public authCredentials$: Observable<User>;
+  public readonly title: string = 'biz-mate';
 
   static readonly ROUTES_FOR_NOTIFICATION_BUTTON: string[] = ['/offer/', '/offers-page'];
 

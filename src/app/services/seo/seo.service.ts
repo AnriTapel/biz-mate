@@ -16,8 +16,6 @@ export class SeoService {
   }
 
   public updateRouteMetaTagsByData(data: any): void {
-    this.clearPreviousRouteTags();
-
     for (const key of Object.keys(data)) {
       switch (key) {
         case 'title':
@@ -25,17 +23,12 @@ export class SeoService {
           break;
         case 'description':
           this.setDescriptionTags(data[key]);
-          this.meta.addTags([
-            {name: 'og:site_name', content: 'BizMate'},
-            {name: 'og:type', content: 'website'},
-            {name: 'twitter:card', content: 'summary'}
-          ]);
           break;
         case 'keywords':
-          this.meta.addTag({name: 'keywords', content: data[key]});
+          this.meta.updateTag({property: 'keywords', content: data[key]});
           break;
         case 'site':
-          this.meta.addTag({name: 'twitter:site', content: `https://biz-mate.ru${data[key]}`});
+          this.meta.updateTag({property: 'twitter:site', content: `https://biz-mate.ru${data[key]}`});
           break;
         default:
           break;
@@ -44,8 +37,6 @@ export class SeoService {
   }
 
   public updateRouteMetaTagsByOffer(offer: Offer): void {
-    this.clearPreviousRouteTags();
-
     const tags = {
       title: `${offer.title} | BizMate`,
       description: offer.desc,
@@ -54,10 +45,8 @@ export class SeoService {
 
     this.updateRouteMetaTagsByData(tags);
     if (offer.imagesURL.length) {
-      this.meta.addTags([
-        {name: 'twitter:image', content: offer.imagesURL[0]},
-        {name: 'og:image', content: offer.imagesURL[0]}
-      ]);
+      this.meta.updateTag({property: 'twitter:image', content: offer.imagesURL[0]});
+      this.meta.updateTag({property: 'og:image', content: offer.imagesURL[0]});
     }
   }
 
@@ -65,20 +54,14 @@ export class SeoService {
     this.title.setTitle(title);
     const titleTags = SeoService.TAG_NAME_VALUES.filter(it => it.indexOf('title') > -1);
     titleTags.forEach(it => {
-      this.meta.addTag({name: it, content: title});
+      this.meta.updateTag({property: it, content: title});
     });
   }
 
   private setDescriptionTags(desc: string): void {
     const descTags = SeoService.TAG_NAME_VALUES.filter(it => it.indexOf('description') > -1);
     descTags.forEach(it => {
-      this.meta.addTag({name: it, content: desc});
-    });
-  }
-
-  private clearPreviousRouteTags(): void {
-    SeoService.TAG_NAME_VALUES.forEach(it => {
-      this.meta.removeTag(`name='${it}'`);
+      this.meta.updateTag({property: it, content: desc});
     });
   }
 

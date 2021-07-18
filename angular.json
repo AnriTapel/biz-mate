@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/biz-mate",
+            "outputPath": "dist/biz-mate/browser",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -41,6 +41,28 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": true,
+              "extractLicenses": true,
+              "vendorChunk": true,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            },
+            "development": {
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -121,6 +143,57 @@
           "configurations": {
             "production": {
               "devServerTarget": "biz-mate:serve:production"
+            }
+          }
+        },
+        "server": {
+          "builder": "@angular-devkit/build-angular:server",
+          "options": {
+            "outputPath": "dist/biz-mate/server",
+            "main": "src/main.server.ts",
+            "tsConfig": "tsconfig.server.json",
+            "externalDependencies": [
+              "@firebase/analytics",
+              "@firebase/analytics-types",
+              "@firebase/app",
+              "@firebase/app-types",
+              "@firebase/auth",
+              "@firebase/auth-interop-types",
+              "@firebase/auth-types",
+              "@firebase/component",
+              "@firebase/database",
+              "@firebase/database-types",
+              "@firebase/firestore",
+              "@firebase/firestore-types",
+              "@firebase/functions",
+              "@firebase/functions-types",
+              "@firebase/installations",
+              "@firebase/installations-types",
+              "@firebase/logger",
+              "@firebase/messaging",
+              "@firebase/messaging-types",
+              "@firebase/performance",
+              "@firebase/performance-types",
+              "@firebase/polyfill",
+              "@firebase/remote-config",
+              "@firebase/remote-config-types",
+              "@firebase/storage",
+              "@firebase/storage-types",
+              "@firebase/util",
+              "@firebase/webchannel-wrapper"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "media",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "sourceMap": false,
+              "optimization": true
             }
           }
         }

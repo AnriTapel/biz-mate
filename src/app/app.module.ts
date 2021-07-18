@@ -32,7 +32,7 @@ import {AngularFireStorageModule} from "@angular/fire/storage";
     AngularFireStorageModule,
     AngularFireFunctionsModule,
     AngularFireAnalyticsModule,
-    BrowserModule,
+    BrowserModule.withServerTransition({ appId: 'serverApp' }),
     AppRoutingModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
