@@ -44,7 +44,7 @@ export class SeoService {
     };
 
     this.updateRouteMetaTagsByData(tags);
-    if (offer.imagesURL.length) {
+    if (offer.imagesURL && offer.imagesURL.length) {
       this.meta.updateTag({property: 'twitter:image', content: offer.imagesURL[0]});
       this.meta.updateTag({property: 'og:image', content: offer.imagesURL[0]});
     }
