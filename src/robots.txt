@@ -1,0 +1,6 @@
+User-agent: *
+Crawl-delay: 10
+Disallow: /assets/img/
+Disallow: /assets/fonts/
+Disallow: /assets/libs/
+Sitemap: https://biz-mate.ru/sitemap.xml
