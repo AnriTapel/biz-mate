@@ -26,7 +26,6 @@ export class AuthService {
   }
 
   public initAuth(): void {
-    this.afAuth.useDeviceLanguage();
     this.afAuth.authState.subscribe(async (user) => {
       try {
         if (user && user.isAnonymous === false) {
