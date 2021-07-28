@@ -5,12 +5,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {DialogConfigType, MatDialogConfig} from "./dialogs/mat-dialog-config";
 import {ActivatedRoute} from "@angular/router";
 import {LazyLoadingService} from "./services/lazy-loading/lazy-loading.service";
-import {AuthService} from "./services/auth/auth.service";
 import {AppService} from "./services/app/app.service";
-import {Observable} from "rxjs";
-import {User} from "./models/User";
-import AppEventNames from "./events/AppEventNames";
-import {ErrorsService} from "./services/errors/errors.service";
 
 @Component({
   selector: 'app-root',
@@ -18,8 +13,6 @@ import {ErrorsService} from "./services/errors/errors.service";
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-
-  public authCredentials$: Observable<User>;
 
   static readonly ROUTES_FOR_NOTIFICATION_BUTTON: string[] = ['/offer/', '/offers-page'];
 
@@ -47,21 +40,8 @@ export class AppComponent {
     }]
   };
 
-  // ErrorsService is imported to being initialized
-  constructor(private route: ActivatedRoute, private userSubscriptionsService: UserSubscriptionsService, private dialog: MatDialog,
-              private lazyLoadingService: LazyLoadingService, private authService: AuthService, private appService: AppService, private errorsService: ErrorsService) {
-    document.addEventListener(AppEventNames.INIT_AUTH_SUCCESS, this.onInitAuthSuccess.bind(this));
-    document.addEventListener(AppEventNames.INIT_APP_DATA_SUCCESS, this.onInitAppDataSuccess.bind(this));
-    this.authService.initAuth();
-  }
-
-  private onInitAuthSuccess(): void {
-    this.appService.appInit();
-  }
-
-  private onInitAppDataSuccess(): void {
+  constructor(private route: ActivatedRoute, private userSubscriptionsService: UserSubscriptionsService, private dialog: MatDialog, private lazyLoadingService: LazyLoadingService) {
     this.manageRouteParams();
-    this.authCredentials$ = this.authService.credentials$;
     AppService.hideInitialSpinner();
   }
 

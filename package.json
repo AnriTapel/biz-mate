@@ -8,7 +8,8 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "deploy": "ng build --configuration production && firebase deploy"
+    "deploy_prod": "ng build --configuration production && firebase deploy -P default",
+    "deploy_dev": "ng build && firebase deploy -P staging"
   },
   "private": true,
   "dependencies": {

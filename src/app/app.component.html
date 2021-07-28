@@ -1,7 +1,7 @@
 <app-overlay></app-overlay>
 <app-notification-bar></app-notification-bar>
 <app-header></app-header>
-<router-outlet *ngIf="(authCredentials$ | async)"></router-outlet>
+<router-outlet></router-outlet>
 <div (click)="onNotificationButtonClick()" *ngIf="showNotificationButton()"
      class="new-offers-notification-button button-primary button-circle">
   <img src="/assets/img/icons/bell.svg" alt="Уведомления"/>

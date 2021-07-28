@@ -74,6 +74,7 @@ export class AppService {
     ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, detail);
     AppService.hideInitialSpinner();
     AppService.showGlobalError();
+    document.dispatchEvent(new Event(AppEventNames.APP_INIT_ERROR));
   }
 
   public static hideInitialSpinner(): void {

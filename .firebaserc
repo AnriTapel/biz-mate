@@ -1,12 +1,20 @@
 {
   "projects": {
-    "default": "bizmate-5f9a4"
+    "default": "bizmate-5f9a4",
+    "staging": "biz-mate-test"
   },
   "targets": {
     "bizmate-5f9a4": {
       "hosting": {
         "biz-mate": [
           "bizmate-5f9a4"
+        ]
+      }
+    },
+    "biz-mate-test": {
+      "hosting": {
+        "biz-mate-test": [
+          "biz-mate-test"
         ]
       }
     }
