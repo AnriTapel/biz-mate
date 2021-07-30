@@ -13,6 +13,7 @@ import {Messages} from "../../models/Messages";
 import {DatabaseService} from "../../services/database/database.service";
 import {FilterFieldName} from "../../models/FilterFields";
 import {AuthService} from "../../services/auth/auth.service";
+import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
 
 @Component({
   selector: 'app-offer-page',
@@ -125,8 +126,7 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
   }
 
   public onOfferContactsClick(): void {
-    //@ts-ignore
-    ym(65053642, 'reachGoal', 'offerContactsClicked');
+    document.dispatchEvent(new GoogleAnalyticsEvent('offer_contacts_clicked'));
   }
 
   public reportOnOffer(): void {

@@ -1,5 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {AppService} from "../../services/app/app.service";
+import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
 
 @Component({
   selector: 'app-footer',
@@ -24,12 +25,10 @@ export class FooterComponent implements OnInit {
   }
 
   public sendVkGroupYmGoal(): void {
-    //@ts-ignore
-    ym(65053642,'reachGoal','vkGroup');
+    document.dispatchEvent(new GoogleAnalyticsEvent('footer_vk_group_clicked'));
   }
 
   public sendEmailYmGoal(): void {
-    //@ts-ignore
-    ym(65053642,'reachGoal','emailLink');
+    document.dispatchEvent(new GoogleAnalyticsEvent('footer_email_clicked'));
   }
 }

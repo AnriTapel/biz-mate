@@ -10,6 +10,7 @@ import {DatabaseService} from "../../services/database/database.service";
 import {AppService} from "../../services/app/app.service";
 import {LazyLoadingService} from "../../services/lazy-loading/lazy-loading.service";
 import {StorageService} from "../../services/storage/storage.service";
+import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
 
 @Component({
   selector: 'app-offer-card',
@@ -67,9 +68,7 @@ export class OfferCardComponent {
     this.databaseService.deleteOffer(this.offer)
       .then(() => {
         this.notificationService.showNotificationBar(Messages.DELETE_OFFER_SUCCESS, true);
-        //@ts-ignore
-        ym(65053642, 'reachGoal', 'offerDeleted');
-        document.dispatchEvent(new Event('offerdeleted'));
+        document.dispatchEvent(new GoogleAnalyticsEvent('offer_deleted'));
       })
       .catch(() => this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false))
       .finally(() => OverlayService.hideOverlay());

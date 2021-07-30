@@ -1,5 +1,6 @@
 import {AfterViewInit, Component, Input} from '@angular/core';
 import {AppService} from "../../services/app/app.service";
+import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
 
 @Component({
   selector: 'app-share-buttons',
@@ -95,7 +96,6 @@ export class ShareButtonsComponent implements AfterViewInit {
   }
 
   public sendYMGoal(): void {
-    //@ts-ignore
-    ym(65053642,'reachGoal','shareSocials');
+    document.dispatchEvent(new GoogleAnalyticsEvent('share_in_socials'));
   }
 }

@@ -18,6 +18,7 @@ import {DatabaseService} from "../../services/database/database.service";
 import {ErrorsService} from "../../services/errors/errors.service";
 import AppEventNames from "../../events/AppEventNames";
 import {AuthService} from "../../services/auth/auth.service";
+import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
 
 @Component({
   selector: 'app-offer-form',
@@ -277,11 +278,9 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
         this.areChangesSaved = true;
         this.notificationBarService.showNotificationBar(this.editOffer ? Messages.SAVE_SUCCESS : Messages.OFFER_CREATED, true);
         if (this.editOffer) {
-          //@ts-ignore
-          ym(65053642,'reachGoal','offerEdited')
+          document.dispatchEvent(new GoogleAnalyticsEvent('offer_edited'));
         } else {
-          //@ts-ignore
-          ym(65053642,'reachGoal','offerCreated');
+          document.dispatchEvent(new GoogleAnalyticsEvent('offer_created'));
         }
         this.router.navigateByUrl(`/offer/${offerData.offerId}`);
       })

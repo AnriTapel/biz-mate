@@ -7,10 +7,10 @@ import {UserSubscriptions} from "../../models/UserSubscriptions";
 import {Messages} from "../../models/Messages";
 import {OverlayService} from "../overlay/overlay.service";
 import {AppService} from "../app/app.service";
-import AppEventNames from "../../events/AppEventNames";
 import {User} from "../../models/User";
 import {LazyLoadingService} from "../lazy-loading/lazy-loading.service";
 import {AuthService} from "../auth/auth.service";
+import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
 
 @Injectable({
   providedIn: 'root'
@@ -66,8 +66,7 @@ export class UserSubscriptionsService {
               .then(() => {
                 UserSubscriptionsService.setNewOffersSubscriptionStatus(true);
                 this.notificationService.showNotificationBar(Messages.SUBSCRIPTION_SUCCESS, true);
-                //@ts-ignore
-                ym(65053642, 'reachGoal', 'newOffersSubscription')
+                document.dispatchEvent(new GoogleAnalyticsEvent('new_offers_subscription'));
               })
               .catch(() => this.notificationService.showNotificationBar(Messages.SUBSCRIPTION_ERROR, false));
           }

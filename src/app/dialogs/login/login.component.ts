@@ -6,6 +6,7 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Messages} from "../../models/Messages";
 import {Router} from "@angular/router";
 import {LazyLoadingService} from "../../services/lazy-loading/lazy-loading.service";
+import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
 
 @Component({
   selector: 'app-login',
@@ -56,8 +57,7 @@ export class LoginComponent {
   public loginGoogle() {
     this.auth.googleAuth()
       .then(() => {
-        //@ts-ignore
-        ym(65053642, 'reachGoal', 'completeSignUp');
+        document.dispatchEvent(new GoogleAnalyticsEvent('complete_sign_up'));
         this.onSuccessfulLogin();
       }).catch((err) => this.errorMessage = Messages[err.code] || Messages.DEFAULT_MESSAGE);
   }

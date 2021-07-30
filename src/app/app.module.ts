@@ -12,7 +12,7 @@ import {HeaderComponent} from "./template-blocks/header/header.component";
 import {FooterComponent} from "./template-blocks/footer/footer.component";
 import {NotificationBarComponent} from "./template-blocks/notification-bar/notification-bar.component";
 import {OverlayComponent} from "./template-blocks/overlay/overlay.component";
-import {AngularFireAnalyticsModule} from "@angular/fire/analytics";
+import {AngularFireAnalyticsModule, CONFIG} from "@angular/fire/analytics";
 import {MaterialModule} from "./modules/material.module";
 import {AngularFireFunctionsModule} from "@angular/fire/functions";
 import {AngularFireStorageModule} from "@angular/fire/storage";
@@ -20,6 +20,7 @@ import {ErrorsService} from "./services/errors/errors.service";
 import {AuthService} from "./services/auth/auth.service";
 import {AppService} from "./services/app/app.service";
 import AppEventNames from "./events/AppEventNames";
+import {GoogleAnalyticsService} from "./services/google-analytis/google-analytics.service";
 
 
 export function initializeAppFactory(appService: AppService, authService: AuthService): () => Promise<any> {
@@ -76,8 +77,15 @@ export function initializeAppFactory(appService: AppService, authService: AuthSe
     {
       provide: APP_INITIALIZER,
       useFactory: initializeAppFactory,
-      deps: [AppService, AuthService, ErrorsService],
+      deps: [AppService, AuthService, ErrorsService, GoogleAnalyticsService],
       multi: true
+    },
+    { provide: CONFIG,
+      useValue: {
+        send_page_view: false,
+        allow_ad_personalization_signals: false,
+        anonymize_ip: true
+      }
     }
   ],
   bootstrap: [AppComponent]

@@ -9,6 +9,7 @@ import {DatabaseService} from "../../services/database/database.service";
 import {Messages} from "../../models/Messages";
 import {OverlayService} from "../../services/overlay/overlay.service";
 import {ActivatedRoute} from "@angular/router";
+import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
 
 @Component({
   selector: 'app-feedback',
@@ -53,8 +54,7 @@ export class FeedbackComponent extends ComponentBrowserAbstractClass implements 
         data.reportOfferId = this.reportOfferId;
       }
       await this.databaseService.sendFeedback(data);
-      //@ts-ignore
-      ym(65053642,'reachGoal','feedbackSent');
+      document.dispatchEvent(new GoogleAnalyticsEvent('feedback_sent'));
       this.notificationService.showNotificationBar(Messages.FEEDBACK_SUCCESS, true);
     } catch(e) {
       this.notificationService.showNotificationBar(Messages.FEEDBACK_ERROR, false);

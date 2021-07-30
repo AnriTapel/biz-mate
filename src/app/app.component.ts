@@ -6,6 +6,7 @@ import {DialogConfigType, MatDialogConfig} from "./dialogs/mat-dialog-config";
 import {ActivatedRoute} from "@angular/router";
 import {LazyLoadingService} from "./services/lazy-loading/lazy-loading.service";
 import {AppService} from "./services/app/app.service";
+import {GoogleAnalyticsEvent} from "./events/GoogleAnalyticsEvent";
 
 @Component({
   selector: 'app-root',
@@ -52,8 +53,7 @@ export class AppComponent {
           .then(comp => {
             this.dialog.open(comp, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG,
               params['password_reset'] ? this.resetPasswordEvent : this.emailVerifyEvent));
-            //@ts-ignore
-            ym(65053642, 'reachGoal', params['password_reset'] ? 'resetPassword' : 'completeSignUp');
+            document.dispatchEvent(new GoogleAnalyticsEvent(params['password_reset'] ? 'reset_password' : 'complete_sign_up'));
           }).catch(console.error);
       } else if (params['event']) {
         if (params['event'] === 'unsubscribe') {

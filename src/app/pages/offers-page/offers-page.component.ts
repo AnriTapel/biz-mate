@@ -19,6 +19,7 @@ import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config
 import {OfferType} from "../../models/IOfferType";
 import {LazyLoadingService} from "../../services/lazy-loading/lazy-loading.service";
 import {AuthService} from "../../services/auth/auth.service";
+import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
 
 @Component({
   selector: 'app-offers-page',
@@ -174,8 +175,7 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
           this.filteredOffers$ = undefined;
           this.emptyFilterResult = true
         }
-        //@ts-ignore
-        ym(65053642, 'reachGoal', 'searchByFilter');
+        document.dispatchEvent(new GoogleAnalyticsEvent('offers_search_by_filter'));
       })
       .catch(() => this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false))
       .finally(() => {

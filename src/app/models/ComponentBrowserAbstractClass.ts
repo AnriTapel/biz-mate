@@ -9,8 +9,6 @@ export abstract class ComponentBrowserAbstractClass implements OnDestroy {
   protected userAuthData: User;
 
   protected constructor(protected authService: AuthService) {
-    //@ts-ignore
-    ym(65053642, 'hit', location.href);
     this.userAuthData = authService.credentials;
   }
 
