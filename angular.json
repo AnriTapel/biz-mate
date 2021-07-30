@@ -49,6 +49,7 @@
               "vendorChunk": true,
               "buildOptimizer": true,
               "assets": [
+                "src/assets",
                 "src/sitemap.xml",
                 "src/robots.txt"
               ],
