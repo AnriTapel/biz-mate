@@ -18,7 +18,14 @@
         "source": "**",
         "destination": "/index.html"
       }
-    ]
+    ],
+    "headers": [{
+      "source" : "**/*.@(js|ttf|css|svg|png|jpeg|jpg)",
+      "headers" : [{
+        "key" : "Cache-Control",
+        "value" : "max-age=31536000"
+      }]
+    }]
   },
   "storage": {
     "rules": "storage.rules"

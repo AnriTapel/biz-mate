@@ -7,6 +7,7 @@ export abstract class ComponentBrowserAbstractClass implements OnDestroy {
 
   protected metaTags: any;
   protected userAuthData: User;
+  private isInitialSpinnerHidden: boolean = false;
 
   protected constructor(protected authService: AuthService) {
     this.userAuthData = authService.credentials;
@@ -14,6 +15,13 @@ export abstract class ComponentBrowserAbstractClass implements OnDestroy {
 
   ngOnDestroy(): void {
     AppService.scrollPageToHeader();
+  }
+
+  ngAfterViewChecked(): void {
+    if (!this.isInitialSpinnerHidden) {
+      AppService.hideInitialSpinner();
+      this.isInitialSpinnerHidden = true;
+    }
   }
 
   public isUserLoggedIn(): boolean {

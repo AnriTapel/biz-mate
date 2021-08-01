@@ -3,9 +3,8 @@ import {UserSubscriptionsService} from "./services/user-subscriptions/user-subsc
 import NotificationDataModel from "./models/NotificationDataModel";
 import {MatDialog} from "@angular/material/dialog";
 import {DialogConfigType, MatDialogConfig} from "./dialogs/mat-dialog-config";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {LazyLoadingService} from "./services/lazy-loading/lazy-loading.service";
-import {AppService} from "./services/app/app.service";
 import {GoogleAnalyticsEvent} from "./events/GoogleAnalyticsEvent";
 
 @Component({
@@ -41,9 +40,9 @@ export class AppComponent {
     }]
   };
 
-  constructor(private route: ActivatedRoute, private userSubscriptionsService: UserSubscriptionsService, private dialog: MatDialog, private lazyLoadingService: LazyLoadingService) {
+  constructor(router: Router, private route: ActivatedRoute, private userSubscriptionsService: UserSubscriptionsService,
+              private dialog: MatDialog, private lazyLoadingService: LazyLoadingService) {
     this.manageRouteParams();
-    AppService.hideInitialSpinner();
   }
 
   private manageRouteParams(): void {

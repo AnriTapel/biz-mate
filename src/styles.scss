@@ -4,21 +4,19 @@
 @font-face {
   font-family: "Raleway-Regular";
   src: url("/assets/fonts/Raleway-Regular.ttf");
-}
-
-@font-face {
-  font-family: "Raleway-Thin";
-  src: url("/assets/fonts/Raleway-Thin.ttf");
+  font-display: swap;
 }
 
 @font-face {
   font-family: "Raleway-SemiBold";
   src: url("/assets/fonts/Raleway-SemiBold.ttf");
+  font-display: swap;
 }
 
 @font-face {
   font-family: "Raleway-Light";
   src: url("/assets/fonts/Raleway-Light.ttf");
+  font-display: swap;
 }
 
 $main-theme-color: #2E7990;
