@@ -20,6 +20,12 @@ import AppEventNames from "../../events/AppEventNames";
 import {AuthService} from "../../services/auth/auth.service";
 import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
 
+interface OfferImage {
+  dataUrl: string
+  fileName: string
+  isValid: boolean
+}
+
 @Component({
   selector: 'app-offer-form',
   templateUrl: './offer-form.component.html',
@@ -29,6 +35,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
 
   @ViewChild(FormGroupDirective) formGroupDirective: FormGroupDirective;
 
+  private readonly offerImagesMaxCount: number = 6;
   private currentType: number = undefined;
 
   private editOfferId: string = null;
@@ -49,8 +56,10 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     experience: 1024,
     conditions: 1024
   };
-  public offerImages: string[] = [];
-  private removedImages: string[] = [];
+
+  private initialOfferImages: OfferImage[] = [];
+  public offerImages: OfferImage[] = [];
+
   public contactMethods: any = {
     email: true,
     phone: true,
@@ -146,26 +155,36 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
 
   public async fileChangeEvent(event): Promise<void> {
     let files = event.target.files;
-    let imgCount = files.length > 5 ? 5 : files.length;
-    OverlayService.showOverlay();
-    for (let i = 0; i < imgCount; i++) {
-      let res = await this.storageService.uploadUserImage(files[i], files[i].name);
-      if (res)
-        this.offerImages.push(res);
-      else {
-        this.notificationBarService.showNotificationBar(Messages["image/could_not_load"], false);
-      }
+    for (let i = 0; i < this.getAvailImagesUploadCount(files.length); i++) {
+      let reader = new FileReader();
+      reader.onloadend = () => {
+        this.offerImages.push({dataUrl: reader.result.toString(), fileName: files[i].name, isValid: true});
+      };
+      reader.readAsDataURL(files[i]);
     }
-    OverlayService.hideOverlay();
+    this.isFormValid = true;
+  }
+
+  private getAvailImagesUploadCount(length: number): number {
+    let availSpace = this.offerImagesMaxCount - this.offerImages.length;
+    return length < availSpace ? length : availSpace;
   }
 
   public openImage(url: string): void {
     window.open(url, '_blank');
   }
 
-  public deleteImage(image: string): void {
-    this.removedImages.push(image);
-    this.offerImages = this.offerImages.filter(it => it !== image);
+  public onImageLoadError(e: any, img: OfferImage): void {
+    if (!e.target) {
+      return;
+    }
+    img.isValid = false;
+    e.target.parentElement.classList.add('invalid-image-uploaded');
+  }
+
+  public deleteImage(index: number): void {
+    this.offerImages.splice(index, 1);
+    this.isFormValid = true;
   }
 
   public isCapitalFieldVisible(): boolean {
@@ -210,16 +229,23 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
       offerData['desc'] = offer.desc || null;
       offerData['capital'] = offer.capital || null;
       offerData['experience'] = offer.experience || null;
+      offerData['conditions'] = offer.conditions || null;
+      offerData['phone'] = offer.phone || null;
+      offerData['city'] = this.appService.getCityByFiledValue('id', offer.city).name || null;
       offerData['businessArea'] = this.appService.getBusinessAreaByFiledValue('id', offer.businessArea[0]).name || null;
       if (offer.businessArea[1]) {
         offerData['extraBusinessArea'] = this.appService.getBusinessAreaByFiledValue('id', offer.businessArea[1]).name || null;
         this.isExtraBusinessAreaFieldAvail = true;
       }
-      offerData['conditions'] = offer.conditions || null;
-      offerData['phone'] = offer.phone || null;
-      offerData['city'] = this.appService.getCityByFiledValue('id', offer.city).name || null;
+
+      if (offer.imagesURL && offer.imagesURL.length) {
+        for (let i = 0; i < offer.imagesURL.length; i++) {
+          this.offerImages.push({dataUrl: offer.imagesURL[i], fileName: `$${i}`, isValid: true});
+        }
+        this.initialOfferImages = JSON.parse(JSON.stringify(this.offerImages));
+      }
+
       this.contactMethods = offer.contactMethods || this.contactMethods;
-      this.offerImages = offer.imagesURL || [];
       this.offerDate = offer.date;
 
       OverlayService.hideOverlay();
@@ -239,8 +265,13 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     };
   }
 
-  public sendOffer(): Promise<void> {
+  public async sendOffer(): Promise<void> {
     if (!this.newOfferForm.valid) {
+      this.isFormValid = false;
+      return;
+    }
+
+    if (this.offerImages.some(it => !it.isValid)) {
       this.isFormValid = false;
       return;
     }
@@ -268,27 +299,43 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     offerData.imagesURL = this.offerImages;
     offerData.contactMethods = offerData.phone ? this.contactMethods : null;
 
-    for (let img of this.removedImages) {
-      this.storageService.deleteUserImage(img);
+    try {
+      await this.resolveOfferImages();
+      offerData.imagesURL = this.offerImages.map(it => it.dataUrl);
+      await this.databaseService.sendOffer(offerData, this.editOffer);
+      this.areChangesSaved = true;
+      this.notificationBarService.showNotificationBar(this.editOffer ? Messages.SAVE_SUCCESS : Messages.OFFER_CREATED, true);
+      if (this.editOffer) {
+        document.dispatchEvent(new GoogleAnalyticsEvent('offer_edited'));
+      } else {
+        document.dispatchEvent(new GoogleAnalyticsEvent('offer_created'));
+      }
+      this.router.navigateByUrl(`/offer/${offerData.offerId}`);
+    } catch (e) {
+      ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'OfferFormComponent.sendOffer', error: e});
+      this.notificationBarService.showNotificationBar(this.editOffer ? Messages.SAVE_ERROR : Messages.OFFER_ERROR, false);
     }
-    this.removedImages = [];
 
-    this.databaseService.sendOffer(offerData, this.editOffer)
-      .then(() => {
-        this.areChangesSaved = true;
-        this.notificationBarService.showNotificationBar(this.editOffer ? Messages.SAVE_SUCCESS : Messages.OFFER_CREATED, true);
-        if (this.editOffer) {
-          document.dispatchEvent(new GoogleAnalyticsEvent('offer_edited'));
-        } else {
-          document.dispatchEvent(new GoogleAnalyticsEvent('offer_created'));
-        }
-        this.router.navigateByUrl(`/offer/${offerData.offerId}`);
-      })
-      .catch((e) => {
-        ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'OfferFormComponent.sendOffer', error: e});
-        this.notificationBarService.showNotificationBar(this.editOffer ? Messages.SAVE_ERROR : Messages.OFFER_ERROR, false)
-      })
-      .finally(() => OverlayService.hideOverlay());
+    OverlayService.hideOverlay();
+  }
+
+  private async resolveOfferImages(): Promise<void> {
+    let deletedImages: OfferImage[] = this.initialOfferImages.filter(it => !this.offerImages.find(ot => ot.fileName === it.fileName));
+    let newImages: OfferImage[] = this.offerImages.filter(it => !this.initialOfferImages.find(ot => ot.fileName === it.fileName));
+
+    for (let image of deletedImages) {
+      this.storageService.deleteUserImage(image.dataUrl);
+    }
+
+    let promises = [];
+    for (let image of newImages) {
+      promises.push(this.storageService.uploadUserImage(image.dataUrl, image.fileName));
+    }
+    let res = await Promise.all(promises);
+    for (let i = 0; i < newImages.length; i++) {
+      newImages[i].dataUrl = res[i];
+    }
+    this.offerImages.filter(it => it.dataUrl.indexOf('data:image/') == -1);
   }
 
   private static getFieldsLabels(offerType: OfferTypesEnum): object {

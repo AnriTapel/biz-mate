@@ -86,7 +86,7 @@ $main-theme-color: #2E7990;
       right: 5px;
       width: 15px;
       height: 15px;
-      z-index: 2147483647;
+      z-index: 10;
       background-color: white;
       border-radius: 50%;
     }
@@ -115,6 +115,11 @@ $main-theme-color: #2E7990;
       font-size: 60px;
       line-height: 0;
       font-family: Raleway-Light;
+    }
+
+    .invalid-image-uploaded {
+      border: 2px solid #FF0000;
+      color: #FF0000;
     }
   }
 

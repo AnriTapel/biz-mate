@@ -72,9 +72,9 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
           AppService.unsubscribeHandler([this.dialogHandler]);
           if (res && typeof res === "string") {
             this.authService.updateUserDisplayNameOrPhotoURL('photoURL', res)
-              .then(() => {
+              .then(async () => {
                 this.storageService.deleteUserImage(this.userAuthData.photoURL);
-                this.updateUserData('photoURL', res);
+                await this.updateUserData('photoURL', res);
               })
               .catch(() => this.notificationBarService.showNotificationBar(Messages.SAVE_ERROR, false))
               .finally(() => OverlayService.hideOverlay());

@@ -104,15 +104,15 @@
       <h4 class="full-width-field">Фотографии и изображения</h4>
 
       <div class="images-container full-width-field">
-        <div *ngFor="let img of offerImages" class="image-block">
-          <img [src]="img" alt="Изображение" (click)="openImage(img)"/>
-          <img src="/assets/img/icons/delete.svg" title="Удалить" alt="Удалить" (click)="deleteImage(img)"/>
+        <div *ngFor="let img of offerImages;let i = index" class="image-block">
+          <img [src]="img.dataUrl" alt="Ошибка загрузки" (click)="openImage(img.dataUrl)" (error)="onImageLoadError($event, img)"/>
+          <img src="/assets/img/icons/delete.svg" title="Удалить" alt="Удалить" (click)="deleteImage(i)"/>
         </div>
         <div *ngIf="offerImages.length === 0" class="image-block text-thumb" (click)="_fileInput.click()">
-          <span>Загрузить изображение</span>
-          <span>(максимум 5)</span>
+          <span>Загрузить изображения</span>
+          <span>(максимум 6)</span>
         </div>
-        <button *ngIf="offerImages.length > 0 && offerImages.length <5" class="button-primary button-circle button-primary-large"
+        <button *ngIf="offerImages.length > 0 && offerImages.length < 6" class="button-primary button-circle button-primary-large"
                 (click)="_fileInput.click()">+</button>
         <input #_fileInput type="file" (change)="fileChangeEvent($event)" multiple accept=".jpg, .jpeg, .png" hidden>
       </div>

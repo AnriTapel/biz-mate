@@ -2,25 +2,30 @@ import {OnDestroy} from "@angular/core";
 import {User} from "./User";
 import {AppService} from "../services/app/app.service";
 import {AuthService} from "../services/auth/auth.service";
+import {Subscription} from "rxjs";
 
 export abstract class ComponentBrowserAbstractClass implements OnDestroy {
 
   protected metaTags: any;
   protected userAuthData: User;
-  private isInitialSpinnerHidden: boolean = false;
+  private static isInitialSpinnerHidden: boolean = false;
+  private readonly userAuthDataHandler: Subscription;
 
   protected constructor(protected authService: AuthService) {
-    this.userAuthData = authService.credentials;
+    this.userAuthDataHandler = authService.credentials$.subscribe((user: User) => {
+      this.userAuthData = user;
+    });
   }
 
   ngOnDestroy(): void {
+    AppService.unsubscribeHandler([this.userAuthDataHandler]);
     AppService.scrollPageToHeader();
   }
 
   ngAfterViewChecked(): void {
-    if (!this.isInitialSpinnerHidden) {
+    if (!ComponentBrowserAbstractClass.isInitialSpinnerHidden) {
       AppService.hideInitialSpinner();
-      this.isInitialSpinnerHidden = true;
+      ComponentBrowserAbstractClass.isInitialSpinnerHidden = true;
     }
   }
 

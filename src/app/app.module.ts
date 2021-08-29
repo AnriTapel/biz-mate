@@ -21,6 +21,7 @@ import {AuthService} from "./services/auth/auth.service";
 import {AppService} from "./services/app/app.service";
 import AppEventNames from "./events/AppEventNames";
 import {GoogleAnalyticsService} from "./services/google-analytis/google-analytics.service";
+import {NgxImageCompressService} from "ngx-image-compress";
 
 
 export function initializeAppFactory(appService: AppService, authService: AuthService): () => Promise<any> {
@@ -86,7 +87,8 @@ export function initializeAppFactory(appService: AppService, authService: AuthSe
         allow_ad_personalization_signals: false,
         anonymize_ip: true
       }
-    }
+    },
+    NgxImageCompressService
   ],
   bootstrap: [AppComponent]
 })

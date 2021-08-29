@@ -28,20 +28,13 @@ export class AuthService {
   public initAuth(): void {
     this.afAuth.authState.subscribe(async (user) => {
       try {
-        if (user && user.isAnonymous === false) {
-          this._credentials.next({
-            displayName: user.displayName, uid: user.uid,
-            email: user.email, photoURL: user.photoURL,
-            emailVerified: user.emailVerified, isAnonymous: false
-          });
-          if (!user.emailVerified && !this.firstUserSession) {
-            setTimeout(this.openEmailVerificationDialog.bind(this),
-              AuthService.EMAIL_VERIFICATION_DIALOG_TIMEOUT_SEC * 1000);
-          }
-        } else if (user && user.isAnonymous === true) {
-          this._credentials.next({uid: user.uid, isAnonymous: true});
-        } else {
+        if (!user) {
           await this.signInAnonymously();
+        } else {
+          this._credentials.next(AuthService.getUserDataObject(user));
+          if (!user.emailVerified && !this.firstUserSession) {
+            setTimeout(this.openEmailVerificationDialog.bind(this), AuthService.EMAIL_VERIFICATION_DIALOG_TIMEOUT_SEC * 1000);
+          }
         }
         this.dispatchInitAuthCompleteEvent();
       } catch (e) {
@@ -144,24 +137,9 @@ export class AuthService {
   }
 
   // Update this.user when firebaseUser data is changed
-  public async updateCurrentUserData(): Promise<User> {
-    const user = await this.afAuth.currentUser;
-    if (!user.isAnonymous) {
-      this._credentials.next({
-        displayName: user.displayName,
-        uid: user.uid,
-        email: user.email,
-        emailVerified: user.emailVerified,
-        photoURL: user.photoURL,
-        isAnonymous: false
-      });
-    } else {
-      this._credentials.next({
-        uid: user.uid,
-        isAnonymous: true
-      });
-    }
-    return this.credentials;
+  public updateCurrentUserData(): void {
+    this.afAuth.currentUser
+      .then(user => this._credentials.next(AuthService.getUserDataObject(user)))
   }
 
   public googleAuth(): Promise<void> {
@@ -205,5 +183,16 @@ export class AuthService {
 
   get credentials(): User {
     return this._credentials.value;
+  }
+
+  private static getUserDataObject(fireUser: firebase.User): User {
+    return {
+      uid: fireUser.uid,
+      displayName: fireUser.displayName,
+      email: fireUser.email,
+      photoURL: fireUser.photoURL,
+      emailVerified: fireUser.emailVerified,
+      isAnonymous: fireUser.isAnonymous
+    }
   }
 }

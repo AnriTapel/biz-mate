@@ -23,14 +23,6 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "aot": true,
-            "optimization": true,
-            "outputHashing": "all",
-            "sourceMap": false,
-            "extractCss": true,
-            "namedChunks": true,
-            "extractLicenses": true,
-            "vendorChunk": true,
-            "buildOptimizer": true,
             "assets": [
               "src/assets"
             ],
@@ -48,6 +40,14 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": true,
+              "extractLicenses": true,
+              "vendorChunk": true,
+              "buildOptimizer": true,
               "assets": [
                 "src/assets",
                 "src/sitemap.xml",
