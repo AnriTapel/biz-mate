@@ -32,7 +32,7 @@ export class AuthService {
           await this.signInAnonymously();
         } else {
           this._credentials.next(AuthService.getUserDataObject(user));
-          if (!user.emailVerified && !this.firstUserSession) {
+          if (!user.isAnonymous && !user.emailVerified && !this.firstUserSession) {
             setTimeout(this.openEmailVerificationDialog.bind(this), AuthService.EMAIL_VERIFICATION_DIALOG_TIMEOUT_SEC * 1000);
           }
         }
