@@ -1,9 +1,10 @@
-import {OnDestroy} from "@angular/core";
+import { OnDestroy, Directive } from "@angular/core";
 import {User} from "./User";
 import {AppService} from "../services/app/app.service";
 import {AuthService} from "../services/auth/auth.service";
 import {Subscription} from "rxjs";
 
+@Directive()
 export abstract class ComponentBrowserAbstractClass implements OnDestroy {
 
   protected metaTags: any;
