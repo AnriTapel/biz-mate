@@ -30,6 +30,7 @@ export class AppService {
   private _offerTypes: OfferType[] = undefined;
   private _businessAreas: BusinessArea[] = undefined;
   private _cities: City[] = undefined;
+  public static isInitialSpinnerHidden: boolean = false;
 
   constructor(private databaseService: DatabaseService) {
   }
@@ -78,6 +79,9 @@ export class AppService {
   }
 
   public static hideInitialSpinner(): void {
+    if (this.isInitialSpinnerHidden) {
+      return;
+    }
     const initialSpinnerElement = document.getElementById('initial_spinner');
     if (initialSpinnerElement) {
       initialSpinnerElement.style.display = 'none';

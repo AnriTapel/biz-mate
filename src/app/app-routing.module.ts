@@ -20,7 +20,6 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule {
-  //TODO: перенести инджекшн сервиса в более подходящие место
-  constructor(private authGuardService: AuthGuardService){}
+  constructor(){}
 
 }

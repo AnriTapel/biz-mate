@@ -28,13 +28,15 @@ export class AuthGuardService implements CanActivate {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+    if (state.url === '/' || state.url === '') {
+      return true;
+    }
     return new Promise((resolve) => {
       this.authService.credentials$.pipe(
         takeWhile(credentials => credentials === null),
       ).subscribe({
         complete: () => {
-          let authReqPages = AuthGuardService.routesWithVerifiedUserRequired.filter(it => state.url.indexOf(it) > -1);
-          if (!authReqPages.length) {
+          if (!AuthGuardService.routesWithVerifiedUserRequired.some(it => state.url.indexOf(it) > -1)) {
             resolve(true);
             return;
           }
@@ -51,6 +53,7 @@ export class AuthGuardService implements CanActivate {
                   }
                   AppService.unsubscribeHandler([this.dialogHandler]);
                 });
+                AppService.hideInitialSpinner();
               });
             resolve(false);
             return;

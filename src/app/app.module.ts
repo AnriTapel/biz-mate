@@ -22,10 +22,11 @@ import {AppService} from "./services/app/app.service";
 import AppEventNames from "./events/AppEventNames";
 import {GoogleAnalyticsService} from "./services/google-analytis/google-analytics.service";
 import {NgxImageCompressService} from "ngx-image-compress";
+import {AuthGuardService} from "./services/guards/auth-guard/auth-guard.service";
 
 
-export function initializeAppFactory(appService: AppService, authService: AuthService): () => Promise<any> {
-  return (): Promise<any> => {
+export function initializeAppFactory(appService: AppService, authService: AuthService): () => Promise<void> {
+  return (): Promise<void> => {
     return new Promise((resolve, reject) => {
       let status = {app: false, auth: false};
       document.addEventListener(AppEventNames.INIT_AUTH_SUCCESS, () => {
@@ -88,7 +89,8 @@ export function initializeAppFactory(appService: AppService, authService: AuthSe
         anonymize_ip: true
       }
     },
-    NgxImageCompressService
+    NgxImageCompressService,
+    AuthGuardService
   ],
   bootstrap: [AppComponent]
 })

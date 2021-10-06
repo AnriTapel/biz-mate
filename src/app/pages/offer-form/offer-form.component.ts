@@ -36,6 +36,8 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
   @ViewChild(FormGroupDirective) formGroupDirective: FormGroupDirective;
 
   private readonly offerImagesMaxCount: number = 6;
+  private offerType = OfferTypesEnum;
+  private readonly capitalRequiredTypes: OfferTypesEnum[] = [this.offerType.HAVE_INVESTMENTS, this.offerType.NEED_INVESTMENTS];
   private currentType: number = undefined;
 
   private editOfferId: string = null;
@@ -70,7 +72,6 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
 
   public isFormValid: boolean = true;
   public isExtraBusinessAreaFieldAvail: boolean = false;
-  private offerType = OfferTypesEnum;
 
   constructor(private activeRoute: ActivatedRoute, private storageService: StorageService, private router: Router,
               private notificationBarService: NotificationBarService, private seoService: SeoService,
@@ -256,10 +257,13 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
 
   private capitalFieldValidator(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } | null => {
-      let valid: boolean = true;
-      if (this.getOfferType() == this.offerType.NEED_INVESTMENTS || this.getOfferType() ==
-        this.offerType.HAVE_INVESTMENTS)
-        valid = control.value && control.value != "";
+      if (!this.capitalRequiredTypes.includes(this.getOfferType())) {
+        return null;
+      }
+      let valid = control.value && typeof control.value === "number";
+      if (valid) {
+        valid = control.value > -1;
+      }
 
       return !valid ? {'validArea': {value: control.value}} : null;
     };
