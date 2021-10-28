@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {auth} from 'firebase/app';
+import firebase from 'firebase/app';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {User} from "../../models/User";
 import {AppService} from "../app/app.service";
@@ -145,7 +145,7 @@ export class AuthService {
   public googleAuth(): Promise<void> {
     return new Promise<void>(async (resolve, reject) => {
       try {
-        const provider = new auth.GoogleAuthProvider();
+        const provider = new firebase.auth.GoogleAuthProvider();
         await this.afAuth.signInWithPopup(provider);
         resolve();
       } catch (e) {
