@@ -11,6 +11,7 @@ import {AppService} from "../../services/app/app.service";
 import {LazyLoadingService} from "../../services/lazy-loading/lazy-loading.service";
 import {StorageService} from "../../services/storage/storage.service";
 import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
+import {EventObserver} from "../../services/event-observer/event-observer.service";
 
 @Component({
   selector: 'app-offer-card',
@@ -26,7 +27,8 @@ export class OfferCardComponent {
   private dialogHandler: any;
 
   constructor(private router: Router, private dialog: MatDialog, private route: ActivatedRoute, private lazyLoadingService: LazyLoadingService,
-              private notificationService: NotificationBarService, private databaseService: DatabaseService, private storageService: StorageService) {
+              private notificationService: NotificationBarService, private databaseService: DatabaseService, private storageService: StorageService,
+              private eventObserver: EventObserver) {
     this.editable = this.router.url == '/profile';
   }
 
@@ -68,7 +70,7 @@ export class OfferCardComponent {
     this.databaseService.deleteOffer(this.offer)
       .then(() => {
         this.notificationService.showNotificationBar(Messages.DELETE_OFFER_SUCCESS, true);
-        document.dispatchEvent(new GoogleAnalyticsEvent('offer_deleted'));
+        this.eventObserver.dispatchEvent(new GoogleAnalyticsEvent('offer_deleted'));
       })
       .catch(() => this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false))
       .finally(() => OverlayService.hideOverlay());

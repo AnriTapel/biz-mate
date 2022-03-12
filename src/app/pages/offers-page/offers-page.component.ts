@@ -20,6 +20,7 @@ import {OfferType} from "../../models/IOfferType";
 import {LazyLoadingService} from "../../services/lazy-loading/lazy-loading.service";
 import {AuthService} from "../../services/auth/auth.service";
 import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
+import {EventObserver} from "../../services/event-observer/event-observer.service";
 
 @Component({
   selector: 'app-offers-page',
@@ -45,7 +46,7 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
 
   constructor(private appService: AppService, private notificationService: NotificationBarService, private seoService: SeoService,
               private route: ActivatedRoute, private router: Router, private databaseService: DatabaseService, private dialog: MatDialog,
-              private lazyLoadingService: LazyLoadingService, protected authService: AuthService) {
+              private lazyLoadingService: LazyLoadingService, protected authService: AuthService, private eventObserver: EventObserver) {
     super(authService);
     this.metaTags = {
       title: 'Доска предложений | BizMate',
@@ -175,7 +176,7 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
           this.filteredOffers$ = undefined;
           this.emptyFilterResult = true
         }
-        document.dispatchEvent(new GoogleAnalyticsEvent('offers_search_by_filter'));
+        this.eventObserver.dispatchEvent(new GoogleAnalyticsEvent('offers_search_by_filter'));
       })
       .catch(() => this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false))
       .finally(() => {

@@ -3,7 +3,7 @@ import {ActivatedRouteSnapshot, CanActivate, NavigationEnd, Router, RouterStateS
 import {Observable} from "rxjs";
 import {MatDialog} from "@angular/material/dialog";
 import {filter, takeWhile} from "rxjs/operators";
-import {User} from "../../../models/User";
+import {BizMateUser} from "../../../models/BizMateUser";
 import {LazyLoadingService} from "../../lazy-loading/lazy-loading.service";
 import {DialogConfigType, MatDialogConfig} from "../../../dialogs/mat-dialog-config";
 import {AppService} from "../../app/app.service";
@@ -18,7 +18,7 @@ export class AuthGuardService implements CanActivate {
 
   private previousUrl: string;
   private dialogHandler: any = undefined;
-  private userData: User = undefined;
+  private userData: BizMateUser = undefined;
 
   constructor(private router: Router, private dialog: MatDialog, private lazyLoadingService: LazyLoadingService,
               private authService: AuthService) {

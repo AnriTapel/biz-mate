@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {AppService} from "../../services/app/app.service";
 import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
+import {EventObserver} from "../../services/event-observer/event-observer.service";
 
 @Component({
   selector: 'app-footer',
@@ -10,7 +11,7 @@ import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
 })
 export class FooterComponent implements OnInit {
 
-  constructor() {
+  constructor(private eventObserver: EventObserver) {
   }
 
   ngOnInit(): void {
@@ -25,10 +26,10 @@ export class FooterComponent implements OnInit {
   }
 
   public sendVkGroupYmGoal(): void {
-    document.dispatchEvent(new GoogleAnalyticsEvent('footer_vk_group_clicked'));
+    this.eventObserver.dispatchEvent(new GoogleAnalyticsEvent('footer_vk_group_clicked'));
   }
 
   public sendEmailYmGoal(): void {
-    document.dispatchEvent(new GoogleAnalyticsEvent('footer_email_clicked'));
+    this.eventObserver.dispatchEvent(new GoogleAnalyticsEvent('footer_email_clicked'));
   }
 }

@@ -1,12 +1,13 @@
 import AppEventNames from "./AppEventNames";
+import AppCommonEvent from "./AppCommonEvent";
 
-export class GoogleAnalyticsEvent extends Event {
+export class GoogleAnalyticsEvent extends AppCommonEvent {
 
-  eventName: string;
+  analyticsEventName: string;
 
-  constructor(eventName: string) {
+  constructor(analyticsEventName: string) {
     super(AppEventNames.SEND_ANALYTICS);
-    this.eventName = eventName;
+    this.analyticsEventName = analyticsEventName;
   }
 
 }

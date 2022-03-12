@@ -23,7 +23,9 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "assets": [
-              "src/assets"
+              "src/assets",
+              "src/sitemap.xml",
+              "src/robots.txt"
             ],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
@@ -31,11 +33,24 @@
             ],
             "scripts": [],
             "vendorChunk": true,
-            "extractLicenses": false,
-            "buildOptimizer": false,
             "sourceMap": true,
             "optimization": false,
-            "namedChunks": true
+            "namedChunks": true,
+            "outputHashing": "all",
+            "extractLicenses": true,
+            "buildOptimizer": true,
+            "budgets": [
+              {
+                "type": "initial",
+                "maximumWarning": "2mb",
+                "maximumError": "5mb"
+              },
+              {
+                "type": "anyComponentStyle",
+                "maximumWarning": "6kb",
+                "maximumError": "10kb"
+              }
+            ]
           },
           "configurations": {
             "production": {
@@ -45,28 +60,18 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "optimization": true,
-              "outputHashing": "all",
               "sourceMap": false,
-              "extractLicenses": true,
-              "buildOptimizer": true,
-              "assets": [
-                "src/assets",
-                "src/sitemap.xml",
-                "src/robots.txt"
-              ],
-              "budgets": [
+              "optimization": true
+            },
+            "stage": {
+              "fileReplacements": [
                 {
-                  "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "5mb"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "6kb",
-                  "maximumError": "10kb"
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.stage.ts"
                 }
-              ]
+              ],
+              "sourceMap": false,
+              "optimization": true
             }
           },
           "defaultConfiguration": ""
@@ -79,6 +84,9 @@
           "configurations": {
             "production": {
               "browserTarget": "biz-mate:build:production"
+            },
+            "stage": {
+              "browserTarget": "biz-mate:build:stage"
             }
           }
         },
@@ -128,6 +136,9 @@
           "configurations": {
             "production": {
               "devServerTarget": "biz-mate:serve:production"
+            },
+            "stage": {
+              "devServerTarget": "biz-mate:serve:stage"
             }
           }
         }

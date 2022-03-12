@@ -10,7 +10,8 @@ if (environment.production) {
 }
 
 platformBrowserDynamic().bootstrapModule(AppModule)
-  .catch(() => {
+  .catch((e) => {
+    console.error(e);
     AppService.hideInitialSpinner();
     AppService.showGlobalError();
   });

@@ -1,6 +1,6 @@
 import {Compiler, Injectable, Injector} from '@angular/core';
-import AppEventNames from "../../events/AppEventNames";
-import {ErrorsService} from "../errors/errors.service";
+import {EventObserver} from "../event-observer/event-observer.service";
+import {AppErrorEvent} from "../../events/AppErrorEvent";
 
 @Injectable({
   providedIn: 'root'
@@ -17,14 +17,14 @@ export class LazyLoadingService {
   static readonly RESET_PASSWORD_MODULE_NAME = "ResetPasswordModule";
   static readonly CUSTOM_IMAGE_CROPPER_MODULE_NAME = "CustomImageCropperModule";
 
-  constructor(private compiler: Compiler, private injector: Injector) {}
+  constructor(private compiler: Compiler, private injector: Injector, private eventObserver: EventObserver) {}
 
   public async getLazyLoadedComponent(moduleName: string): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       let importModule = LazyLoadingService.getDialogModuleImportPath(moduleName);
       if (!importModule) {
         reject(new Error("LazyLoadingService:getLazyLoadedComponent - module with provided name is not found"));
-        ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'LazyLoadingService:getLazyLoadedComponent', error: moduleName + 'module is not found'});
+        this.eventObserver.dispatchEvent(new AppErrorEvent({anchor: 'LazyLoadingService:getLazyLoadedComponent', error: moduleName + 'module is not found'}))
         return;
       }
       let component;

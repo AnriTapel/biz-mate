@@ -1,14 +1,29 @@
 import {Injectable} from '@angular/core';
-import firebase from 'firebase/app';
-import {AngularFireAuth} from '@angular/fire/auth';
-import {User} from "../../models/User";
+import {BizMateUser} from "../../models/BizMateUser";
 import {AppService} from "../app/app.service";
 import {MatDialog} from "@angular/material/dialog";
 import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
-import AppEventNames from "../../events/AppEventNames";
 import {LazyLoadingService} from "../lazy-loading/lazy-loading.service";
-import {ErrorsService} from "../errors/errors.service";
 import {BehaviorSubject, Observable} from "rxjs";
+import {
+  Auth,
+  authState,
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  signInAnonymously,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+  updateEmail,
+  updateProfile,
+  User
+} from "@angular/fire/auth";
+import {EventObserver} from "../event-observer/event-observer.service";
+import {InitAuthEvent} from "../../events/InitAuthEvent";
+import {AppErrorEvent} from "../../events/AppErrorEvent";
+import {environment} from "../../../environments/environment";
 
 @Injectable({
   providedIn: 'root'
@@ -17,16 +32,17 @@ export class AuthService {
 
   static readonly EMAIL_VERIFICATION_DIALOG_TIMEOUT_SEC: number = 5;
 
-  private _credentials: BehaviorSubject<User> = new BehaviorSubject<User>({isAnonymous: true, uid: null});
+  private _credentials: BehaviorSubject<BizMateUser> = new BehaviorSubject<BizMateUser>({isAnonymous: true, uid: null});
   private firstUserSession: boolean = undefined;
   private initialAuthCompleted: boolean = false;
-  public readonly credentials$: Observable<User> = this._credentials.asObservable();
+  public readonly credentials$: Observable<BizMateUser> = this._credentials.asObservable();
 
-  constructor(private afAuth: AngularFireAuth, private dialog: MatDialog, private lazyLoadingService: LazyLoadingService) {
+  constructor(private auth: Auth, private dialog: MatDialog, private lazyLoadingService: LazyLoadingService,
+              private eventObserver: EventObserver) {
   }
 
   public initAuth(): void {
-    this.afAuth.authState.subscribe(async (user) => {
+    authState(this.auth).subscribe(async (user) => {
       try {
         if (!user) {
           await this.signInAnonymously();
@@ -38,8 +54,10 @@ export class AuthService {
         }
         this.dispatchInitAuthCompleteEvent();
       } catch (e) {
+        console.error(e);
         if (!this.initialAuthCompleted) {
-          AppService.dispatchAppInitError({anchor: 'AuthService.initAuth', error: e});
+          this.eventObserver.dispatchEvent(new InitAuthEvent(false));
+          this.eventObserver.dispatchEvent(new AppErrorEvent({anchor: 'AuthService.initAuth', error: e}))
         }
       }
     });
@@ -49,22 +67,22 @@ export class AuthService {
     if (this.initialAuthCompleted) {
       return;
     }
-
-    document.dispatchEvent(new Event(AppEventNames.INIT_AUTH_SUCCESS));
+    this.eventObserver.dispatchEvent(new InitAuthEvent());
     this.initialAuthCompleted = true;
   }
 
   private async signInAnonymously(): Promise<void> {
-    await this.afAuth.signInAnonymously();
+    await signInAnonymously(this.auth);
   }
 
   public emailAndPasswordLogin(credentials: any): Promise<void> {
     return new Promise<void>(async (resolve, reject) => {
       try {
-        await this.afAuth.signInWithEmailAndPassword(credentials.login, credentials.password);
+        await signInWithEmailAndPassword(this.auth, credentials.login, credentials.password);
         resolve();
       } catch (e) {
-        ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.emailAndPasswordLogin', error: e});
+        console.error(e);
+        this.eventObserver.dispatchEvent(new AppErrorEvent({anchor: 'AuthService.emailAndPasswordLogin', error: e}));
         reject(e);
       }
     });
@@ -74,44 +92,46 @@ export class AuthService {
     try {
       // This param is used to avoid showing unnecessary "Confirm email" dialog after user signed up and authState changed
       this.firstUserSession = true;
-      await this.afAuth.createUserWithEmailAndPassword(credentials.email, credentials.password);
-      const userData = await this.afAuth.currentUser;
-      await userData.updateProfile({
+      await createUserWithEmailAndPassword(this.auth, credentials.email, credentials.password);
+      await updateProfile(this.getAuthCurrentUser(), {
         displayName: credentials.name,
         photoURL: AppService.getDefaultAvatar()
       });
       this.updateCurrentUserData();
       this.sendEmailVerification();
     } catch (e) {
+      console.error(e);
       this.firstUserSession = undefined;
       this.signOut();
-      ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.emailPasswordSignUp', error: e});
+      this.eventObserver.dispatchEvent(new AppErrorEvent({anchor: 'AuthService.emailPasswordSignUp', error: e}));
     }
   }
 
   public updateUserEmail(newValue: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      this.afAuth.currentUser.then((user) => {
-        user.updateEmail(newValue).then(() => {
-          user.sendEmailVerification();
+      updateEmail(this.getAuthCurrentUser(), newValue)
+        .then(() => {
           this.updateCurrentUserData();
+          this.sendEmailVerification();
           resolve();
-        }).catch((e) => {
-          ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.updateUserEmail', error: e});
+        })
+        .catch((e) => {
+          console.error(e);
+          this.eventObserver.dispatchEvent(new AppErrorEvent({anchor: 'AuthService.updateUserEmail', error: e}));
           reject();
         });
-      });
     });
   }
 
   public resetPasswordByEmail(email: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      this.afAuth.sendPasswordResetEmail(email, {
-        url: 'https://biz-mate.ru/?password_reset=true'
+      sendPasswordResetEmail(this.auth, email, {
+        url: `${environment.domain}?password_reset=true`
       })
         .then((res) => resolve(res))
         .catch((e) => {
-          ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.resetPasswordByEmail', error: e});
+          console.error(e);
+          this.eventObserver.dispatchEvent(new AppErrorEvent({anchor: 'AuthService.resetPasswordByEmail', error: e}));
           reject(e);
         });
     });
@@ -119,48 +139,49 @@ export class AuthService {
 
   public updateUserDisplayNameOrPhotoURL(field: string, newValue: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      this.afAuth.currentUser.then(user => {
-        user.updateProfile({[field]: newValue})
-          .then(() => {
-            this.updateCurrentUserData();
-            resolve();
-          })
-          .catch((e) => {
-            ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {
-              anchor: 'AuthService.updateUserDisplayNameOrPhotoURL',
-              error: e
-            });
-            reject(e);
-          });
-      });
+      updateProfile(this.getAuthCurrentUser(), {[field]: newValue})
+        .then(() => {
+          this.updateCurrentUserData();
+          resolve();
+        })
+        .catch((e) => {
+          console.error(e);
+          this.eventObserver.dispatchEvent(new AppErrorEvent({
+            anchor: 'AuthService.updateUserDisplayNameOrPhotoURL',
+            error: e
+          }));
+          reject(e);
+        });
     });
   }
 
   // Update this.user when firebaseUser data is changed
   public updateCurrentUserData(): void {
-    this.afAuth.currentUser
-      .then(user => this._credentials.next(AuthService.getUserDataObject(user)))
+    this._credentials.next(AuthService.getUserDataObject(this.getAuthCurrentUser()));
   }
 
   public googleAuth(): Promise<void> {
     return new Promise<void>(async (resolve, reject) => {
       try {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        await this.afAuth.signInWithPopup(provider);
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(this.auth, provider);
         resolve();
       } catch (e) {
-        ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.googleAuth', error: e});
+        console.error(e);
+        this.eventObserver.dispatchEvent(new AppErrorEvent({anchor: 'AuthService.googleAuth', error: e}));
         reject(e);
       }
     });
   }
 
   public sendEmailVerification(): void {
-    this.afAuth.currentUser.then((user) => {
-      user.sendEmailVerification({
-        url: 'https://biz-mate.ru/?email_verify=true'
+    try {
+      sendEmailVerification(this.getAuthCurrentUser(), {
+        url: `${environment.domain}?email_verify=true`
       });
-    });
+    } catch (e) {
+      console.error('AuthService.sendEmailVerification', e);
+    }
   }
 
   private openEmailVerificationDialog(): void {
@@ -175,17 +196,18 @@ export class AuthService {
 
   public async signOut(): Promise<void> {
     try {
-      await this.afAuth.signOut();
+      await signOut(this.auth);
     } catch (e) {
-      ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'AuthService.signOut', error: e});
+      console.error(e);
+      this.eventObserver.dispatchEvent(new AppErrorEvent({anchor: 'AuthService.signOut', error: e}));
     }
   }
 
-  get credentials(): User {
+  get credentials(): BizMateUser {
     return this._credentials.value;
   }
 
-  private static getUserDataObject(fireUser: firebase.User): User {
+  private static getUserDataObject(fireUser: any): BizMateUser {
     return {
       uid: fireUser.uid,
       displayName: fireUser.displayName,
@@ -194,5 +216,9 @@ export class AuthService {
       emailVerified: fireUser.emailVerified,
       isAnonymous: fireUser.isAnonymous
     }
+  }
+
+  private getAuthCurrentUser(): User {
+    return this.auth.currentUser;
   }
 }

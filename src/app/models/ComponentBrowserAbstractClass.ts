@@ -1,5 +1,5 @@
 import { OnDestroy, Directive } from "@angular/core";
-import {User} from "./User";
+import {BizMateUser} from "./BizMateUser";
 import {AppService} from "../services/app/app.service";
 import {AuthService} from "../services/auth/auth.service";
 import {Subscription} from "rxjs";
@@ -8,11 +8,11 @@ import {Subscription} from "rxjs";
 export abstract class ComponentBrowserAbstractClass implements OnDestroy {
 
   protected metaTags: any;
-  protected userAuthData: User;
+  protected userAuthData: BizMateUser;
   private readonly userAuthDataHandler: Subscription;
 
   protected constructor(protected authService: AuthService) {
-    this.userAuthDataHandler = authService.credentials$.subscribe((user: User) => {
+    this.userAuthDataHandler = authService.credentials$.subscribe((user: BizMateUser) => {
       this.userAuthData = user;
     });
   }
@@ -30,7 +30,7 @@ export abstract class ComponentBrowserAbstractClass implements OnDestroy {
     return !!this.userAuthData;
   }
 
-  public getUserAuthData(): User {
+  public getUserAuthData(): BizMateUser {
     return this.userAuthData;
   }
 }

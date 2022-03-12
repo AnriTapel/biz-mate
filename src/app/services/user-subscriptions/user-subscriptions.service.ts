@@ -7,10 +7,11 @@ import {UserSubscriptions} from "../../models/UserSubscriptions";
 import {Messages} from "../../models/Messages";
 import {OverlayService} from "../overlay/overlay.service";
 import {AppService} from "../app/app.service";
-import {User} from "../../models/User";
+import {BizMateUser} from "../../models/BizMateUser";
 import {LazyLoadingService} from "../lazy-loading/lazy-loading.service";
 import {AuthService} from "../auth/auth.service";
 import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
+import {EventObserver} from "../event-observer/event-observer.service";
 
 @Injectable({
   providedIn: 'root'
@@ -18,12 +19,12 @@ import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
 export class UserSubscriptionsService {
 
   private dialogHandler: any = undefined;
-  private userData: User = undefined;
+  private userData: BizMateUser = undefined;
 
   static readonly NEW_OFFERS_SUBSCRIPTION_STORAGE_FIELD_NAME: string = 'bm_new_offers_subscription_status';
   static readonly NEW_OFFERS_SUBSCRIPTION_DIALOG_TIMEOUT_MSEC: number = 5000;
 
-  constructor(private notificationService: NotificationBarService, private dbService: DatabaseService,
+  constructor(private notificationService: NotificationBarService, private dbService: DatabaseService, private eventObserver: EventObserver,
               private matDialog: MatDialog, private lazyLoadingService: LazyLoadingService, private authService: AuthService) {
     this.initService();
   }
@@ -66,7 +67,7 @@ export class UserSubscriptionsService {
               .then(() => {
                 UserSubscriptionsService.setNewOffersSubscriptionStatus(true);
                 this.notificationService.showNotificationBar(Messages.SUBSCRIPTION_SUCCESS, true);
-                document.dispatchEvent(new GoogleAnalyticsEvent('new_offers_subscription'));
+                this.eventObserver.dispatchEvent(new GoogleAnalyticsEvent('new_offers_subscription'))
               })
               .catch(() => this.notificationService.showNotificationBar(Messages.SUBSCRIPTION_ERROR, false));
           }

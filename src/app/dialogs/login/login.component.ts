@@ -7,6 +7,7 @@ import {Messages} from "../../models/Messages";
 import {Router} from "@angular/router";
 import {LazyLoadingService} from "../../services/lazy-loading/lazy-loading.service";
 import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
+import {EventObserver} from "../../services/event-observer/event-observer.service";
 
 @Component({
   selector: 'app-login',
@@ -22,8 +23,8 @@ export class LoginComponent {
   public acceptRules: boolean = true;
   public errorMessage: string = null;
 
-  constructor(private auth: AuthService, private dialog: MatDialog, private dialogRef: MatDialogRef<LoginComponent>,
-              private router: Router, @Inject(MAT_DIALOG_DATA) public data: any, private lazyLoadingService: LazyLoadingService) {
+  constructor(private auth: AuthService, private dialog: MatDialog, private dialogRef: MatDialogRef<LoginComponent>, private eventObserver: EventObserver,
+              private router: Router, @Inject(MAT_DIALOG_DATA) private data: any, private lazyLoadingService: LazyLoadingService) {
     this.loginFormGroup = new FormGroup({
       login: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', Validators.required)
@@ -57,14 +58,17 @@ export class LoginComponent {
   public loginGoogle() {
     this.auth.googleAuth()
       .then(() => {
-        document.dispatchEvent(new GoogleAnalyticsEvent('complete_sign_up'));
+        this.eventObserver.dispatchEvent(new GoogleAnalyticsEvent('complete_sign_up'));
         this.onSuccessfulLogin();
       }).catch((err) => this.errorMessage = Messages[err.code] || Messages.DEFAULT_MESSAGE);
   }
 
   private onSuccessfulLogin(): void {
     this.dialogRef.close();
-    if (this.data && this.data.redirectUrl && this.data.redirectUrl.length) {
+    if (!this.userHasAccount) {
+      return;
+    }
+    if (this.data && this.data.redirectUrl) {
       setTimeout(() => this.router.navigateByUrl(this.data.redirectUrl), 0);
     }
   }

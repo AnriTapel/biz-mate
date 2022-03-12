@@ -6,6 +6,7 @@ import {DialogConfigType, MatDialogConfig} from "./dialogs/mat-dialog-config";
 import {ActivatedRoute, Router} from "@angular/router";
 import {LazyLoadingService} from "./services/lazy-loading/lazy-loading.service";
 import {GoogleAnalyticsEvent} from "./events/GoogleAnalyticsEvent";
+import {EventObserver} from "./services/event-observer/event-observer.service";
 
 @Component({
   selector: 'app-root',
@@ -41,7 +42,7 @@ export class AppComponent {
   };
 
   constructor(router: Router, private route: ActivatedRoute, private userSubscriptionsService: UserSubscriptionsService,
-              private dialog: MatDialog, private lazyLoadingService: LazyLoadingService) {
+              private dialog: MatDialog, private lazyLoadingService: LazyLoadingService, private eventObserver: EventObserver) {
     this.manageRouteParams();
   }
 
@@ -52,7 +53,7 @@ export class AppComponent {
           .then(comp => {
             this.dialog.open(comp, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG,
               params['password_reset'] ? this.resetPasswordEvent : this.emailVerifyEvent));
-            document.dispatchEvent(new GoogleAnalyticsEvent(params['password_reset'] ? 'reset_password' : 'complete_sign_up'));
+            this.eventObserver.dispatchEvent(new GoogleAnalyticsEvent(params['password_reset'] ? 'reset_password' : 'complete_sign_up'));
           }).catch(console.error);
       } else if (params['event']) {
         if (params['event'] === 'unsubscribe') {
