@@ -15,10 +15,12 @@ import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstra
 import {OverlayService} from "../../services/overlay/overlay.service";
 import {StorageService} from "../../services/storage/storage.service";
 import {DatabaseService} from "../../services/database/database.service";
-import {ErrorsService} from "../../services/errors/errors.service";
+import {FunctionsService} from "../../services/functions/functions.service";
 import AppEventNames from "../../events/AppEventNames";
 import {AuthService} from "../../services/auth/auth.service";
 import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
+import {EventObserver} from "../../services/event-observer/event-observer.service";
+import {AppErrorEvent} from "../../events/AppErrorEvent";
 
 interface OfferImage {
   dataUrl: string
@@ -36,6 +38,8 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
   @ViewChild(FormGroupDirective) formGroupDirective: FormGroupDirective;
 
   private readonly offerImagesMaxCount: number = 6;
+  private offerType = OfferTypesEnum;
+  private readonly capitalRequiredTypes: OfferTypesEnum[] = [this.offerType.HAVE_INVESTMENTS, this.offerType.NEED_INVESTMENTS];
   private currentType: number = undefined;
 
   private editOfferId: string = null;
@@ -70,10 +74,9 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
 
   public isFormValid: boolean = true;
   public isExtraBusinessAreaFieldAvail: boolean = false;
-  private offerType = OfferTypesEnum;
 
   constructor(private activeRoute: ActivatedRoute, private storageService: StorageService, private router: Router,
-              private notificationBarService: NotificationBarService, private seoService: SeoService,
+              private notificationBarService: NotificationBarService, private seoService: SeoService, private eventObserver: EventObserver,
               private databaseService: DatabaseService, private appService: AppService, protected authService: AuthService) {
     super(authService);
     this.metaTags = {
@@ -256,10 +259,13 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
 
   private capitalFieldValidator(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } | null => {
-      let valid: boolean = true;
-      if (this.getOfferType() == this.offerType.NEED_INVESTMENTS || this.getOfferType() ==
-        this.offerType.HAVE_INVESTMENTS)
-        valid = control.value && control.value != "";
+      if (!this.capitalRequiredTypes.includes(this.getOfferType())) {
+        return null;
+      }
+      let valid = control.value && typeof control.value === "number";
+      if (valid) {
+        valid = control.value > -1;
+      }
 
       return !valid ? {'validArea': {value: control.value}} : null;
     };
@@ -293,7 +299,7 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
     }
     offerData.businessArea = areas;
     offerData.date = this.offerDate || Date.now();
-    offerData.offerId = this.editOfferId || this.databaseService.createId();
+    offerData.offerId = this.editOfferId || DatabaseService.createId();
     offerData.email = this.userAuthData.email;
     offerData.photoURL = this.userAuthData.photoURL || AppService.getDefaultAvatar();
     offerData.imagesURL = this.offerImages;
@@ -305,14 +311,11 @@ export class OfferFormComponent extends ComponentBrowserAbstractClass implements
       await this.databaseService.sendOffer(offerData, this.editOffer);
       this.areChangesSaved = true;
       this.notificationBarService.showNotificationBar(this.editOffer ? Messages.SAVE_SUCCESS : Messages.OFFER_CREATED, true);
-      if (this.editOffer) {
-        document.dispatchEvent(new GoogleAnalyticsEvent('offer_edited'));
-      } else {
-        document.dispatchEvent(new GoogleAnalyticsEvent('offer_created'));
-      }
+      this.eventObserver.dispatchEvent(new GoogleAnalyticsEvent(this.editOffer ? 'offer_edited' : 'offer_created'))
       this.router.navigateByUrl(`/offer/${offerData.offerId}`);
     } catch (e) {
-      ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'OfferFormComponent.sendOffer', error: e});
+      this.eventObserver.dispatchEvent(new AppErrorEvent({anchor: 'OfferFormComponent.sendOffer', error: e}));
+      console.log('OfferFormComponent.sendOffer error', e);
       this.notificationBarService.showNotificationBar(this.editOffer ? Messages.SAVE_ERROR : Messages.OFFER_ERROR, false);
     }
 

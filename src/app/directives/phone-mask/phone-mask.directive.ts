@@ -105,7 +105,6 @@ export class PhoneMaskDirective implements OnInit, OnDestroy {
         //in the following case, you are typing in the middle
         if (preInputValue.length >= start) {
           //change cursor according to special chars.
-          // console.log(start+removedD);
           if (removedD == '(') {
             start++;
             end++;

@@ -4,46 +4,60 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ReactiveFormsModule} from "@angular/forms";
-import {AngularFireModule} from '@angular/fire';
-import {AngularFirestoreModule} from '@angular/fire/firestore';
-import {AngularFireAuthModule} from '@angular/fire/auth';
 import {environment} from "../environments/environment";
 import {HeaderComponent} from "./template-blocks/header/header.component";
 import {FooterComponent} from "./template-blocks/footer/footer.component";
 import {NotificationBarComponent} from "./template-blocks/notification-bar/notification-bar.component";
 import {OverlayComponent} from "./template-blocks/overlay/overlay.component";
-import {AngularFireAnalyticsModule, CONFIG} from "@angular/fire/analytics";
 import {MaterialModule} from "./modules/material.module";
-import {AngularFireFunctionsModule} from "@angular/fire/functions";
-import {AngularFireStorageModule} from "@angular/fire/storage";
-import {ErrorsService} from "./services/errors/errors.service";
+import {FunctionsService} from "./services/functions/functions.service";
 import {AuthService} from "./services/auth/auth.service";
 import {AppService} from "./services/app/app.service";
 import AppEventNames from "./events/AppEventNames";
-import {GoogleAnalyticsService} from "./services/google-analytis/google-analytics.service";
 import {NgxImageCompressService} from "ngx-image-compress";
+import {AuthGuardService} from "./services/guards/auth-guard/auth-guard.service";
+import {initializeApp, provideFirebaseApp} from "@angular/fire/app";
+import {enableIndexedDbPersistence, getFirestore, provideFirestore} from '@angular/fire/firestore';
+import {getStorage, provideStorage} from "@angular/fire/storage";
+import {getAnalytics, provideAnalytics} from "@angular/fire/analytics";
+import {getAuth, provideAuth} from "@angular/fire/auth";
+import {getFunctions, provideFunctions} from "@angular/fire/functions";
+import {EventObserver} from "./services/event-observer/event-observer.service";
+import {InitAuthEvent} from "./events/InitAuthEvent";
+import {InitDataEvent} from "./events/InitDataEvent";
 
 
-export function initializeAppFactory(appService: AppService, authService: AuthService): () => Promise<any> {
-  return (): Promise<any> => {
+function initializeAppFactory(appService: AppService, authService: AuthService, eventObserver: EventObserver): () => Promise<void> {
+  return (): Promise<void> => {
     return new Promise((resolve, reject) => {
       let status = {app: false, auth: false};
-      document.addEventListener(AppEventNames.INIT_AUTH_SUCCESS, () => {
+      let initAuthSubscription, initDataSubscription;
+      initAuthSubscription = eventObserver.getEventObservable(AppEventNames.INIT_APP_AUTH).subscribe((event: InitAuthEvent) => {
+        if (!event.isSuccess) {
+          reject();
+          return;
+        }
+
+        AppService.unsubscribeHandler([initAuthSubscription]);
+        eventObserver.detachEventObservable(AppEventNames.INIT_APP_AUTH);
         status.auth = true;
         if (status.app) {
           resolve();
         }
       });
 
-      document.addEventListener(AppEventNames.INIT_APP_DATA_SUCCESS, () => {
+      initDataSubscription = eventObserver.getEventObservable(AppEventNames.INIT_APP_DATA).subscribe((event: InitDataEvent) => {
+        if (!event.isSuccess) {
+          reject();
+          return;
+        }
+
+        AppService.unsubscribeHandler([initDataSubscription]);
+        eventObserver.detachEventObservable(AppEventNames.INIT_APP_DATA);
         status.app = true;
         if (status.auth) {
           resolve();
         }
-      });
-
-      document.addEventListener(AppEventNames.APP_INIT_ERROR, () => {
-        reject();
       });
 
       authService.initAuth();
@@ -62,12 +76,16 @@ export function initializeAppFactory(appService: AppService, authService: AuthSe
     OverlayComponent
   ],
   imports: [
-    AngularFireModule.initializeApp(environment.firebase),
-    AngularFireAuthModule,
-    AngularFirestoreModule,
-    AngularFireStorageModule,
-    AngularFireFunctionsModule,
-    AngularFireAnalyticsModule,
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideAuth(() => getAuth()),
+    provideFirestore(() => {
+      const firestore = getFirestore();
+      enableIndexedDbPersistence(firestore);
+      return firestore;
+    }),
+    provideStorage(() => getStorage()),
+    provideFunctions(() => getFunctions()),
+    provideAnalytics(() => getAnalytics()),
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
@@ -75,20 +93,14 @@ export function initializeAppFactory(appService: AppService, authService: AuthSe
     MaterialModule
   ],
   providers: [
+    AuthGuardService,
+    NgxImageCompressService,
     {
       provide: APP_INITIALIZER,
       useFactory: initializeAppFactory,
-      deps: [AppService, AuthService, ErrorsService, GoogleAnalyticsService],
+      deps: [AppService, AuthService, EventObserver, FunctionsService],
       multi: true
-    },
-    { provide: CONFIG,
-      useValue: {
-        send_page_view: false,
-        allow_ad_personalization_signals: false,
-        anonymize_ip: true
-      }
-    },
-    NgxImageCompressService
+    }
   ],
   bootstrap: [AppComponent]
 })

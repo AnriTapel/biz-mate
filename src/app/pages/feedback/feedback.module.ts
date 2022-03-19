@@ -5,6 +5,7 @@ import {FeedbackRoutingModule} from "./feedback-routing.module";
 import {MaterialModule} from "../../modules/material.module";
 import {ReactiveFormsModule} from "@angular/forms";
 
+
 @NgModule({
   declarations: [FeedbackComponent],
   imports: [

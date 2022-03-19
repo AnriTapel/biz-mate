@@ -1,12 +1,14 @@
 import {Component, Inject} from '@angular/core';
 import {AuthService} from "../../services/auth/auth.service";
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
-import {DialogConfigType, MatDialogConfig} from "../mat-dialog-config";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {DialogConfigType, MatDialogConfig} from "../MatDialogConfig";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Messages} from "../../models/Messages";
 import {Router} from "@angular/router";
-import {LazyLoadingService} from "../../services/lazy-loading/lazy-loading.service";
 import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
+import {EventObserver} from "../../services/event-observer/event-observer.service";
+import {DialogModuleNames} from "../DialogModuleNames";
+import {OpenDialogEvent} from "../../events/OpenDialogEvent";
 
 @Component({
   selector: 'app-login',
@@ -22,8 +24,8 @@ export class LoginComponent {
   public acceptRules: boolean = true;
   public errorMessage: string = null;
 
-  constructor(private auth: AuthService, private dialog: MatDialog, private dialogRef: MatDialogRef<LoginComponent>,
-              private router: Router, @Inject(MAT_DIALOG_DATA) public data: any, private lazyLoadingService: LazyLoadingService) {
+  constructor(private auth: AuthService, private dialogRef: MatDialogRef<LoginComponent>, private eventObserver: EventObserver,
+              private router: Router, @Inject(MAT_DIALOG_DATA) private data: any) {
     this.loginFormGroup = new FormGroup({
       login: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', Validators.required)
@@ -57,14 +59,17 @@ export class LoginComponent {
   public loginGoogle() {
     this.auth.googleAuth()
       .then(() => {
-        document.dispatchEvent(new GoogleAnalyticsEvent('complete_sign_up'));
+        this.eventObserver.dispatchEvent(new GoogleAnalyticsEvent('complete_sign_up'));
         this.onSuccessfulLogin();
       }).catch((err) => this.errorMessage = Messages[err.code] || Messages.DEFAULT_MESSAGE);
   }
 
   private onSuccessfulLogin(): void {
     this.dialogRef.close();
-    if (this.data && this.data.redirectUrl && this.data.redirectUrl.length) {
+    if (!this.userHasAccount) {
+      return;
+    }
+    if (this.data && this.data.redirectUrl) {
       setTimeout(() => this.router.navigateByUrl(this.data.redirectUrl), 0);
     }
   }
@@ -82,13 +87,11 @@ export class LoginComponent {
 
     this.auth.emailPasswordSignUp(credentials).then(() => {
       this.onSuccessfulLogin();
-      this.lazyLoadingService.getLazyLoadedComponent(LazyLoadingService.EMAIL_VERIFY_MESSAGE_MODULE_NAME)
-        .then((comp) => {
-          this.dialog.open(comp, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, {
-            email: credentials.email,
-            alreadySent: true
-          }));
-        }).catch(console.error);
+      this.eventObserver.dispatchEvent(new OpenDialogEvent(DialogModuleNames.EMAIL_VERIFY_MESSAGE_MODULE_NAME,
+        MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, {
+          email: credentials.email,
+          alreadySent: true
+        })));
     }).catch((err) => {
       this.errorMessage = Messages[err.code] || Messages.DEFAULT_MESSAGE;
     });
@@ -96,9 +99,7 @@ export class LoginComponent {
 
   public forgotPassword() {
     this.dialogRef.close();
-    this.lazyLoadingService.getLazyLoadedComponent(LazyLoadingService.RESET_PASSWORD_MODULE_NAME)
-      .then(comp => this.dialog.open(comp, MatDialogConfig.narrowDialogWindow))
-      .catch(console.error);
+    this.eventObserver.dispatchEvent(new OpenDialogEvent(DialogModuleNames.RESET_PASSWORD_MODULE_NAME, MatDialogConfig.narrowDialogWindow))
   }
 
 }

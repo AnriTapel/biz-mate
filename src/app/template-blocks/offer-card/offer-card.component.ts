@@ -1,16 +1,16 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {Offer} from "../../models/Offer";
 import {ActivatedRoute, Router} from "@angular/router";
-import {MatDialog} from "@angular/material/dialog";
-import {MatDialogConfig} from "../../dialogs/mat-dialog-config";
+import {MatDialogConfig} from "../../dialogs/MatDialogConfig";
 import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
 import {Messages} from "../../models/Messages";
 import {OverlayService} from "../../services/overlay/overlay.service";
 import {DatabaseService} from "../../services/database/database.service";
-import {AppService} from "../../services/app/app.service";
-import {LazyLoadingService} from "../../services/lazy-loading/lazy-loading.service";
 import {StorageService} from "../../services/storage/storage.service";
 import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
+import {EventObserver} from "../../services/event-observer/event-observer.service";
+import {DialogModuleNames} from "../../dialogs/DialogModuleNames";
+import {OpenDialogEvent} from "../../events/OpenDialogEvent";
 
 @Component({
   selector: 'app-offer-card',
@@ -23,10 +23,9 @@ export class OfferCardComponent {
   @Input() offer: Offer;
 
   public readonly editable: boolean;
-  private dialogHandler: any;
 
-  constructor(private router: Router, private dialog: MatDialog, private route: ActivatedRoute, private lazyLoadingService: LazyLoadingService,
-              private notificationService: NotificationBarService, private databaseService: DatabaseService, private storageService: StorageService) {
+  constructor(private router: Router, private route: ActivatedRoute, private notificationService: NotificationBarService, private databaseService: DatabaseService,
+              private storageService: StorageService, private eventObserver: EventObserver) {
     this.editable = this.router.url == '/profile';
   }
 
@@ -49,15 +48,13 @@ export class OfferCardComponent {
   }
 
   public onDeleteOfferButtonClick(): void {
-    this.lazyLoadingService.getLazyLoadedComponent(LazyLoadingService.DELETE_OFFER_MODULE_NAME).then((comp) => {
-      const dialog = this.dialog.open(comp, MatDialogConfig.narrowDialogWindow);
-      this.dialogHandler = dialog.afterClosed().subscribe((res) => {
-        if (res === true) {
-          this.deleteOffer();
-        }
-        AppService.unsubscribeHandler([this.dialogHandler]);
-      });
-    }).catch(console.error);
+    const beforeCloseFunc = (res) => {
+      if (res === true) {
+        this.deleteOffer();
+      }
+    };
+
+    this.eventObserver.dispatchEvent(new OpenDialogEvent(DialogModuleNames.DELETE_OFFER_MODULE_NAME, MatDialogConfig.narrowDialogWindow, beforeCloseFunc.bind(this)));
   }
 
   private deleteOffer(): void {
@@ -68,9 +65,11 @@ export class OfferCardComponent {
     this.databaseService.deleteOffer(this.offer)
       .then(() => {
         this.notificationService.showNotificationBar(Messages.DELETE_OFFER_SUCCESS, true);
-        document.dispatchEvent(new GoogleAnalyticsEvent('offer_deleted'));
+        this.eventObserver.dispatchEvent(new GoogleAnalyticsEvent('offer_deleted'));
       })
-      .catch(() => this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false))
+      .catch(() => {
+        this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false)
+      })
       .finally(() => OverlayService.hideOverlay());
   }
 }

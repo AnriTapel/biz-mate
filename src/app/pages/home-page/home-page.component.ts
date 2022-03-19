@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {Observable} from "rxjs";
 import {Offer} from "../../models/Offer";
 import {SeoService} from "../../services/seo/seo.service";
 import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstractClass";
@@ -8,6 +7,7 @@ import {AppService} from "../../services/app/app.service";
 import {DatabaseService} from "../../services/database/database.service";
 import {Router} from "@angular/router";
 import {AuthService} from "../../services/auth/auth.service";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-home-page',

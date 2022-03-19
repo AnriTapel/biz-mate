@@ -1,8 +1,7 @@
 export default class AppEventNames {
-  static readonly INIT_APP_DATA_SUCCESS = 'initappdatasuccess';
-  static readonly INIT_AUTH_SUCCESS = 'initauthsuccess';
-  static readonly APP_INIT_ERROR = 'appiniterror';
-  static readonly SEND_ANALYTICS = 'sendanalytic';
-
+  static readonly INIT_APP_DATA = 'initdata';
+  static readonly INIT_APP_AUTH = 'initauth';
   static readonly APP_ERROR = 'apperror';
+  static readonly SEND_ANALYTICS = 'sendanalytics';
+  static readonly OPEN_DIALOG = 'opendialog';
 }

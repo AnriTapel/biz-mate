@@ -1,17 +1,16 @@
 import {Injectable} from '@angular/core';
-import {AngularFireStorage} from "@angular/fire/storage";
+import {deleteObject, getDownloadURL, ref, Storage, uploadBytes} from "@angular/fire/storage";
 import {AppService} from "../app/app.service";
 import {DOC_ORIENTATION, NgxImageCompressService} from "ngx-image-compress";
-import {ErrorsService} from "../errors/errors.service";
-import AppEventNames from "../../events/AppEventNames";
+import {EventObserver} from "../event-observer/event-observer.service";
+import {AppErrorEvent} from "../../events/AppErrorEvent";
 
 @Injectable({
   providedIn: 'root'
 })
 export class StorageService {
-
-
-  constructor(private storage: AngularFireStorage, private compressService: NgxImageCompressService) {
+  
+  constructor(private storage: Storage, private compressService: NgxImageCompressService, private eventObserver: EventObserver) {
   }
 
   public async uploadUserImage(base64: string, fileName: string): Promise<any> {
@@ -19,25 +18,26 @@ export class StorageService {
       fileName = Date.now().toString();
     }
     try {
-      await this.storage.ref('user-images').child(fileName).getDownloadURL();
+      await getDownloadURL(ref(this.storage, `user-images/${fileName}`));
       fileName = `${Date.now()}_${fileName}`;
     } catch (err) {
       console.info(`File with name ${fileName} doesn't exist.`);
     }
 
-    const imageRef = this.storage.ref('user-images').child(fileName);
+    const imageRef = ref(this.storage, `user-images/${fileName}`);
 
     try {
       base64 = await this.compressService.compressFile(base64, DOC_ORIENTATION.NotDefined, 30, 50)
     } catch (err) {
-      ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'StorageService.uploadUserImage compressFile error', error: err});
+      this.eventObserver.dispatchEvent(new AppErrorEvent({anchor: 'StorageService.uploadUserImage compressFile error', error: err}))
     }
 
-    const uploadRef = await imageRef.put(StorageService.base64toFile(base64, fileName));
-    if (uploadRef.state === 'success') {
-      return await uploadRef.ref.getDownloadURL();
+    try {
+      await uploadBytes(imageRef, StorageService.base64toFile(base64, fileName));
+      return await getDownloadURL(imageRef);
+    } catch {
+      return false;
     }
-    return false;
   }
 
   public async deleteUserImage(url: string): Promise<void> {
@@ -45,7 +45,8 @@ export class StorageService {
       if (AppService.defaultAvatars.includes(url)) {
         return;
       }
-      await this.storage.storage.refFromURL(url).delete();
+      let imageUrl = new URL(url).pathname;
+      await deleteObject(ref(this.storage, decodeURIComponent(imageUrl.substr(imageUrl.indexOf('/user-images')))));
     } catch (e) {
       console.error(`Couldn't remove image by url ${url}`);
     }

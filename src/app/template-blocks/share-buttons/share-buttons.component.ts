@@ -1,6 +1,7 @@
 import {AfterViewInit, Component, Input} from '@angular/core';
 import {AppService} from "../../services/app/app.service";
 import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
+import {EventObserver} from "../../services/event-observer/event-observer.service";
 
 @Component({
   selector: 'app-share-buttons',
@@ -56,7 +57,7 @@ export class ShareButtonsComponent implements AfterViewInit {
   private shareButtons: any;
   public readonly isMobile: boolean;
 
-  constructor() {
+  constructor(private eventObserver: EventObserver) {
     this.isMobile = AppService.isMobile();
   }
 
@@ -96,6 +97,6 @@ export class ShareButtonsComponent implements AfterViewInit {
   }
 
   public sendYMGoal(): void {
-    document.dispatchEvent(new GoogleAnalyticsEvent('share_in_socials'));
+    this.eventObserver.dispatchEvent(new GoogleAnalyticsEvent('share_in_socials'));
   }
 }

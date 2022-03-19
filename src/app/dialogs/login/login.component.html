@@ -1,4 +1,4 @@
-<ng-container *ngIf="userHasAccount">
+<ng-container *ngIf="userHasAccount; else signUpTemplate">
   <h1>Вход</h1>
 
   <p class="error-message" *ngIf="errorMessage">{{errorMessage}}</p>
@@ -30,7 +30,7 @@
   </form>
 </ng-container>
 
-<ng-container *ngIf="!userHasAccount">
+<ng-template #signUpTemplate>
   <h1>Регистрация</h1>
 
   <p class="error-message" *ngIf="errorMessage">{{errorMessage}}</p>
@@ -66,5 +66,5 @@
       <button class="button-primary" (click)="signUp()" [disabled]="!acceptRules">Создать профиль</button>
     </div>
   </form>
-</ng-container>
+</ng-template>
 

@@ -14,6 +14,7 @@ import {DatabaseService} from "../../services/database/database.service";
 import {FilterFieldName} from "../../models/FilterFields";
 import {AuthService} from "../../services/auth/auth.service";
 import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
+import {EventObserver} from "../../services/event-observer/event-observer.service";
 
 @Component({
   selector: 'app-offer-page',
@@ -31,7 +32,7 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
   public commentInput: FormControl;
 
   constructor(private route: ActivatedRoute, private seoService: SeoService, private databaseService: DatabaseService,
-              private router: Router, private notificationService: NotificationBarService,
+              private router: Router, private notificationService: NotificationBarService, private eventObserver: EventObserver,
               private appService: AppService, protected authService: AuthService) {
     super(authService);
     OverlayService.showOverlay();
@@ -126,7 +127,7 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
   }
 
   public onOfferContactsClick(): void {
-    document.dispatchEvent(new GoogleAnalyticsEvent('offer_contacts_clicked'));
+    this.eventObserver.dispatchEvent(new GoogleAnalyticsEvent('offer_contacts_clicked'));
   }
 
   public reportOnOffer(): void {
@@ -170,7 +171,7 @@ export class OfferPageComponent extends ComponentBrowserAbstractClass {
 
     OverlayService.showOverlay();
     let comment: OfferComment = {
-      commentId: this.databaseService.createId(),
+      commentId: DatabaseService.createId(),
       offerId: this.offer.offerId,
       userId: this.userAuthData.uid,
       displayName: this.userAuthData.displayName,

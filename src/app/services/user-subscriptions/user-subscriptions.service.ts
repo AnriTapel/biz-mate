@@ -1,30 +1,29 @@
 import {Injectable} from '@angular/core';
 import {NotificationBarService} from "../notification-bar/notification-bar.service";
 import {DatabaseService} from "../database/database.service";
-import {MatDialog} from "@angular/material/dialog";
-import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
+import {DialogConfigType, MatDialogConfig} from "../../dialogs/MatDialogConfig";
 import {UserSubscriptions} from "../../models/UserSubscriptions";
 import {Messages} from "../../models/Messages";
 import {OverlayService} from "../overlay/overlay.service";
 import {AppService} from "../app/app.service";
-import {User} from "../../models/User";
-import {LazyLoadingService} from "../lazy-loading/lazy-loading.service";
+import {BizMateUser} from "../../models/BizMateUser";
 import {AuthService} from "../auth/auth.service";
 import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
+import {EventObserver} from "../event-observer/event-observer.service";
+import {DialogModuleNames} from "../../dialogs/DialogModuleNames";
+import {OpenDialogEvent} from "../../events/OpenDialogEvent";
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserSubscriptionsService {
 
-  private dialogHandler: any = undefined;
-  private userData: User = undefined;
+  private userData: BizMateUser = undefined;
 
   static readonly NEW_OFFERS_SUBSCRIPTION_STORAGE_FIELD_NAME: string = 'bm_new_offers_subscription_status';
   static readonly NEW_OFFERS_SUBSCRIPTION_DIALOG_TIMEOUT_MSEC: number = 5000;
 
-  constructor(private notificationService: NotificationBarService, private dbService: DatabaseService,
-              private matDialog: MatDialog, private lazyLoadingService: LazyLoadingService, private authService: AuthService) {
+  constructor(private notificationService: NotificationBarService, private dbService: DatabaseService, private eventObserver: EventObserver, private authService: AuthService) {
     this.initService();
   }
 
@@ -48,30 +47,25 @@ export class UserSubscriptionsService {
   }
 
   public showNewOffersSubscriptionDialog(): void {
-    this.lazyLoadingService.getLazyLoadedComponent(LazyLoadingService.NEW_OFFERS_SUBSCRIPTION_MODULE_NAME)
-      .then(comp => {
-        let dialog = this.matDialog.open(comp, this.userData.email
-          ? MatDialogConfig.getConfigWithData(DialogConfigType.WIDE_CONFIG, {email: this.userData.email})
-          : MatDialogConfig.wideDialogWindow);
+    const config = this.userData.email
+      ? MatDialogConfig.getConfigWithData(DialogConfigType.WIDE_CONFIG, {email: this.userData.email})
+      : MatDialogConfig.wideDialogWindow;
+    const beforeCloseFunc = (res) => {
+      if (!res && !this.userData.isAnonymous) {
+        UserSubscriptionsService.setNewOffersSubscriptionStatus(false);
+      } else if (res) {
+        res.email = btoa(res.email);
+        this.dbService.setUserSubscriptionsByEmail(res as UserSubscriptions)
+          .then(() => {
+            UserSubscriptionsService.setNewOffersSubscriptionStatus(true);
+            this.notificationService.showNotificationBar(Messages.SUBSCRIPTION_SUCCESS, true);
+            this.eventObserver.dispatchEvent(new GoogleAnalyticsEvent('new_offers_subscription'))
+          })
+          .catch(() => this.notificationService.showNotificationBar(Messages.SUBSCRIPTION_ERROR, false));
+      }
+    };
 
-        this.dialogHandler = dialog.afterClosed().subscribe((res) => {
-          AppService.unsubscribeHandler([this.dialogHandler]);
-          this.dialogHandler = undefined;
-
-          if (!res && !this.userData.isAnonymous) {
-            UserSubscriptionsService.setNewOffersSubscriptionStatus(false);
-          } else if (res) {
-            res.email = btoa(res.email);
-            this.dbService.setUserSubscriptionsByEmail(res as UserSubscriptions)
-              .then(() => {
-                UserSubscriptionsService.setNewOffersSubscriptionStatus(true);
-                this.notificationService.showNotificationBar(Messages.SUBSCRIPTION_SUCCESS, true);
-                document.dispatchEvent(new GoogleAnalyticsEvent('new_offers_subscription'));
-              })
-              .catch(() => this.notificationService.showNotificationBar(Messages.SUBSCRIPTION_ERROR, false));
-          }
-        });
-      }).catch(console.error);
+    this.eventObserver.dispatchEvent(new OpenDialogEvent(DialogModuleNames.NEW_OFFERS_SUBSCRIPTION_MODULE_NAME, config, beforeCloseFunc.bind(this)));
   }
 
   private setNewOffersSubscriptionTimeout(): void {

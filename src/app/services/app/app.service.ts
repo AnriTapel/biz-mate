@@ -4,8 +4,10 @@ import {BusinessArea} from "../../models/BusinessArea";
 import {AbstractControl, ValidatorFn} from "@angular/forms";
 import {DatabaseService} from "../database/database.service";
 import {OfferType} from "../../models/IOfferType";
+import {EventObserver} from "../event-observer/event-observer.service";
+import {InitDataEvent} from "../../events/InitDataEvent";
 import AppEventNames from "../../events/AppEventNames";
-import {ErrorsService} from "../errors/errors.service";
+import {InitAuthEvent} from "../../events/InitAuthEvent";
 
 @Injectable({
   providedIn: 'root'
@@ -30,54 +32,43 @@ export class AppService {
   private _offerTypes: OfferType[] = undefined;
   private _businessAreas: BusinessArea[] = undefined;
   private _cities: City[] = undefined;
+  public static isInitialSpinnerHidden: boolean = false;
 
-  constructor(private databaseService: DatabaseService) {
+  constructor(private databaseService: DatabaseService, private eventObserver: EventObserver) {
+    //eventObserver.getEventObservable(AppEventNames.APP_ERROR).subscribe(() => AppService.onAppErrorEvent());
+    eventObserver.getEventObservable(AppEventNames.INIT_APP_DATA).subscribe((event: InitDataEvent) => AppService.onInitEvents(event));
+    eventObserver.getEventObservable(AppEventNames.INIT_APP_AUTH).subscribe((event: InitAuthEvent) => AppService.onInitEvents(event));
   }
 
   public appInit(): void {
-    this.initCitiesCollection();
-    this.initBusinessAreasCollection();
-    this.initOfferTypesCollection();
+    Promise.all([this.initCitiesCollection(), this.initBusinessAreasCollection(), this.initOfferTypesCollection()])
+      .then(() => this.eventObserver.dispatchEvent(new InitDataEvent()))
+      .catch(() => this.eventObserver.dispatchEvent(new InitDataEvent(false)));
   }
 
-  private initCitiesCollection(): void {
-    this.databaseService.getCitiesCollection()
-      .then((res) => {
-        this._cities = res;
-        this.checkAppInitStatus();
-      }).catch(e => AppService.dispatchAppInitError({anchor: 'AppService.initCitiesCollection', error: e}));
+  private async initCitiesCollection(): Promise<void> {
+    this._cities = await this.databaseService.getCitiesCollection();
   }
 
-  private initOfferTypesCollection(): void {
-    this.databaseService.getOfferTypesCollection()
-      .then((res) => {
-        this._offerTypes = res;
-        this.checkAppInitStatus();
-      }).catch(e => AppService.dispatchAppInitError({anchor: 'AppService.initOfferTypesCollection', error: e}));
+  private async initOfferTypesCollection(): Promise<void> {
+    this._offerTypes = await this.databaseService.getOfferTypesCollection();
   }
 
-  private initBusinessAreasCollection(): void {
-    this.databaseService.getBusinessAreasCollection()
-      .then((res) => {
-        this._businessAreas = res;
-        this.checkAppInitStatus();
-      }).catch(e => AppService.dispatchAppInitError({anchor: 'AppService.initBusinessAreasCollection', error: e}));
+  private async initBusinessAreasCollection(): Promise<void> {
+    this._businessAreas = await this.databaseService.getBusinessAreasCollection();
   }
 
-  private checkAppInitStatus(): void {
-    if (this.cities && this.offerTypes && this.businessAreas) {
-      document.dispatchEvent(new Event(AppEventNames.INIT_APP_DATA_SUCCESS));
+  private static onInitEvents(event: InitDataEvent | InitAuthEvent): void {
+    if (!event.isSuccess) {
+      this.hideInitialSpinner();
+      this.showGlobalError();
     }
   }
 
-  public static dispatchAppInitError(detail: {}): void {
-    ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, detail);
-    AppService.hideInitialSpinner();
-    AppService.showGlobalError();
-    document.dispatchEvent(new Event(AppEventNames.APP_INIT_ERROR));
-  }
-
   public static hideInitialSpinner(): void {
+    if (this.isInitialSpinnerHidden) {
+      return;
+    }
     const initialSpinnerElement = document.getElementById('initial_spinner');
     if (initialSpinnerElement) {
       initialSpinnerElement.style.display = 'none';

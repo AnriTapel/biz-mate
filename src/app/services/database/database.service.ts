@@ -1,5 +1,22 @@
 import {Injectable} from '@angular/core';
-import {AngularFirestore} from "@angular/fire/firestore";
+import {
+  addDoc,
+  collection,
+  collectionData,
+  deleteDoc,
+  doc,
+  Firestore,
+  getDoc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  setDoc,
+  startAfter,
+  updateDoc,
+  where,
+  writeBatch
+} from "@angular/fire/firestore";
 import {Offer} from "../../models/Offer";
 import {Observable, of, zip} from "rxjs";
 import {map} from "rxjs/operators";
@@ -10,8 +27,8 @@ import {UserSubscriptions} from "../../models/UserSubscriptions";
 import {City} from "../../models/City";
 import {BusinessArea} from "../../models/BusinessArea";
 import {OfferType} from "../../models/IOfferType";
-import {ErrorsService} from "../errors/errors.service";
-import AppEventNames from "../../events/AppEventNames";
+import {EventObserver} from "../event-observer/event-observer.service";
+import {AppErrorEvent} from "../../events/AppErrorEvent";
 
 @Injectable({
   providedIn: 'root'
@@ -35,105 +52,128 @@ export class DatabaseService {
   private allSortedOffersLoaded: boolean = false;
   private allFilteredOffersLoaded: boolean = false;
 
-  private offersCollectionRef: any = undefined;
-  private commentsCollectionRef: any = undefined;
+  private readonly offersCollectionRef: any = undefined;
+  private readonly commentsCollectionRef: any = undefined;
 
-  constructor(private db: AngularFirestore) {
-    this.offersCollectionRef = this.db.collection(DatabaseService.OFFERS_COLLECTION_PATH).ref;
-    this.commentsCollectionRef = this.db.collection(DatabaseService.COMMENTS_COLLECTION_PATH).ref;
+  constructor(private firestore: Firestore, private eventObserver: EventObserver) {
+    this.offersCollectionRef = collection(this.firestore, DatabaseService.OFFERS_COLLECTION_PATH);
+    this.commentsCollectionRef = collection(this.firestore, DatabaseService.COMMENTS_COLLECTION_PATH);
   }
 
-  public createId(): string {
-    return this.db.createId();
+  public static createId(): string {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let autoId = '';
+    for (let i = 0; i < 20; i++) {
+      autoId += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return autoId;
   }
 
   public getCitiesCollection(): Promise<City[]> {
-    return new Promise<City[]>((resolve, reject) => {
-      this.db.collection(DatabaseService.CITIES_COLLECTION_PATH).ref.get()
-        .then((res) => {
-          let cities: City[] = [];
-          res.forEach(it => cities.push(it.data() as City));
-          cities.sort((a, b) => a.name.localeCompare(b.name));
-          resolve(cities);
-        })
-        .catch((e) => {
-          ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'DatabaseService.getCitiesCollection', error: e});
-          reject(e);
-        });
+    return new Promise<City[]>(async (resolve, reject) => {
+      let cities: City[] = [];
+      try {
+        const querySnapshot = await getDocs(collection(this.firestore, DatabaseService.CITIES_COLLECTION_PATH));
+        querySnapshot.forEach((doc) => cities.push(doc.data() as City));
+        cities.sort((a, b) => a.name.localeCompare(b.name));
+        resolve(cities);
+      } catch (e) {
+        console.error(e);
+        this.eventObserver.dispatchEvent(new AppErrorEvent({anchor: 'DatabaseService.getCitiesCollection', error: e}));
+        reject(e);
+      }
     });
   }
 
   public getBusinessAreasCollection(): Promise<BusinessArea[]> {
-    return new Promise<BusinessArea[]>((resolve, reject) => {
-      this.db.collection(DatabaseService.BUSINESS_AREAS_COLLECTION_PATH).ref.get()
-        .then((res) => {
-          let businessAreas: BusinessArea[] = [];
-          res.forEach(it => businessAreas.push(it.data() as City));
-          let anyArea = businessAreas.shift();
-          businessAreas.sort((a, b) => a.name.localeCompare(b.name)).unshift(anyArea);
-          resolve(businessAreas);
-        })
-        .catch((e) => {
-          ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'DatabaseService.getBusinessAreasCollection', error: e});
-          reject(e);
-        });
+    return new Promise<BusinessArea[]>(async (resolve, reject) => {
+      let businessAreas: BusinessArea[] = [];
+      try {
+        const querySnapshot = await getDocs(collection(this.firestore, DatabaseService.BUSINESS_AREAS_COLLECTION_PATH));
+        querySnapshot.forEach((doc) => businessAreas.push(doc.data() as BusinessArea));
+        let anyArea = businessAreas.shift();
+        businessAreas.sort((a, b) => a.name.localeCompare(b.name)).unshift(anyArea);
+        resolve(businessAreas);
+      } catch (e) {
+        console.error(e);
+        this.eventObserver.dispatchEvent(new AppErrorEvent({
+          anchor: 'DatabaseService.getBusinessAreasCollection',
+          error: e
+        }));
+        reject(e);
+      }
     });
   }
 
   public getOfferTypesCollection(): Promise<any[]> {
-    return new Promise<any[]>((resolve, reject) => {
-      this.db.collection(DatabaseService.OFFER_TYPES_COLLECTION_PATH).ref.get()
-        .then((res) => {
-          const offerTypes: OfferType[] = [];
-          res.forEach(it => offerTypes.push(it.data() as OfferType));
-          resolve(offerTypes);
-        })
-        .catch((e) => {
-          ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'DatabaseService.getOfferTypesCollection', error: e});
-          reject(e);
-        });
+    return new Promise<OfferType[]>(async (resolve, reject) => {
+      let offerTypes: OfferType[] = [];
+      try {
+        const querySnapshot = await getDocs(collection(this.firestore, DatabaseService.OFFER_TYPES_COLLECTION_PATH));
+        querySnapshot.forEach((doc) => offerTypes.push(doc.data() as OfferType));
+        resolve(offerTypes);
+      } catch (e) {
+        console.error(e);
+        this.eventObserver.dispatchEvent(new AppErrorEvent({
+          anchor: 'DatabaseService.getOfferTypesCollection',
+          error: e
+        }));
+        reject(e);
+      }
     });
   }
 
   public async getOfferByOfferId(id: string): Promise<Offer> {
     try {
-      const offer = await this.offersCollectionRef.doc(id).get();
+      const offer = await getDoc(doc(this.firestore, DatabaseService.OFFERS_COLLECTION_PATH + '/' + id));
       return offer.data() as Offer;
     } catch (e) {
-      ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'DatabaseService.getOfferByOfferId', error: e});
+      console.error(e);
+      this.eventObserver.dispatchEvent(new AppErrorEvent({anchor: 'DatabaseService.getOfferByOfferId', error: e}));
     }
   }
 
   public getUserOffersByUserId(id: string): Observable<Offer[]> {
-    return this.db.collection<Offer>(DatabaseService.OFFERS_COLLECTION_PATH, (ref => ref
-      .where('userId', '==', id).orderBy('date', 'desc'))).valueChanges();
+    let q = query<Offer>(this.offersCollectionRef,
+      where('userId', '==', id),
+      orderBy('date', 'desc')
+    );
+    return collectionData<Offer>(q);
   }
 
   public getLatestOffers(): Observable<Offer[]> {
-    return this.db.collection<Offer>(DatabaseService.OFFERS_COLLECTION_PATH, ref => ref
-      .orderBy('date', 'desc').limit(DatabaseService.LATEST_OFFERS_CHUNK_SIZE)).valueChanges();
+    let q = query<Offer>(this.offersCollectionRef,
+      orderBy('date', 'desc'),
+      limit(DatabaseService.LATEST_OFFERS_CHUNK_SIZE)
+    );
+    return collectionData<Offer>(q);
   }
 
   public async getSortedOffersChunk(nextChunk: boolean = false): Promise<Observable<Offer[]>> {
     return new Promise<Observable<Offer[]>>(async (resolve, reject) => {
       try {
-        let query;
+        let q;
         if (nextChunk) {
-          query = await this.offersCollectionRef.orderBy('date', 'desc')
-            .limit(DatabaseService.SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE).startAfter(this.lastLoadedSortedOffer).get();
+          q = query(this.offersCollectionRef,
+            orderBy('date', 'desc'),
+            limit(DatabaseService.SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE),
+            startAfter(this.lastLoadedSortedOffer));
         } else {
           if (this.sortedOffers$ != undefined) {
             resolve(this.sortedOffers$);
             return;
           }
-          query = await this.offersCollectionRef.orderBy('date', 'desc')
-            .limit(DatabaseService.SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE).get();
+          q = query(this.offersCollectionRef,
+            orderBy('date', 'desc'),
+            limit(DatabaseService.SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE)
+          );
         }
 
         const offers = [];
-        if (!query.empty) {
-          query.forEach(it => offers.push(it.data()));
-          this.lastLoadedSortedOffer = query.docs[query.docs.length - 1];
+        const docs = await getDocs(q);
+        if (!docs.empty) {
+          docs.forEach(it => offers.push(it.data()));
+          this.lastLoadedSortedOffer = docs.docs[docs.docs.length - 1];
           if (offers.length < DatabaseService.SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE) {
             this.allSortedOffersLoaded = true;
           }
@@ -152,7 +192,11 @@ export class DatabaseService {
         }
         resolve(this.sortedOffers$);
       } catch (e) {
-        ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'DatabaseService.getSortedOffersChunk', error: e});
+        console.error(e);
+        this.eventObserver.dispatchEvent(new AppErrorEvent({
+          anchor: 'DatabaseService.getSortedOffersChunk',
+          error: e
+        }));
         this.sortedOffers$ = undefined;
         this.lastLoadedSortedOffer = undefined;
         this.allSortedOffersLoaded = false;
@@ -175,31 +219,28 @@ export class DatabaseService {
       }
 
       try {
-        let query;
+        let q;
         if (queryParams.length === 1) {
-          query = this.offersCollectionRef.orderBy('date', 'desc').where(queryParams[0].name, queryParams[0].operator, queryParams[0].value)
-            .limit(DatabaseService.SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE);
+          q = nextChunk
+            ? query(this.offersCollectionRef, orderBy('date', 'desc'), where(queryParams[0].name, queryParams[0].operator, queryParams[0].value), limit(DatabaseService.SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE), startAfter(this.lastLoadedFilteredOffer))
+            : query(this.offersCollectionRef, orderBy('date', 'desc'), where(queryParams[0].name, queryParams[0].operator, queryParams[0].value), limit(DatabaseService.SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE))
         } else if (queryParams.length === 2) {
-          query = this.offersCollectionRef.orderBy('date', 'desc').where(queryParams[0].name, queryParams[0].operator, queryParams[0].value)
-            .where(queryParams[1].name, queryParams[1].operator, queryParams[1].value)
-            .limit(DatabaseService.SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE);
+          q = nextChunk
+            ? query(this.offersCollectionRef, orderBy('date', 'desc'), where(queryParams[0].name, queryParams[0].operator, queryParams[0].value), where(queryParams[1].name, queryParams[1].operator, queryParams[1].value), limit(DatabaseService.SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE), startAfter(this.lastLoadedFilteredOffer))
+            : query(this.offersCollectionRef, orderBy('date', 'desc'), where(queryParams[0].name, queryParams[0].operator, queryParams[0].value), where(queryParams[1].name, queryParams[1].operator, queryParams[1].value), limit(DatabaseService.SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE));
         } else if (queryParams.length === 3) {
-          query = this.offersCollectionRef.orderBy('date', 'desc').where(queryParams[0].name, queryParams[0].operator, queryParams[0].value)
-            .where(queryParams[1].name, queryParams[1].operator, queryParams[1].value)
-            .where(queryParams[2].name, queryParams[2].operator, queryParams[2].value)
-            .limit(DatabaseService.SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE);
+          q = nextChunk
+            ? query(this.offersCollectionRef, orderBy('date', 'desc'), where(queryParams[0].name, queryParams[0].operator, queryParams[0].value), where(queryParams[1].name, queryParams[1].operator, queryParams[1].value), where(queryParams[2].name, queryParams[2].operator, queryParams[2].value), limit(DatabaseService.SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE), startAfter(this.lastLoadedFilteredOffer))
+            : query(this.offersCollectionRef, orderBy('date', 'desc'), where(queryParams[0].name, queryParams[0].operator, queryParams[0].value), where(queryParams[1].name, queryParams[1].operator, queryParams[1].value), where(queryParams[2].name, queryParams[2].operator, queryParams[2].value), limit(DatabaseService.SORTED_AND_FILTERED_OFFERS_CHUNK_SIZE));
         }
 
-        let resp;
-        if (nextChunk) {
-          resp = await query.startAfter(this.lastLoadedFilteredOffer).get();
-        } else {
-          resp = await query.get();
-        }
-
+        let resp = await getDocs(q);
         this.resolveFilterQuery(resp, nextChunk) ? resolve(this.filteredOffers$) : resolve(null);
       } catch (e) {
-        ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'DatabaseService.getFilteredOffersChunk', error: e});
+        this.eventObserver.dispatchEvent(new AppErrorEvent({
+          anchor: 'DatabaseService.getFilteredOffersChunk',
+          error: e
+        }));
         this.filteredOffers$ = null;
         this.lastLoadedFilteredOffer = null;
         this.allFilteredOffersLoaded = false;
@@ -240,36 +281,24 @@ export class DatabaseService {
     return this.allFilteredOffersLoaded;
   }
 
-  public sendOffer(offer: Offer, editOffer: boolean): Promise<void> {
-    return editOffer ? this.offersCollectionRef.doc(offer.offerId).update(offer) :
-      this.offersCollectionRef.doc(offer.offerId).set(offer);
+  public async sendOffer(offer: Offer, editOffer: boolean): Promise<void> {
+    return editOffer ?
+      await updateDoc(doc(this.offersCollectionRef, offer.offerId), offer) :
+      await setDoc(doc(this.offersCollectionRef, offer.offerId), offer)
   }
 
-  public deleteOffer(offer: Offer): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      this.commentsCollectionRef.where('offerId', '==', offer.offerId).get()
-        .then((resp) => {
-          const batch = this.db.firestore.batch();
-
-          resp.docs.forEach(userDocRef => {
-            batch.delete(userDocRef.ref);
-          });
-
-          batch.commit().catch(err => console.error(err));
-        });
-
-      this.db.collection(DatabaseService.OFFERS_COLLECTION_PATH).doc(offer.offerId).delete()
-        .then(() => resolve())
-        .catch(() => reject());
-    });
+  public async deleteOffer(offer: Offer): Promise<void> {
+      const offerRes = await doc(this.firestore, `${DatabaseService.OFFERS_COLLECTION_PATH}/${offer.offerId}`);
+      await deleteDoc(offerRes);
   }
 
   // Called when users' personal info is changed (name, avatar etc.)
   public async updateUserDataInOffers(userId: string, field: string, newValue: string): Promise<void> {
     try {
-      const offersRes = await this.offersCollectionRef.where('userId', '==', userId).get();
-      const offersBatch = this.db.firestore.batch();
+      const offersRes = await getDocs(query<Offer[]>(this.offersCollectionRef, where('userId', '==', userId)));
+      const offersBatch = writeBatch(this.firestore);
       offersRes.docs.forEach(userDocRef => {
+        //@ts-ignore
         offersBatch.update(userDocRef.ref, {[field]: newValue});
       });
 
@@ -279,81 +308,102 @@ export class DatabaseService {
         return;
       }
 
-      const commentsRes = await this.commentsCollectionRef.where('userId', '==', userId).get();
-      const commentsBatch = this.db.firestore.batch();
+      const commentsRes = await getDocs(query<Offer[]>(this.commentsCollectionRef, where('userId', '==', userId)));
+      const commentsBatch = writeBatch(this.firestore);
 
       commentsRes.docs.forEach(userCommentsRef => {
+        //@ts-ignore
         commentsBatch.update(userCommentsRef.ref, {[field]: newValue});
       });
 
       commentsBatch.commit();
     } catch (e) {
-      ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'DatabaseService.updateUserDataInOffers', error: e});
       console.error(e);
+      this.eventObserver.dispatchEvent(new AppErrorEvent({
+        anchor: 'DatabaseService.updateUserDataInOffers',
+        error: e
+      }));
     }
 
   }
 
   public getOfferCommentsByOfferId(offerId: string): Observable<OfferComment[]> {
-    return this.db.collection<OfferComment>(DatabaseService.COMMENTS_COLLECTION_PATH, (ref => ref
-      .where('offerId', '==', offerId).orderBy('date'))).valueChanges();
+    let q = query<OfferComment>(this.commentsCollectionRef,
+      where('offerId', '==', offerId),
+      orderBy('date')
+    );
+    return collectionData<OfferComment>(q);
   }
 
   public sendOfferComment(comment: OfferComment): Promise<void> {
-    return this.commentsCollectionRef.doc(comment.commentId).set(comment);
+    return setDoc(doc(this.firestore, `${DatabaseService.COMMENTS_COLLECTION_PATH}/${comment.commentId}`), comment);
   }
 
   public deleteOfferComment(commentId: string): Promise<void> {
-    return this.commentsCollectionRef.doc(commentId).delete();
+    return deleteDoc(doc(this.firestore, `${DatabaseService.COMMENTS_COLLECTION_PATH}/${commentId}`))
   }
 
   public async sendFeedback(message: FeedbackMessage): Promise<void> {
-    await this.db.collection(DatabaseService.FEEDBACK_COLLECTION_PATH).add(message);
+    await addDoc(collection(this.firestore, DatabaseService.FEEDBACK_COLLECTION_PATH), message);
   }
 
   public async getUserSubscriptionsByEmail(email: string): Promise<UserSubscriptions> {
-    return new Promise<UserSubscriptions>((resolve) => {
-      this.db.collection(DatabaseService.USER_SUBSCRIPTIONS_COLLECTION_PATH).ref.doc(email).get()
-        .then((doc) => resolve(doc.data() as UserSubscriptions))
-        .catch((e) => {
-          ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'DatabaseService.getUserSubscriptionsByEmail', error: e});
-          resolve(e);
-        });
+    return new Promise<UserSubscriptions>(async (resolve) => {
+      try {
+        let d = await getDoc(doc(this.firestore, `${DatabaseService.USER_SUBSCRIPTIONS_COLLECTION_PATH}/${email}`));
+        resolve(d.data() as UserSubscriptions);
+      } catch (e) {
+        console.error(e);
+        this.eventObserver.dispatchEvent(new AppErrorEvent({
+          anchor: 'DatabaseService.getUserSubscriptionsByEmail',
+          error: e
+        }));
+        resolve(e);
+      }
     });
   }
 
   public async setUserSubscriptionsByEmail(params: UserSubscriptions): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      let ref = this.db.collection(DatabaseService.USER_SUBSCRIPTIONS_COLLECTION_PATH).ref;
-      ref.doc(params.email).get().then((res) => {
-        if (res.exists) {
-          ref.doc(params.email).update({newOfferAreas: params.newOfferAreas});
+    return new Promise<void>(async (resolve, reject) => {
+      try {
+        let docRef = doc(this.firestore, `${DatabaseService.USER_SUBSCRIPTIONS_COLLECTION_PATH}/${params.email}`);
+        let d = await getDoc(docRef);
+        if (d.exists()) {
+          await updateDoc(docRef, {newOfferAreas: params.newOfferAreas})
         } else {
-          ref.doc(params.email).set({email: params.email, newOfferAreas: params.newOfferAreas});
+          await setDoc(docRef, {email: params.email, newOfferAreas: params.newOfferAreas});
         }
         resolve();
-      }).catch((e) => {
-        ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'DatabaseService.setUserSubscriptionsByEmail', error: e});
+      } catch (e) {
+        console.error(e);
+        this.eventObserver.dispatchEvent(new AppErrorEvent({
+          anchor: 'DatabaseService.setUserSubscriptionsByEmail',
+          error: e
+        }));
         reject(e);
-      });
+      }
     });
   }
 
   // field: field name as string from UserSubscriptions
   public async removeUserSubscriptionByField(email: string, fields: string[]): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      let ref = this.db.collection(DatabaseService.USER_SUBSCRIPTIONS_COLLECTION_PATH).ref;
-      ref.doc(email).get().then((res) => {
-        if (res.exists) {
+    return new Promise<void>(async (resolve, reject) => {
+      try {
+        let docRef = doc(this.firestore, `${DatabaseService.USER_SUBSCRIPTIONS_COLLECTION_PATH}/${email}`);
+        let d = await getDoc(docRef);
+        if (d.exists()) {
           let data = {};
           fields.forEach(it => data[it] = []);
-          ref.doc(email).update(data);
+          await updateDoc(docRef, data);
         }
-        resolve();
-      }).catch((e) => {
-        ErrorsService.dispatchEvent(AppEventNames.APP_ERROR, {anchor: 'DatabaseService.removeUserSubscriptionByField', error: e});
+      } catch (e) {
+        console.error(e);
+        this.eventObserver.dispatchEvent(new AppErrorEvent({
+          anchor: 'DatabaseService.removeUserSubscriptionByField',
+          error: e
+        }));
         reject(e);
-      });
+      }
     });
   }
 }
