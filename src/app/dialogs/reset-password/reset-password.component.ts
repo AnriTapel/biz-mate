@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormControl, Validators} from "@angular/forms";
-import {MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {AuthService} from "../../services/auth/auth.service";
 import {Messages} from "../../models/Messages";
 
@@ -15,7 +14,7 @@ export class ResetPasswordComponent implements OnInit {
   emailSent: boolean = false;
   errorMessage: string = null;
 
-  constructor(private dialog: MatDialog, private dialogRef: MatDialogRef<ResetPasswordComponent>, private authService: AuthService) { }
+  constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
     this.emailControl = new FormControl(null, [Validators.required, Validators.email]);

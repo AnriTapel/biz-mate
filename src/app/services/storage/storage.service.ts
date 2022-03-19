@@ -46,7 +46,7 @@ export class StorageService {
         return;
       }
       let imageUrl = new URL(url).pathname;
-      await deleteObject(ref(this.storage, decodeURIComponent(imageUrl.substr(url.indexOf('/user-images')))));
+      await deleteObject(ref(this.storage, decodeURIComponent(imageUrl.substr(imageUrl.indexOf('/user-images')))));
     } catch (e) {
       console.error(`Couldn't remove image by url ${url}`);
     }

@@ -15,6 +15,7 @@ export class FunctionsService {
 
   private onAppErrorEvent(event: AppErrorEvent): void {
     try {
+      console.error(event.detail);
       // toPromise().then() is for callable function to work \_O_/
       httpsCallable(this.functions, 'logError')({anchor: event.detail.anchor || '', error: event.detail.error || ''});
     } catch (e) {

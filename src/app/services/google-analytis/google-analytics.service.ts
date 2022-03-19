@@ -12,7 +12,6 @@ import {InitDataEvent} from "../../events/InitDataEvent";
 export class GoogleAnalyticsService {
 
   constructor(private analytics: Analytics, private eventObserver: EventObserver) {
-    console.log('GoogleAnalyticsService constructor');
     eventObserver.getEventObservable(AppEventNames.SEND_ANALYTICS).subscribe(this.sendAnalytics.bind(this));
     eventObserver.getEventObservable(AppEventNames.APP_ERROR).subscribe(this.onAppError.bind(this));
     eventObserver.getEventObservable(AppEventNames.INIT_APP_AUTH).subscribe(this.onInitAppAuthEvent.bind(this));

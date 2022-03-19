@@ -27,7 +27,7 @@ import {InitAuthEvent} from "./events/InitAuthEvent";
 import {InitDataEvent} from "./events/InitDataEvent";
 
 
-export function initializeAppFactory(appService: AppService, authService: AuthService, eventObserver: EventObserver): () => Promise<void> {
+function initializeAppFactory(appService: AppService, authService: AuthService, eventObserver: EventObserver): () => Promise<void> {
   return (): Promise<void> => {
     return new Promise((resolve, reject) => {
       let status = {app: false, auth: false};

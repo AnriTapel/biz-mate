@@ -14,13 +14,13 @@ import {OverlayService} from "../../services/overlay/overlay.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {DatabaseService} from "../../services/database/database.service";
 import {FilterField, FilterFieldName, FilterFieldOperator} from "../../models/FilterFields";
-import {MatDialog} from "@angular/material/dialog";
-import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
+import {DialogConfigType, MatDialogConfig} from "../../dialogs/MatDialogConfig";
 import {OfferType} from "../../models/IOfferType";
-import {LazyLoadingService} from "../../services/lazy-loading/lazy-loading.service";
 import {AuthService} from "../../services/auth/auth.service";
 import {GoogleAnalyticsEvent} from "../../events/GoogleAnalyticsEvent";
 import {EventObserver} from "../../services/event-observer/event-observer.service";
+import {DialogModuleNames} from "../../dialogs/DialogModuleNames";
+import {OpenDialogEvent} from "../../events/OpenDialogEvent";
 
 @Component({
   selector: 'app-offers-page',
@@ -31,7 +31,6 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
   private areQueryParamsInitialyResolved: boolean = false;
   private mobileFilterParamsText: string = '';
   private queryParamsHandler: any = undefined;
-  private mobileFilterDialogHandler: any = undefined;
 
   public sortedOffers$: Observable<Offer[]> = undefined;
   public filteredOffers$: Observable<Offer[]> = undefined;
@@ -45,8 +44,8 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
   public isTouchDevice: boolean = AppService.isTouchableDevice();
 
   constructor(private appService: AppService, private notificationService: NotificationBarService, private seoService: SeoService,
-              private route: ActivatedRoute, private router: Router, private databaseService: DatabaseService, private dialog: MatDialog,
-              private lazyLoadingService: LazyLoadingService, protected authService: AuthService, private eventObserver: EventObserver) {
+              private route: ActivatedRoute, private router: Router, private databaseService: DatabaseService, protected authService: AuthService,
+              private eventObserver: EventObserver) {
     super(authService);
     this.metaTags = {
       title: 'Доска предложений | BizMate',
@@ -88,7 +87,7 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
   ngOnDestroy(): void {
     super.ngOnDestroy();
     this.databaseService.clearSortedOffers();
-    AppService.unsubscribeHandler([this.queryParamsHandler, this.mobileFilterDialogHandler]);
+    AppService.unsubscribeHandler([this.queryParamsHandler]);
   }
 
   private resolveGetParams(): void {
@@ -251,25 +250,26 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
       data[FilterFieldName.CITY] = filterValues[FilterFieldName.CITY];
     }
 
-    this.lazyLoadingService.getLazyLoadedComponent(LazyLoadingService.OFFERS_FILTER_FORM_MODULE_NAME)
-      .then(comp => {
-        const mobileFilter = this.dialog.open(comp, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, data));
-        this.mobileFilterDialogHandler = mobileFilter.afterClosed().subscribe((res) => {
-          AppService.unsubscribeHandler([this.mobileFilterDialogHandler]);
-          if (res === undefined) {
-            return;
-          }
-          if (!res || !Object.values(res).some(x => (x !== null && x !== ''))) {
-            this.clearFilterForm();
-            return;
-          }
+    const beforeCloseFunc = (res) => {
+      if (res === undefined) {
+        return;
+      }
+      if (!res || !Object.values(res).some(x => (x !== null && x !== ''))) {
+        this.clearFilterForm();
+        return;
+      }
 
-          for (let key in res) {
-            this.searchForm.controls[key].setValue(res[key]);
-          }
-          this.applyFilter();
-        });
-      }).catch(console.error);
+      for (let key in res) {
+        this.searchForm.controls[key].setValue(res[key]);
+      }
+      this.applyFilter();
+    };
+
+    this.eventObserver.dispatchEvent(new OpenDialogEvent(
+      DialogModuleNames.OFFERS_FILTER_FORM_MODULE_NAME,
+      MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, data),
+      beforeCloseFunc.bind(this)
+    ));
   }
 
   public async getNextOffersChunk(): Promise<void> {

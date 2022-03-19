@@ -287,29 +287,14 @@ export class DatabaseService {
       await setDoc(doc(this.offersCollectionRef, offer.offerId), offer)
   }
 
-  public deleteOffer(offer: Offer): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      this.commentsCollectionRef.where('offerId', '==', offer.offerId).get()
-        .then((resp) => {
-          const batch = writeBatch(this.firestore);
-
-          resp.docs.forEach(userDocRef => {
-            batch.delete(userDocRef.ref);
-          });
-
-          batch.commit().catch(err => console.error(err));
-        });
-
-      deleteDoc(doc(this.firestore, `${DatabaseService.OFFERS_COLLECTION_PATH}/${offer.offerId}`))
-        .then(() => resolve())
-        .catch(() => reject());
-    });
+  public async deleteOffer(offer: Offer): Promise<void> {
+      const offerRes = await doc(this.firestore, `${DatabaseService.OFFERS_COLLECTION_PATH}/${offer.offerId}`);
+      await deleteDoc(offerRes);
   }
 
   // Called when users' personal info is changed (name, avatar etc.)
   public async updateUserDataInOffers(userId: string, field: string, newValue: string): Promise<void> {
     try {
-      //const offersRes = await this.offersCollectionRef.where('userId', '==', userId).get();
       const offersRes = await getDocs(query<Offer[]>(this.offersCollectionRef, where('userId', '==', userId)));
       const offersBatch = writeBatch(this.firestore);
       offersRes.docs.forEach(userDocRef => {

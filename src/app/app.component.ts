@@ -1,12 +1,14 @@
 import {Component} from '@angular/core';
 import {UserSubscriptionsService} from "./services/user-subscriptions/user-subscriptions.service";
 import NotificationDataModel from "./models/NotificationDataModel";
-import {MatDialog} from "@angular/material/dialog";
-import {DialogConfigType, MatDialogConfig} from "./dialogs/mat-dialog-config";
-import {ActivatedRoute, Router} from "@angular/router";
-import {LazyLoadingService} from "./services/lazy-loading/lazy-loading.service";
+import {DialogConfigType, MatDialogConfig} from "./dialogs/MatDialogConfig";
+import {ActivatedRoute} from "@angular/router";
 import {GoogleAnalyticsEvent} from "./events/GoogleAnalyticsEvent";
 import {EventObserver} from "./services/event-observer/event-observer.service";
+import {DialogModuleNames} from "./dialogs/DialogModuleNames";
+import {OpenDialogEvent} from "./events/OpenDialogEvent";
+import {DialogsService} from "./services/dialogs/dialogs.service";
+import {GoogleAnalyticsService} from "./services/google-analytis/google-analytics.service";
 
 @Component({
   selector: 'app-root',
@@ -41,20 +43,19 @@ export class AppComponent {
     }]
   };
 
-  constructor(router: Router, private route: ActivatedRoute, private userSubscriptionsService: UserSubscriptionsService,
-              private dialog: MatDialog, private lazyLoadingService: LazyLoadingService, private eventObserver: EventObserver) {
+  constructor(private route: ActivatedRoute, private userSubscriptionsService: UserSubscriptionsService, private eventObserver: EventObserver,
+              dialogsService: DialogsService, analyticsService: GoogleAnalyticsService) {
     this.manageRouteParams();
   }
 
   private manageRouteParams(): void {
     this.route.queryParams.subscribe(params => {
       if (params['password_reset'] || params['email_verify']) {
-        this.lazyLoadingService.getLazyLoadedComponent(LazyLoadingService.NOTIFICATION_MODULE_NAME)
-          .then(comp => {
-            this.dialog.open(comp, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG,
-              params['password_reset'] ? this.resetPasswordEvent : this.emailVerifyEvent));
-            this.eventObserver.dispatchEvent(new GoogleAnalyticsEvent(params['password_reset'] ? 'reset_password' : 'complete_sign_up'));
-          }).catch(console.error);
+        this.eventObserver.dispatchEvent(new OpenDialogEvent(
+          DialogModuleNames.NOTIFICATION_MODULE_NAME,
+          MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, params['password_reset'] ? this.resetPasswordEvent : this.emailVerifyEvent)
+        ));
+        this.eventObserver.dispatchEvent(new GoogleAnalyticsEvent(params['password_reset'] ? 'reset_password' : 'complete_sign_up'));
       } else if (params['event']) {
         if (params['event'] === 'unsubscribe') {
           this.userSubscriptionsService.resolveUnsubscribeQuery(params);

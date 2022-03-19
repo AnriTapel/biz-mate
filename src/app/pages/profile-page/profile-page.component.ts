@@ -5,8 +5,7 @@ import {AuthService} from "../../services/auth/auth.service";
 import {Offer} from "../../models/Offer";
 import {Observable} from "rxjs";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
-import {MatDialog} from "@angular/material/dialog";
-import {MatDialogConfig} from "../../dialogs/mat-dialog-config";
+import {MatDialogConfig} from "../../dialogs/MatDialogConfig";
 import {NotificationBarService} from "../../services/notification-bar/notification-bar.service";
 import {Messages} from "../../models/Messages";
 import {SeoService} from "../../services/seo/seo.service";
@@ -14,7 +13,9 @@ import {ComponentBrowserAbstractClass} from "../../models/ComponentBrowserAbstra
 import {OverlayService} from "../../services/overlay/overlay.service";
 import {StorageService} from "../../services/storage/storage.service";
 import {DatabaseService} from "../../services/database/database.service";
-import {LazyLoadingService} from "../../services/lazy-loading/lazy-loading.service";
+import {DialogModuleNames} from "../../dialogs/DialogModuleNames";
+import {EventObserver} from "../../services/event-observer/event-observer.service";
+import {OpenDialogEvent} from "../../events/OpenDialogEvent";
 
 @Component({
   selector: 'app-profile-page',
@@ -30,12 +31,9 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
     email: false
   };
 
-  private dialogHandler: any = undefined;
-
-  constructor(private appService: AppService, protected authService: AuthService, private router: Router,
-              private dialog: MatDialog, private storageService: StorageService, private databaseService: DatabaseService,
-              private notificationBarService: NotificationBarService, private seoService: SeoService,
-              private lazyLoadingService: LazyLoadingService) {
+  constructor(private appService: AppService, protected authService: AuthService, private router: Router, private storageService: StorageService,
+              private databaseService: DatabaseService, private notificationBarService: NotificationBarService, private seoService: SeoService,
+              private eventObserver: EventObserver) {
     super(authService);
     this.metaTags = {title: 'Мой профиль | BizMate'};
     this.userDataForm = new FormGroup({
@@ -65,22 +63,24 @@ export class ProfilePageComponent extends ComponentBrowserAbstractClass implemen
   }
 
   public changePhotoURL(): void {
-    this.lazyLoadingService.getLazyLoadedComponent(LazyLoadingService.CUSTOM_IMAGE_CROPPER_MODULE_NAME)
-      .then(comp => {
-        const dialogRef = this.dialog.open(comp, MatDialogConfig.narrowDialogWindow);
-        this.dialogHandler = dialogRef.afterClosed().subscribe((res) => {
-          AppService.unsubscribeHandler([this.dialogHandler]);
-          if (res && typeof res === "string") {
-            this.authService.updateUserDisplayNameOrPhotoURL('photoURL', res)
-              .then(async () => {
-                this.storageService.deleteUserImage(this.userAuthData.photoURL);
-                await this.updateUserData('photoURL', res);
-              })
-              .catch(() => this.notificationBarService.showNotificationBar(Messages.SAVE_ERROR, false))
-              .finally(() => OverlayService.hideOverlay());
-          }
-        });
-      }).catch(console.error);
+    const beforeClosedFunc = async (res) => {
+      try {
+        if (!res || typeof res !== "string") {
+          return;
+        }
+
+        let previousAvatarUrl = this.userAuthData.photoURL;
+        await this.authService.updateUserDisplayNameOrPhotoURL('photoURL', res);
+        this.storageService.deleteUserImage(previousAvatarUrl);
+        await this.updateUserData('photoURL', res);
+      } catch {
+        this.notificationBarService.showNotificationBar(Messages.SAVE_ERROR, false);
+      } finally {
+        OverlayService.hideOverlay();
+      }
+    };
+
+    this.eventObserver.dispatchEvent(new OpenDialogEvent(DialogModuleNames.CUSTOM_IMAGE_CROPPER_MODULE_NAME, MatDialogConfig.narrowDialogWindow, beforeClosedFunc.bind(this)));
   }
 
   public async editUserData(field: string): Promise<void> {

@@ -1,9 +1,7 @@
 import {Injectable} from '@angular/core';
 import {BizMateUser} from "../../models/BizMateUser";
 import {AppService} from "../app/app.service";
-import {MatDialog} from "@angular/material/dialog";
-import {DialogConfigType, MatDialogConfig} from "../../dialogs/mat-dialog-config";
-import {LazyLoadingService} from "../lazy-loading/lazy-loading.service";
+import {DialogConfigType, MatDialogConfig} from "../../dialogs/MatDialogConfig";
 import {BehaviorSubject, Observable} from "rxjs";
 import {
   Auth,
@@ -24,6 +22,8 @@ import {EventObserver} from "../event-observer/event-observer.service";
 import {InitAuthEvent} from "../../events/InitAuthEvent";
 import {AppErrorEvent} from "../../events/AppErrorEvent";
 import {environment} from "../../../environments/environment";
+import {DialogModuleNames} from "../../dialogs/DialogModuleNames";
+import {OpenDialogEvent} from "../../events/OpenDialogEvent";
 
 @Injectable({
   providedIn: 'root'
@@ -37,8 +37,7 @@ export class AuthService {
   private initialAuthCompleted: boolean = false;
   public readonly credentials$: Observable<BizMateUser> = this._credentials.asObservable();
 
-  constructor(private auth: Auth, private dialog: MatDialog, private lazyLoadingService: LazyLoadingService,
-              private eventObserver: EventObserver) {
+  constructor(private auth: Auth, private eventObserver: EventObserver) {
   }
 
   public initAuth(): void {
@@ -185,13 +184,10 @@ export class AuthService {
   }
 
   private openEmailVerificationDialog(): void {
-    this.lazyLoadingService.getLazyLoadedComponent(LazyLoadingService.EMAIL_VERIFY_MESSAGE_MODULE_NAME)
-      .then((comp) =>
-        this.dialog.open(comp, MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, {
-          email: this.credentials.email,
-          alreadySent: false
-        }))
-      ).catch(console.error);
+    this.eventObserver.dispatchEvent(new OpenDialogEvent(
+      DialogModuleNames.EMAIL_VERIFY_MESSAGE_MODULE_NAME,
+      MatDialogConfig.getConfigWithData(DialogConfigType.NARROW_CONFIG, {email: this.credentials.email, alreadySent: false}))
+    );
   }
 
   public async signOut(): Promise<void> {
