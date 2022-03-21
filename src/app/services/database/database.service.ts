@@ -288,8 +288,8 @@ export class DatabaseService {
   }
 
   public async deleteOffer(offer: Offer): Promise<void> {
-      const offerRes = await doc(this.firestore, `${DatabaseService.OFFERS_COLLECTION_PATH}/${offer.offerId}`);
-      await deleteDoc(offerRes);
+    const offerRes = await doc(this.firestore, `${DatabaseService.OFFERS_COLLECTION_PATH}/${offer.offerId}`);
+    await deleteDoc(offerRes);
   }
 
   // Called when users' personal info is changed (name, avatar etc.)

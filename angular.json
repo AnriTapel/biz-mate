@@ -17,6 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "aot": true,
             "outputPath": "dist/biz-mate",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -34,7 +35,7 @@
             "scripts": [],
             "vendorChunk": true,
             "sourceMap": true,
-            "optimization": false,
+            "optimization": true,
             "namedChunks": true,
             "outputHashing": "all",
             "extractLicenses": true,
@@ -60,8 +61,7 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "sourceMap": false,
-              "optimization": true
+              "sourceMap": false
             },
             "stage": {
               "fileReplacements": [
@@ -70,8 +70,7 @@
                   "with": "src/environments/environment.stage.ts"
                 }
               ],
-              "sourceMap": false,
-              "optimization": true
+              "sourceMap": false
             }
           },
           "defaultConfiguration": ""
