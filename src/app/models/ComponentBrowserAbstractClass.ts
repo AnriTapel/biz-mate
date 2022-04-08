@@ -19,7 +19,6 @@ export abstract class ComponentBrowserAbstractClass implements OnDestroy {
 
   ngOnDestroy(): void {
     AppService.unsubscribeHandler([this.userAuthDataHandler]);
-    AppService.scrollPageToHeader();
   }
 
   ngAfterViewChecked(): void {

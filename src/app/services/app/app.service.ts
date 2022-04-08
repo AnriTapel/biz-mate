@@ -155,10 +155,12 @@ export class AppService {
     };
   }
 
-  public static scrollPageToHeader(): void {
+  public static scrollPageToTop(): void {
     const headerEl = document.getElementById('header');
     if (headerEl) {
       headerEl.scrollIntoView({behavior: "smooth"});
+    } else {
+      window.scrollTo(0, 0);
     }
   }
 

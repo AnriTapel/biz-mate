@@ -18,7 +18,7 @@ export class FooterComponent implements OnInit {
   }
 
   public scrollToHeader(): void {
-    AppService.scrollPageToHeader();
+    AppService.scrollPageToTop();
   }
 
   public getCurrentYearString(): string {

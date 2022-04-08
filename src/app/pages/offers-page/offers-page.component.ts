@@ -180,7 +180,7 @@ export class OffersPageComponent extends ComponentBrowserAbstractClass implement
       .catch(() => this.notificationService.showNotificationBar(Messages.DEFAULT_MESSAGE, false))
       .finally(() => {
         OverlayService.hideOverlay();
-        AppService.scrollPageToHeader();
+        AppService.scrollPageToTop();
       });
   }
 
