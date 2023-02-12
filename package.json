@@ -47,7 +47,7 @@
     "@types/node": "^12.11.1",
     "codelyzer": "^6.0.0",
     "firebase-cli": "^1.2.0",
-    "firebase-tools": "^10.2.0",
+    "firebase-tools": "^11.22.0",
     "fs-extra": "^10.0.1",
     "jasmine-core": "~3.6.0",
     "jasmine-spec-reporter": "~5.0.0",
